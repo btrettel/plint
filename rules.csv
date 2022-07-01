@@ -1,0 +1,13 @@
+regex,warning
+means,Possible 112(f) invocation. See MPEP 2181.
+structure,Possible 112(f) invocation. See MPEP 2181.
+module,Possible 112(f) invocation. See MPEP 2181.
+device,Possible 112(f) invocation. See MPEP 2181.
+unit,Possible 112(f) invocation. See MPEP 2181.
+component,Possible 112(f) invocation. See MPEP 2181.
+element,Possible 112(f) invocation. See MPEP 2181.
+member,Possible 112(f) invocation. See MPEP 2181.
+apparatus,Possible 112(f) invocation. See MPEP 2181.
+machine,Possible 112(f) invocation. See MPEP 2181.
+system,Possible 112(f) invocation. See MPEP 2181.
+mechanism,Possible 112(f) invocation. See MPEP 2181.
