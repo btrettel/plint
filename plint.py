@@ -4,12 +4,21 @@
 
 # TODO: <https://groups.google.com/g/misc.legal.computing/c/1StCrr-FX80/m/hqcKDSkpKjkJ>
 # TODO: Have some extra features that use NLTK. Use try/except ImportError to automatically turn those off. <https://stackoverflow.com/a/12861052>
-# TODO Check dependency structure first. Check that dependent claims exist. Check for invalid multiple dependencies.
+# TODO Check for invalid multiple dependencies.
 # TODO: Check for features of other softwares like the LexisNexus one. Add that one and others to your notes.
-# TODO: 16/753,466: "preferably" makes claim indefinite
 # TODO: Have exit code if any warnings are output. what is the exit code for an assertion failing?
 # TODO: Add tests for all functions.
 # TODO: Interactive option to select identified issues to automatically write office action for.
+# TODO: Relative terms (and subjective terms). MPEP 2173.05(b).
+# TODO: <https://www.aipla.org/docs/default-source/committee-documents/bcp-files/bcelsa_112sg.pdf?sfvrsn=6af15801_2>
+# TODO: <https://www.ipwatchdog.com/2016/01/30/patent-drafting-relative-terminology-can-be-dangerous/id=65455/>
+# TODO: <https://www.napp.org/assets/2016AMC/1-%20wendt%20presentation%20final.pdf>
+# TODO: Check for antecedent basis errors. MPEP 2173.05(e).
+# TODO: --reject option to write rejections to text file. Then you can delete the ones you don't want.
+# TODO: Have list of common trademarks and trade names to check for.
+# TODO: "Use" claim detection: method or process without word step?
+# TODO: 112(f): configured to
+# TODO: 112(b): effective amount
 
 import argparse
 import sys
@@ -72,7 +81,7 @@ if args.json:
 else:
     # Opening CSV file
     # Needs to be "MS-DOS" format, not UTF-8. For some reason the really old version of Python the USPTO has doesn't like Unicode CSV files.
-    rules_csv = csv.DictReader(open(args.rules, 'r'))
+    rules_csv = csv.DictReader(open(args.rules, 'r', encoding="ascii"))
     rules = []
     for rule in rules_csv:
         rules.append(rule)
@@ -132,7 +141,7 @@ with open(args.file) as claim_file:
                     assert_warn(parent_claim in claims, "Dependent claim {} depends on non-existent claim {}.".format(claim_number, parent_claim))
             
             for rule in rules:
-                assert_warn(not(re_matches(rule['regex'], claim_text.lower())), 'Claim {} contains {}. {}'.format(claim_number, rule['regex'], rule['warning']))
+                assert_warn(not(re_matches(rule['regex'], claim_text.lower())), 'Claim {} recites "{}". {}'.format(claim_number, rule['regex'], rule['warning']))
             
             prev_claim_number = claim_number
         
