@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# !https://stackoverflow.com/a/68612842>
+# <https://stackoverflow.com/a/68612842>
 
-# TODO: !https://groups.google.com/g/misc.legal.computing/c/1StCrr-FX80/m/hqcKDSkpKjkJ>
-# TODO: Have some extra features that use NLTK. Use try/except ImportError to automatically turn those off. !https://stackoverflow.com/a/12861052>
+# TODO: <https://groups.google.com/g/misc.legal.computing/c/1StCrr-FX80/m/hqcKDSkpKjkJ>
+# TODO: Have some extra features that use NLTK. Use try/except ImportError to automatically turn those off. <https://stackoverflow.com/a/12861052>
 # TODO Check for invalid multiple dependencies.
 # TODO: Check for features of other softwares like the LexisNexus one. Add that one and others to your notes.
 # TODO: Have exit code if any warnings are output. what is the exit code for an assertion failing?
 # TODO: Add tests for all functions.
 # TODO: Interactive option to select identified issues to automatically write office action for.
 # TODO: Relative terms (and subjective terms). MPEP 2173.05(b).
-# TODO: !https://www.aipla.org/docs/default-source/committee-documents/bcp-files/bcelsa_112sg.pdf?sfvrsn=6af15801_2>
-# TODO: !https://www.ipwatchdog.com/2016/01/30/patent-drafting-relative-terminology-can-be-dangerous/id=65455/>
-# TODO: !https://www.napp.org/assets/2016AMC/1-%20wendt%20presentation%20final.pdf>
+# TODO: <https://www.aipla.org/docs/default-source/committee-documents/bcp-files/bcelsa_112sg.pdf?sfvrsn=6af15801_2>
+# TODO: <https://www.ipwatchdog.com/2016/01/30/patent-drafting-relative-terminology-can-be-dangerous/id=65455/>
+# TODO: <https://www.napp.org/assets/2016AMC/1-%20wendt%20presentation%20final.pdf>
 # TODO: --reject option to write rejections to text file. Then you can delete the ones you don't want.
 # TODO: Have list of common trademarks and trade names to check for. teflon, inconel
 # TODO: "Use" claim detection: method or process without word step?
