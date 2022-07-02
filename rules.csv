@@ -1,29 +1,61 @@
 regex,warning
-means,Possible 112(f) invocation. See MPEP 2181.
-structure,Possible 112(f) invocation. See MPEP 2181.
-module,Possible 112(f) invocation. See MPEP 2181.
-device,Possible 112(f) invocation. See MPEP 2181.
-unit,Possible 112(f) invocation. See MPEP 2181.
-component,Possible 112(f) invocation. See MPEP 2181.
-element,Possible 112(f) invocation. See MPEP 2181.
-member,Possible 112(f) invocation. See MPEP 2181.
-apparatus,Possible 112(f) invocation. See MPEP 2181.
-machine,Possible 112(f) invocation. See MPEP 2181.
-system,Possible 112(f) invocation. See MPEP 2181.
-mechanism,Possible 112(f) invocation. See MPEP 2181.
-preferably,Possible invalid alternative limitation. See MPEP 2173.05(h).
-optionally,Possible invalid alternative limitation. See MPEP 2173.05(h).
-for example,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
-such as,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.10.
-or the like,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.09.
-figure,Possible reference to figure. See MPEP 2173.05(s).
-table,Possible reference to table. See MPEP 2173.05(s).
-about,Possible relative term. See MPEP 2173.05(b).
-superior,Possible relative term. See MPEP 2173.05(b).
-similar,Possible relative term. See MPEP 2173.05(b).
-comparable,Possible relative term. See MPEP 2173.05(b).
-essentially,Possible relative term. See MPEP 2173.05(b).
-type,Possible relative term. See MPEP 2173.05(b).
-order of,Possible relative term. See MPEP 2173.05(b).
-substantially,Possible relative term. See MPEP 2173.05(b).
-substantial,Possible relative term. See MPEP 2173.05(b).
+\bmeans\b,Possible 112(f) invocation. See MPEP 2181.
+\bstructure\b,Possible 112(f) invocation. See MPEP 2181.
+\bmodule\b,Possible 112(f) invocation. See MPEP 2181.
+\bdevice\b,Possible 112(f) invocation. See MPEP 2181.
+\bunit\b,Possible 112(f) invocation. See MPEP 2181.
+\bcomponent\b,Possible 112(f) invocation. See MPEP 2181.
+\belement\b,Possible 112(f) invocation. See MPEP 2181.
+\bmember\b,Possible 112(f) invocation. See MPEP 2181.
+\bapparatus\b,Possible 112(f) invocation. See MPEP 2181.
+\bmachine\b,Possible 112(f) invocation. See MPEP 2181.
+\bsystem\b,Possible 112(f) invocation. See MPEP 2181.
+\bmechanism\b,Possible 112(f) invocation. See MPEP 2181.
+\bstep for\b,Possible 112(f) invocation. See MPEP 2181.
+\bpreferably\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
+\boptionally\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
+\bfor example\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\bsuch as\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.10.
+\bor the like\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.09.
+\bfigure\b,Possible reference to figure. See MPEP 2173.05(s).
+\btable\b,Possible reference to table. See MPEP 2173.05(s).
+\babout\b,Possible relative term. See MPEP 2173.05(b).
+\bsuperior\b,Possible relative term. See MPEP 2173.05(b).
+\bsimilar\b,Possible relative term. See MPEP 2173.05(b).
+\bcomparable\b,Possible relative term. See MPEP 2173.05(b).
+\bessentially\b,Possible relative term. See MPEP 2173.05(b).
+\btype\b,Possible relative term. See MPEP 2173.05(b).
+\border of\b,Possible relative term. See MPEP 2173.05(b).
+\bsubstantially\b,Possible relative term. See MPEP 2173.05(b).
+\bsubstantial\b,Possible relative term. See MPEP 2173.05(b).
+\bapproximately\b,Possible relative term. See MPEP 2173.05(b).
+\broughly\b,Possible relative term. See MPEP 2173.05(b).
+\baround\b,Possible relative term. See MPEP 2173.05(b).
+\bin the region of\b,Possible relative term. See MPEP 2173.05(b).
+\bconsiderable\b,Possible relative term. See MPEP 2173.05(b).
+\blargely\b,Possible relative term. See MPEP 2173.05(b).
+\brelatively\b,Possible relative term. See MPEP 2173.05(b).
+\bpredetermined\b,Possibly indefinite if how the element is predetermined is not discussed in the specs. See PTAB decision in app. no. 15/359,628.
+\beffective amount\b,Possibly indefinite. See MPEP 2173.05(c).
+\bclosely\b,Possible relative term. See MPEP 2173.05(b).
+\bclose to\b,Possible relative term. See MPEP 2173.05(b).
+\balmost\b,Possible relative term. See MPEP 2173.05(b).
+\bgenerally\b,Possible relative term. See MPEP 2173.05(b).
+\bmoderately\b,Possible relative term. See MPEP 2173.05(b).
+\bunobtrusive\b,Possible subjective term. See MPEP 2173.05(b).
+\baesthetically pleasing\b,Possible subjective term. See MPEP 2173.05(b).
+\breasonably\b,Possible relative term. See MPEP 2173.05(b).
+\bnear\b,Possible relative term. See MPEP 2173.05(b).
+\bthin\b,Possible subjective term. See MPEP 2173.05(b).
+\bmost of\b,Possible relative term. See MPEP 2173.05(b).
+\bappropriate\b,Possible relative term. See MPEP 2173.05(b).
+\bproper amount\b,Possible relative term. See MPEP 2173.05(b).
+\bhigh\b,Possible relative term. See MPEP 2173.05(b).
+\bmoderate\b,Possible relative term. See MPEP 2173.05(b).
+\blow\b,Possible relative term. See MPEP 2173.05(b).
+\blarge\b,Possible relative term. See MPEP 2173.05(b).
+\bsmall\b,Possible relative term. See MPEP 2173.05(b).
+\bnearly\b,Possible relative term. See MPEP 2173.05(b).
+\bspongy\b,Possibly indefinite functional language. See MPEP 2173.05(g).
+\bporous\b,Possibly indefinite functional language. See MPEP 2173.05(g).
+\bfragile\b,Possibly indefinite functional language. See MPEP 2173.05(g).
