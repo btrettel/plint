@@ -67,4 +67,8 @@ To check the demo claims on Linux:
 
 The special syntax for antecedent basis issues is as follows: When the start of a new element is not detected, add the word "!" before the element. When the start of an element previously introduced is not detected, add the word "@" before the element. When the end of an element is not detected, add "|" to the end of the word. When an article should not create an element, add "#" to the beginning of that word. See <demo-claims.txt> below for this notation in use.
 
-    1. A contraption comprising: an enclosure| and at least one ! widget| mounted on the enclosure, wherein the enclosure| is green and #the at least one @ widget| is blue.
+    1. A contraption comprising:
+    an enclosure| and
+    at least one ! widget| mounted on the enclosure,
+    wherein the enclosure| is green and
+    #the at least one @ widget| is blue.
