@@ -162,6 +162,9 @@ with open(args.file) as claim_file:
                         else:
                             claim_word_cut = claim_word
                         
+                        if claim_word.startswith('#'):
+                            claim_word = claim_word[1:]
+                        
                         if not((claim_word == 'a') or (claim_word == 'an') or (claim_word == '!')):
                             element.append(claim_word_cut)
                     
@@ -190,6 +193,9 @@ with open(args.file) as claim_file:
                             claim_word_cut = claim_word[0:-1]
                         else:
                             claim_word_cut = claim_word
+                        
+                        if claim_word.startswith('#'):
+                            claim_word = claim_word[1:]
                         
                         if not((claim_word == 'the') or (claim_word == '@')):
                             element.append(claim_word_cut)
