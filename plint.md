@@ -43,7 +43,7 @@ The following hard-coded checks are made:
 
 A rules file is used to identify possibly problematic claim language.
 
-The standard rules file (<rules.csv>) can be modified to add or remove rules as desired by the user. The format of this file is as follows: The first column is "regex", which contains regular expressions to match against the claims. The second column is "warning", which lists the warning displayed when the regex is matched. The file must start with a line listing the columns as "regex" and "warning".
+The standard rules file ([rules.csv](rules.csv)) can be modified to add or remove rules as desired by the user. The format of this file is as follows: The first column is "regex", which contains regular expressions to match against the claims. The second column is "warning", which lists the warning displayed when the regex is matched. The file must start with a line listing the columns as "regex" and "warning".
 
 As an example, consider the following rule:
 
@@ -65,10 +65,16 @@ To check the demo claims on Linux:
 
     ./plint.py -ab demo-claims.txt
 
-The special syntax for antecedent basis issues is as follows: When the start of a new element is not detected, add the word "!" before the element. When the start of an element previously introduced is not detected, add the word "@" before the element. When the end of an element is not detected, add "|" to the end of the word. When an article should not create an element, add "#" to the beginning of that word. See <demo-claims.txt> below for this notation in use.
+The special syntax for antecedent basis issues is as follows: When the start of a new element is not detected, add the word "!" before the element. When the start of an element previously introduced is not detected, add the word "@" before the element. When the end of an element is not detected, add "|" to the end of the word. When an article should not create an element, add "#" to the beginning of that word. See [demo-claims.txt](demo-claims.txt) below for this notation in use.
 
     1. A contraption comprising:
     an enclosure| and
     at least one ! widget| mounted on the enclosure,
     wherein the enclosure| is green and
     #the at least one @ widget| is blue.
+
+## Exit statuses
+
+- 0 means the claims pass all tests.
+- 1 means that a fatal error occurred in the parsing of the claims. Typically the claims will be written in a way that violates plint.py's expectations for how a claim will be structured.
+- 2 means that one or more warnings were made.

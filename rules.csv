@@ -12,6 +12,8 @@ regex,warning
 \bsystem\b,Possible 112(f) invocation. See MPEP 2181.
 \bmechanism\b,Possible 112(f) invocation. See MPEP 2181.
 \bstep for\b,Possible 112(f) invocation. See MPEP 2181.
+\bconfigured to\b,Possible 112(f) invocation. See MPEP 2181.
+\bso that\b,Possible 112(f) invocation. See MPEP 2181.
 \bpreferably\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 \boptionally\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 \bfor example\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
@@ -24,7 +26,8 @@ regex,warning
 \bsimilar\b,Possible relative term. See MPEP 2173.05(b).
 \bcomparable\b,Possible relative term. See MPEP 2173.05(b).
 \bessentially\b,Possible relative term. See MPEP 2173.05(b).
-\btype\b,Possible relative term. See MPEP 2173.05(b).
+\btype\b,Possible relative term. See MPEP 2173.05(b). Possible indefinite use of trademark or trade name. See MPEP 2173.05(u).
+-type\b,Possible relative term. See MPEP 2173.05(b).
 \border of\b,Possible relative term. See MPEP 2173.05(b).
 \bsubstantially\b,Possible relative term. See MPEP 2173.05(b).
 \bsubstantial\b,Possible relative term. See MPEP 2173.05(b).

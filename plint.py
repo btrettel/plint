@@ -3,19 +3,12 @@
 # <https://stackoverflow.com/a/68612842>
 
 # TODO: <https://groups.google.com/g/misc.legal.computing/c/1StCrr-FX80/m/hqcKDSkpKjkJ>
-# TODO: Have some extra features that use NLTK. Use try/except ImportError to automatically turn those off. <https://stackoverflow.com/a/12861052>
 # TODO: Check for invalid multiple dependencies.
 # TODO: Check for features of other softwares like the LexisNexus one. Add that one and others to your notes.
-# TODO: Have exit code if any warnings are output. What is the exit code for an assertion failing?
-# TODO: Add tests for all functions.
-# TODO: <https://www.ipwatchdog.com/2016/01/30/patent-drafting-relative-terminology-can-be-dangerous/id=65455/>
-# TODO: <https://www.napp.org/assets/2016AMC/1-%20wendt%20presentation%20final.pdf>
 # TODO: --reject option to write rejections to text file. Then you can delete the ones you don't want.
-# TODO: Have list of common trademarks and trade names to check for. teflon, inconel
+# TODO: Have list of common trademarks and trade names to check for. teflon, inconel. MPEP 2173.05(u).
 # TODO: "Use" claim detection: method or process without word step?
-# TODO: 112(f): configured to
-# TODO: Clean up antecedent basis code. Add tests for it.
-# TODO: Make new and old element functions, test what is found by the functions.
+# TODO: Clean up antecedent basis code.
 # TODO: Check for antecedent basis issues for plural elements. Check for inconsistencies in how plural elements are referred to, for example, "two widgets" and later "the widget". (Though as-is, if I annotate the claim, it will note this problem.) ClaimMaster does the latter.
 
 import argparse
@@ -40,7 +33,76 @@ def re_matches(regex, text):
         return True
 
 def remove_punctuation(text):
-    return text.replace(',', '').replace(';', '')
+    return text.replace(',', '').replace(';', '').replace('.', '')
+
+def find_new_elements(claim_words, new_elements):
+    capture_element = False
+    element = []
+    
+    # find all new claim elements
+    for claim_word in claim_words[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
+        if capture_element:
+            if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|'):
+                claim_word_cut = claim_word[0:-1]
+            else:
+                claim_word_cut = claim_word
+            
+            if claim_word.startswith('#'):
+                claim_word = claim_word[1:]
+            
+            if not((claim_word == 'a') or (claim_word == 'an') or (claim_word == '!')):
+                element.append(claim_word_cut)
+        
+        # Guess where the end of the claim element is.
+        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|') or (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
+            
+            if element != []:
+                new_elements.add(' '.join(element))
+            
+            # Stop capturing the element.
+            capture_element = False
+        
+        if (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
+            # Start capturing the element.
+            capture_element = True
+            element = []
+    
+    return new_elements
+
+def find_old_elements(claim_words):
+    capture_element = False
+    element = []
+    old_elements = set()
+    
+    # find all old claim elements
+    for claim_word in claim_words[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
+        if capture_element:
+            if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|'):
+                claim_word_cut = claim_word[0:-1]
+            else:
+                claim_word_cut = claim_word
+            
+            if claim_word.startswith('#'):
+                claim_word = claim_word[1:]
+            
+            if not((claim_word == 'the') or (claim_word == 'said') or (claim_word == '@')):
+                element.append(claim_word_cut)
+        
+        # Guess where the end of the claim element is.
+        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|') or (claim_word == 'the') or (claim_word == 'said') or (claim_word == '@'):
+            
+            if element != []:
+                old_elements.add(' '.join(element))
+            
+            # Stop capturing the element.
+            capture_element = False
+        
+        if (claim_word == 'the') or (claim_word == 'said') or (claim_word == '@'):
+            # Start capturing the element.
+            capture_element = True
+            element = []
+    
+    return old_elements
 
 parser = argparse.ArgumentParser(description="patent claim linter: analyses patent claims for 112(b), 112(f), and other issues")
 parser.add_argument("file", help="claim file to read")
@@ -49,7 +111,26 @@ parser.add_argument("--rules", help="rules file to read",
                     default=None)
 parser.add_argument("--json", action="store_true", help="use a JSON rules file (default is CSV)", default=False)
 parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-01')
+parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
+
+if args.test:
+    assert re_matches('\\btest\\b', 'This is a test.')
+    assert not(re_matches('\\btest\\b', 'A different sentence.'))
+    
+    assert remove_punctuation('an element; another element') == 'an element another element'
+    
+    claim_words = "A contraption comprising: an enclosure| and at least one ! widget| mounted on the enclosure, wherein the enclosure| is green and #the at least one @ widget| is blue.".split(' ')
+    
+    new_elements = find_new_elements(claim_words, set())
+    assert new_elements == {'enclosure', 'widget'}
+    
+    old_elements = find_old_elements(claim_words)
+    assert old_elements == {'enclosure', 'widget'}
+    
+    print('All tests passed.')
+    
+    exit()
 
 if args.json:
     file_ext = '.json'
@@ -169,75 +250,14 @@ for claim_text_with_number in claims_text:
     
     if args.ant_basis:
         # Check for antecedent basis issues.
-        capture_element = False
-        element = []
+        
         if dependent:
             new_elements = new_elements_in_claims[parent_claim]
         else:
             new_elements = set()
+        new_elements = find_new_elements(claim_words, new_elements)
         
-        # find all new claim elements
-        for claim_word in claim_words[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
-            if capture_element:
-                if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|'):
-                    claim_word_cut = claim_word[0:-1]
-                else:
-                    claim_word_cut = claim_word
-                
-                if claim_word.startswith('#'):
-                    claim_word = claim_word[1:]
-                
-                if not((claim_word == 'a') or (claim_word == 'an') or (claim_word == '!')):
-                    element.append(claim_word_cut)
-            
-            # Guess where the end of the claim element is.
-            if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|') or (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
-                
-                if element != []:
-                    new_elements.add(' '.join(element))
-                
-                # Stop capturing the element.
-                capture_element = False
-            
-            if (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
-                # Start capturing the element.
-                capture_element = True
-                element = []
-        
-        capture_element = False
-        element = []
-        old_elements = set()
-        
-        # find all old claim elements
-        for claim_word in claim_words[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
-            if capture_element:
-                if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|'):
-                    claim_word_cut = claim_word[0:-1]
-                else:
-                    claim_word_cut = claim_word
-                
-                if claim_word.startswith('#'):
-                    claim_word = claim_word[1:]
-                
-                if not((claim_word == 'the') or (claim_word == 'said') or (claim_word == '@')):
-                    element.append(claim_word_cut)
-            
-            # Guess where the end of the claim element is.
-            if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|') or (claim_word == 'the') or (claim_word == 'said') or (claim_word == '@'):
-                
-                if element != []:
-                    old_elements.add(' '.join(element))
-                
-                # Stop capturing the element.
-                capture_element = False
-            
-            if (claim_word == 'the') or (claim_word == 'said') or (claim_word == '@'):
-                # Start capturing the element.
-                capture_element = True
-                element = []
-        
-        #print(new_elements)
-        #print(old_elements)
+        old_elements = find_old_elements(claim_words)
         
         for old_element in old_elements:
             assert_warn(old_element in new_elements, 'Claim {} has a possible antecedent basis issue for "{}". See MPEP 2173.05(e).'.format(claim_number, old_element))
@@ -252,3 +272,6 @@ print('Depen. claims: {}'.format(number_of_dep_claims))
 print('Warnings: {}'.format(number_of_warnings))
 
 assert number_of_claims == (number_of_indep_claims + number_of_dep_claims)
+
+if number_of_warnings > 0:
+    exit(2)
