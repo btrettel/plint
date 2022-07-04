@@ -35,6 +35,9 @@ def re_matches(regex, text):
 def remove_punctuation(text):
     return text.replace(',', '').replace(';', '').replace('.', '')
 
+def remove_ab_notation(text):
+    return text.replace(' |', '').replace('! ', '').replace('@ ', '')
+
 def find_new_elements(claim_words, new_elements):
     capture_element = False
     element = []
@@ -42,7 +45,7 @@ def find_new_elements(claim_words, new_elements):
     # find all new claim elements
     for claim_word in claim_words[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
         if capture_element:
-            if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|'):
+            if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.'):
                 claim_word_cut = claim_word[0:-1]
             else:
                 claim_word_cut = claim_word
@@ -50,11 +53,11 @@ def find_new_elements(claim_words, new_elements):
             if claim_word.startswith('#'):
                 claim_word = claim_word[1:]
             
-            if not((claim_word == 'a') or (claim_word == 'an') or (claim_word == '!')):
+            if not((claim_word == 'a') or (claim_word == 'an') or (claim_word == '!') or claim_word.startswith('|')):
                 element.append(claim_word_cut)
         
         # Guess where the end of the claim element is.
-        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|') or (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
+        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.startswith('|') or (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
             
             if element != []:
                 new_elements.add(' '.join(element))
@@ -77,7 +80,7 @@ def find_old_elements(claim_words):
     # find all old claim elements
     for claim_word in claim_words[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
         if capture_element:
-            if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|'):
+            if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.'):
                 claim_word_cut = claim_word[0:-1]
             else:
                 claim_word_cut = claim_word
@@ -85,11 +88,11 @@ def find_old_elements(claim_words):
             if claim_word.startswith('#'):
                 claim_word = claim_word[1:]
             
-            if not((claim_word == 'the') or (claim_word == 'said') or (claim_word == '@')):
+            if not((claim_word == 'the') or (claim_word == 'said') or (claim_word == '@') or claim_word.startswith('|')):
                 element.append(claim_word_cut)
         
         # Guess where the end of the claim element is.
-        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.endswith('|') or (claim_word == 'the') or (claim_word == 'said') or (claim_word == '@'):
+        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.startswith('|') or (claim_word == 'the') or (claim_word == 'said') or (claim_word == '@'):
             
             if element != []:
                 old_elements.add(' '.join(element))
@@ -120,13 +123,13 @@ if args.test:
     
     assert remove_punctuation('an element; another element') == 'an element another element'
     
-    claim_words = "A contraption comprising: an enclosure| and at least one ! widget| mounted on the enclosure, wherein the enclosure| is green and #the at least one @ widget| is blue.".split(' ')
+    claim_words = "1. A contraption comprising: an enclosure |, a display |, a button |, and at least one ! widget | mounted on the enclosure, wherein the enclosure | is green, the button | is yellow, and #the at least one @ widget | is blue.".split(' ')
     
     new_elements = find_new_elements(claim_words, set())
-    assert new_elements == {'enclosure', 'widget'}
+    assert new_elements == {'enclosure', 'button', 'display', 'widget'}
     
     old_elements = find_old_elements(claim_words)
-    assert old_elements == {'enclosure', 'widget'}
+    assert old_elements == {'button', 'enclosure', 'widget'}
     
     print('All tests passed.')
     
@@ -246,7 +249,7 @@ for claim_text_with_number in claims_text:
             assert_warn(parent_claim in claim_numbers, "Dependent claim {} depends on non-existent claim {}.".format(claim_number, parent_claim))
     
     for rule in rules:
-        assert_warn(not(re_matches(rule['regex'], claim_text.lower())), 'Claim {} recites "{}". {}'.format(claim_number, rule['regex'].replace('\\b', ''), rule['warning']))
+        assert_warn(not(re_matches(rule['regex'], remove_ab_notation(claim_text.lower()))), 'Claim {} recites "{}". {}'.format(claim_number, rule['regex'].replace('\\b', ''), rule['warning']))
     
     if args.ant_basis:
         # Check for antecedent basis issues.
