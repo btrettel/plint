@@ -9,7 +9,6 @@
 # TODO: "Use" claim detection: method or process without word step?
 # TODO: Clean up antecedent basis code.
 # TODO: Check for antecedent basis issues for plural elements. Check for inconsistencies in how plural elements are referred to, for example, "two widgets" and later "the widget". (Though as-is, if I annotate the claim, it will note this problem.) ClaimMaster does the latter.
-# TODO: Make the regex part print the actual matched text.
 
 import argparse
 import sys
@@ -28,9 +27,10 @@ def assert_warn(bool_input, message):
 
 def re_matches(regex, text):
     if re.search(regex, text) is None:
-        return False
+        return False, None
     else:
-        return True
+        match_str = re.search(regex, text).group()
+        return True, match_str
 
 def remove_punctuation(text):
     return text.replace(',', '').replace(';', '').replace('.', '')
@@ -113,13 +113,15 @@ parser.add_argument("-ab", "--ant-basis", action="store_true", help="check for a
 parser.add_argument("--rules", help="rules file to read",
                     default=None)
 parser.add_argument("--json", action="store_true", help="use a JSON rules file (default is CSV)", default=False)
-parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-01')
+parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-04')
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
 
 if args.test:
-    assert re_matches('\\btest\\b', 'This is a test.')
-    assert not(re_matches('\\btest\\b', 'A different sentence.'))
+    match_bool, match_str = re_matches('\\btest\\b', 'This is a test.')
+    assert match_bool
+    match_bool, match_str = re_matches('\\btest\\b', 'A different sentence.')
+    assert not(match_bool)
     
     assert remove_punctuation('an element; another element') == 'an element another element'
     
@@ -249,7 +251,8 @@ for claim_text_with_number in claims_text:
             assert_warn(parent_claim in claim_numbers, "Dependent claim {} depends on non-existent claim {}.".format(claim_number, parent_claim))
     
     for rule in rules:
-        assert_warn(not(re_matches(rule['regex'], remove_ab_notation(claim_text.lower()))), 'Claim {} recites "{}". {}'.format(claim_number, rule['regex'].replace('\\b', ''), rule['warning']))
+        match_bool, match_str = re_matches(rule['regex'], remove_ab_notation(claim_text.lower()))
+        assert_warn(not(match_bool), 'Claim {} recites "{}". {}'.format(claim_number, match_str, rule['warning'].split('#')[0].strip()))
     
     if args.ant_basis:
         # Check for antecedent basis issues.
