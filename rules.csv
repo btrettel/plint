@@ -27,7 +27,7 @@ regex,warning
 \bcomparable\b,Possible relative term. See MPEP 2173.05(b).
 \bessentially\b,Possible relative term. See MPEP 2173.05(b).
 \btype\b,Possible relative term. See MPEP 2173.05(b). Possible indefinite use of trademark or trade name. See MPEP 2173.05(u).
--type\b,Possible relative term. See MPEP 2173.05(b).
+\B-type\b,Possible relative term. See MPEP 2173.05(b).
 \border of\b,Possible relative term. See MPEP 2173.05(b).
 \bsubstantially\b,Possible relative term. See MPEP 2173.05(b).
 \bsubstantial\b,Possible relative term. See MPEP 2173.05(b).
@@ -62,3 +62,6 @@ regex,warning
 \bspongy\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \bporous\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \bfragile\b,Possibly indefinite functional language. See MPEP 2173.05(g).
+\bconvenient\b,Possible subjective term. See MPEP 2173.05(b).
+\bslow\b,Possible relative term. See MPEP 2173.05(b).
+\bfast\b,Possible relative term. See MPEP 2173.05(b).

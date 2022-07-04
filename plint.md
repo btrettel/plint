@@ -4,15 +4,19 @@
 
 ### Windows
 
-On my USPTO computer (Windows), after adding `C:\Python32` to my path, I can run the script as follows:
+On my USPTO computer (Windows), after adding `C:\Python32` and the folder where plint.py is to my path, I can run the script as follows:
 
-    python.exe plint.py claim-file.txt
+    python.exe plint.py .\claim-file.txt
 
-You can edit your path by using the start search button. Search for env and click on "Edit environment variables for your account".
+You can edit your path by using the start search button. Search for env and click on "Edit environment variables for your account". Separate the different folder paths with a semi-colon. [See here](https://answers.microsoft.com/en-us/windows/forum/all/adding-path-variable/97300613-20cb-4d85-8d0e-cc9d3549ba23) for some screenshots of the environmental variables dialog box.
 
 If you want to run the script directly instead of through Python, you can add ;.PY to the end of the user environmental variable PATHEXT. For me, this means that I added PATHEXT in the "Edit environment variables for your account" dialog as follows:
 
     .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL;.PY
+
+Then I can run plint.py as follows:
+
+    plint.py .\claim-file.txt
 
 ### Linux
 

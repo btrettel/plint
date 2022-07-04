@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 # <https://stackoverflow.com/a/68612842>
 
-# TODO: <https://groups.google.com/g/misc.legal.computing/c/1StCrr-FX80/m/hqcKDSkpKjkJ>
 # TODO: Check for invalid multiple dependencies.
-# TODO: Check for features of other softwares like the LexisNexus one. Add that one and others to your notes.
+# TODO: Check for features of other softwares.
 # TODO: --reject option to write rejections to text file. Then you can delete the ones you don't want.
 # TODO: Have list of common trademarks and trade names to check for. teflon, inconel. MPEP 2173.05(u).
 # TODO: "Use" claim detection: method or process without word step?
 # TODO: Clean up antecedent basis code.
 # TODO: Check for antecedent basis issues for plural elements. Check for inconsistencies in how plural elements are referred to, for example, "two widgets" and later "the widget". (Though as-is, if I annotate the claim, it will note this problem.) ClaimMaster does the latter.
+# TODO: Make the regex part print the actual matched text.
 
 import argparse
 import sys
