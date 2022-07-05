@@ -9,6 +9,9 @@
 # TODO: "Use" claim detection: method or process without word step?
 # TODO: Clean up antecedent basis code.
 # TODO: Check for antecedent basis issues for plural elements. Check for inconsistencies in how plural elements are referred to, for example, "two widgets" and later "the widget". (Though as-is, if I annotate the claim, it will note this problem.) ClaimMaster does the latter.
+# TODO: Other phrases the start elements: at least one, one or more
+# TODO: Check classification for patent documents on patent analysis for more ideas. US20090070317A1
+# TODO: Check for synonyms of the relative terms you already have for more.
 
 import argparse
 import sys
