@@ -157,7 +157,7 @@ parser.add_argument("-ab", "--ant-basis", action="store_true", help="check for a
 parser.add_argument("--filter", help="filter out warnings with this regex", nargs='*')
 parser.add_argument("--rules", help="rules file to read", default=None)
 parser.add_argument("--json", action="store_true", help="use a JSON rules file (default is CSV)", default=False)
-parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-04')
+parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-05')
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
 
