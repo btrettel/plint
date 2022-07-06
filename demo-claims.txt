@@ -2,7 +2,7 @@
 an enclosure |,
 a display |,
 a button |, and
-at least one ! widget | mounted on the enclosure,
+at least one widget | mounted on the enclosure,
 wherein the enclosure | is green,
 the button | is yellow, and
-#the at least one @ widget | is blue.
+the at least one widget | is blue.

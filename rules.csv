@@ -1,27 +1,36 @@
 regex,warning
 \babout\b,Possible relative term. See MPEP 2173.05(b).
 \badapted (to|for)\b,Possible 112(f) invocation. See MPEP 2181.
+#\badjacent\b,Possible relative term. See MPEP 2173.05(b).
 \baesthetically pleasing\b,Possible subjective term. See MPEP 2173.05(b).
 \balmost\b,Possible relative term. See MPEP 2173.05(b).
 \bapparatus\b,Possible 112(f) invocation. See MPEP 2181.
+\bapproaches\b,Possible relative term. See MPEP 2173.05(b).
 \bappropriate\b,Possible relative term. See MPEP 2173.05(b).
+\bapprox\b,Possible relative term. See MPEP 2173.05(b).
 \bapproximately\b,Possible relative term. See MPEP 2173.05(b).
 \baround\b,Possible relative term. See MPEP 2173.05(b).
+\bas in\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \b(at least one|one or more) of (.+?) and (.+?)\b,"Should be interpreted as 'at least one of A and at least one of B'. See SuperGuide Corp. v. DirecTV Enterprises, Inc. (358 F.3d 870 (Fed. Cir. 2004)). # <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/i0pnysf/>"
 \b(at least one|one or more) of (.+?) or (.+?)\b,"Should be interpreted as 'at least one of A, or at least one of B'. See SuperGuide Corp. v. DirecTV Enterprises, Inc. (358 F.3d 870 (Fed. Cir. 2004)). # <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/i0pnysf/>"
+\bbeside\b,Possible relative term. See MPEP 2173.05(b).
 \bbig\b,Possible relative term. See MPEP 2173.05(b).
+\bcirca\b,Possible relative term. See MPEP 2173.05(b).
 \bclosely\b,Possible relative term. See MPEP 2173.05(b).
 \bclose to\b,Possible relative term. See MPEP 2173.05(b).
 \bcold\b,Possible relative term. See MPEP 2173.05(b).
 \bcomparable\b,Possible relative term. See MPEP 2173.05(b).
+\bcomparatively\b,Possible relative term. See MPEP 2173.05(b).
 \bcomponent\b,Possible 112(f) invocation. See MPEP 2181.
 \bconfigured (to|for)\b,Possible 112(f) invocation. See MPEP 2181.
 \bconsiderable\b,Possible relative term. See MPEP 2173.05(b).
 \bconvenient\b,Possible subjective term. See MPEP 2173.05(b).
 \bdesigned (to|for)\b,Possible 112(f) invocation. See MPEP 2181.
 \bdevice\b,Possible 112(f) invocation. See MPEP 2181.
+\bdistant\b,Possible relative term. See MPEP 2173.05(b).
 \beffective amount\b,Possible subjective term. See MPEP 2173.05(c).
 \belement\b,Possible 112(f) invocation. See MPEP 2181.
+\belongated\b,Possible relative term. See MPEP 2173.05(b).
 \bessentially\b,Possible relative term. See MPEP 2173.05(b).
 \bfar\b,Possible relative term. See MPEP 2173.05(b).
 \bfast\b,Possible relative term. See MPEP 2173.05(b).
@@ -30,13 +39,21 @@ regex,warning
 \bfor example\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bfragile\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \bgenerally\b,Possible relative term. See MPEP 2173.05(b).
-\bheat capacity\b,Possibly indefinite if type of heat capacity (constant pressure or constant volume) is not mentioned.
+\bheat capacity\b,Possibly indefinite if type of heat capacity (constant pressure or constant volume) is not mentioned. # 17/179,850
 \bhigh\b,Possible relative term. See MPEP 2173.05(b).
 \bhot\b,Possible relative term. See MPEP 2173.05(b).
+\binexactly\b,Possible relative term. See MPEP 2173.05(b).
+\bin lieu of\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\bin place of\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\binstead of\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # 16910171
 \bin the region of\b,Possible relative term. See MPEP 2173.05(b).
+\bin the region of\b,Possible relative term. See MPEP 2173.05(b).
+\bit\b,Possible ambiguous pronoun.
+\bits\b,Possible ambiguous pronoun.
 \blarge\b,Possible relative term. See MPEP 2173.05(b).
 \blargely\b,Possible relative term. See MPEP 2173.05(b).
 \blong\b,Possible relative term. See MPEP 2173.05(b).
+\bloosely\b,Possible relative term. See MPEP 2173.05(b).
 \blow\b,Possible relative term. See MPEP 2173.05(b).
 \bmachine\b,Possible 112(f) invocation. See MPEP 2181.
 \bmeans\b,Possible 112(f) invocation. See MPEP 2181.
@@ -50,40 +67,68 @@ regex,warning
 \bmost of\b,Possible relative term. See MPEP 2173.05(b).
 \bnarrow\b,Possible relative term. See MPEP 2173.05(b).
 \bnear\b,Possible relative term. See MPEP 2173.05(b).
+\bnearby\b,Possible relative term. See MPEP 2173.05(b).
 \bnearly\b,Possible relative term. See MPEP 2173.05(b).
+\bneighbor\b,Possible relative term. See MPEP 2173.05(b).
+\bneighborhood of\b,Possible relative term. See MPEP 2173.05(b).
+\bneighbour\b,Possible relative term. See MPEP 2173.05(b).
+\bnot far from\b,Possible relative term. See MPEP 2173.05(b).
+\bnot far off\b,Possible relative term. See MPEP 2173.05(b).
+\bnot quite\b,Possible relative term. See MPEP 2173.05(b).
+\boblong\b,Possible relative term. See MPEP 2173.05(b).
 \boptionally\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 \b(or|and) the like\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.09.
 \border of\b,Possible relative term. See MPEP 2173.05(b).
+\bor so\b,Possible relative term. See MPEP 2173.05(b).
 \bporous\b,Possibly indefinite functional language. See MPEP 2173.05(g).
+\bpractically\b,Possible subjective term. See MPEP 2173.05(c).
 \bpredetermined\b,Possibly indefinite if how the element is predetermined is not discussed in the specs. See PTAB decision in app. no. 15/359,628.
 \bpreferably\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 \bproper amount\b,Possible relative term. See MPEP 2173.05(b).
 \bproper\b,Possible subjective term. See MPEP 2173.05(c).
 \bproperly\b,Possible subjective term. See MPEP 2173.05(c).
+\bproximal\b,Possible relative term. See MPEP 2173.05(b).
+\bproximate\b,Possible relative term. See MPEP 2173.05(b).
+\bproximity\b,Possible relative term. See MPEP 2173.05(b).
+\brather than\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \breasonably\b,Possible relative term. See MPEP 2173.05(b).
 \brelatively\b,Possible relative term. See MPEP 2173.05(b).
+\bremoved\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\bremoving\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\breplaced\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # replaced by: 16589226, 16561252 (but these weren't rejected)
+\breplacement\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\breplacing\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \broughly\b,Possible relative term. See MPEP 2173.05(b).
 \bsimilar\b,Possible relative term. See MPEP 2173.05(b).
 \bsized (to|for)\b,Possible 112(f) invocation. See MPEP 2181.
 \bskinny\b,Possible relative term. See MPEP 2173.05(b).
 \bslow\b,Possible relative term. See MPEP 2173.05(b).
 \bsmall\b,Possible relative term. See MPEP 2173.05(b).
+\bsomewhat\b,Possible relative term. See MPEP 2173.05(b).
 \bso that\b,Possible 112(f) invocation. See MPEP 2181.
-\bspecific heat\b,Possibly indefinite if type of specific heat (constant pressure or constant volume) is not mentioned.
+\bspecific heat\b,Possibly indefinite if type of specific heat (constant pressure or constant volume) is not mentioned. # 17/179,850
 \bspongy\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \bstep for\b,Possible 112(f) invocation. See MPEP 2181.
 \bstructure\b,Possible 112(f) invocation. See MPEP 2181.
 \bsubstantial\b,Possible relative term. See MPEP 2173.05(b).
 \bsubstantially\b,Possible relative term. See MPEP 2173.05(b).
+\bsubstitute\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\bsubstituting\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \bsuch as\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.10.
 \bsuperior\b,Possible relative term. See MPEP 2173.05(b).
 \bsystem\b,Possible 112(f) invocation. See MPEP 2181.
 \btable\b,Possible reference to table. See MPEP 2173.05(s).
+#\bthat\b,Possible ambiguous pronoun.
+\bthereabouts\b,Possible relative term. See MPEP 2173.05(b).
+\bthese\b,Possible ambiguous pronoun.
 \bthick\b,Possible relative term. See MPEP 2173.05(b).
 \bthin\b,Possible relative term. See MPEP 2173.05(b).
+\bthis\b,Possible ambiguous pronoun.
+\bthose\b,Possible ambiguous pronoun.
 \btype\b,Possible relative term. See MPEP 2173.05(b). Possible indefinite use of trademark or trade name. See MPEP 2173.05(u).
 \bunit\b,Possible 112(f) invocation. See MPEP 2181.
 \bunobtrusive\b,Possible subjective term. See MPEP 2173.05(b).
+\bvicinity\b,Possible relative term. See MPEP 2173.05(b).
 \bvirtually\b,Possible relative term. See MPEP 2173.05(b).
 \bwide\b,Possible relative term. See MPEP 2173.05(b).
 \bwide\b,Possible relative term. See MPEP 2173.05(b).

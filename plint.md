@@ -6,7 +6,7 @@
 
 On my USPTO computer (Windows), after adding `C:\Python32` and the folder where plint.py is to my path, I can run the script as follows:
 
-    python.exe plint.py .\claim-file.txt
+    python.exe plint.py .\claims.txt
 
 You can edit your path by using the start search button. Search for env and click on "Edit environment variables for your account". Separate the different folder paths with a semi-colon. [See here](https://answers.microsoft.com/en-us/windows/forum/all/adding-path-variable/97300613-20cb-4d85-8d0e-cc9d3549ba23) for some screenshots of the environmental variables dialog box.
 
@@ -16,19 +16,19 @@ If you want to run the script directly instead of through Python, you can add ;.
 
 Then I can run plint.py as follows:
 
-    plint.py .\claim-file.txt
+    plint.py .\claims.txt
 
 ### Linux
 
 On Linux, the plint.py script can be run from the directory it is in as follows:
 
-    ./plint.py claim-file.txt
+    ./plint.py claims.txt
 
-claim-file.txt is the file you wish to read, which is plain text containing the patent document claims. Each claim is numbered with a period after the number, for example: "1."
+claims.txt is the file you wish to read, which is plain text containing the patent document claims. Each claim is numbered with a period after the number, for example: "1."
 
 Alternatively, you can add the directory plint.py is in to your PATH and then run plint.py as follows:
 
-    plint.py claim-file.txt
+    plint.py claims.txt
 
 ## Hard-coded checks
 
@@ -59,11 +59,25 @@ An external rules file can be called with the `--rules` flag.
 
 The `--json` flag allows a similarly structured JSON rules file to be read instead of the standard CSV file.
 
-If a user wishes to prevent a rule using word boundaries from being applied to a particular word, they can add "#" to the beginning of the word. For example, they could change *element* to *#element*. Now the word no longer matches the regular expression and the warning will not appear.
+Rules can be disabled in a rules file without being deleted by adding "#" to the beginning of the regex column of a rule. Comments can be added in the warning column; all text after "#" will not be printed in plint.py.
+
+Rules with warning text containing the terms "112(d)" or "DEPONLY" will only apply to dependent claims. This is true even if "DEPONLY" is only printed in a comment.
+
+## Filtering out warnings
+
+Warnings can be disabled from the command line by filtering out any part of the warning message printed using the `--filter` flag followed by one or more regular expressions. For example, to filter out all rules containing the text "112(f)":
+
+    plint.py claims.txt --filter "112\(f\)"
+
+Then no warnings where the text contains "112(f)" will be printed. (The parentheses are escaped as parentheses have a special function in regular expressions.) Multiple filters can be applied as well:
+
+    plint.py claims.txt --filter "112\(f\)" "antecedent"
+
+The filtering applies to both hard-coded checks and rules from a rules file.
 
 ## Antecedent basis checking
 
-Checking for antecedent basis issues requires using the optional flag `-ab` or `--ant-basis`. This is optional because the feature requires the claims file to use a special syntax as it is difficult to automatically recognize the start and end of claim elements. plint.py will recognize that the words "a" or "an" will appear before new claim elements and that the words "the" or "said" will appear before claim elements previously introduced. plint.py will also know that a claim element ends when a semi-colon, period, comma, colon, "a", or "an" appear.
+Checking for antecedent basis issues requires using the optional flag `-ab` or `--ant-basis`. This is optional because the feature requires the claims file to use a special syntax as it is difficult to automatically recognize the start and end of claim elements. plint.py will recognize that the terms "a", "an", "at least one", and "one or more" will appear before new claim elements and that the words "the" or "said" will appear before claim elements previously introduced. plint.py will also know that a claim element ends when a semi-colon, period, comma, colon, "a", or "an" appear.
 
 To check the demo claims on Linux:
 
@@ -75,10 +89,10 @@ The special syntax for antecedent basis issues is as follows: When the start of 
     an enclosure |,
     a display |,
     a button |, and
-    at least one ! widget | mounted on the enclosure,
+    at least one widget | mounted on the enclosure,
     wherein the enclosure | is green,
     the button | is yellow, and
-    #the at least one @ widget | is blue.
+    the at least one widget | is blue.
 
 ## Exit statuses
 
