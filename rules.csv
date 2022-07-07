@@ -50,7 +50,7 @@ regex,warning
 \bgeneral\b,Possible relative term. See MPEP 2173.05(b). Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bgenerally\b,Possible relative term. See MPEP 2173.05(b). Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bgradually\b,Possible relative term. See MPEP 2173.05(b). # 16491320
-\b(having|has)\b,"Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV. # <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>, <http://digital-law-online.info/lpdi1.0/treatise55.html>: open like comprising, PIY 1997 p. 9/18R: "having only" is closed like consisting of"
+\b(having|has)\b,"Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV. # <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>, <http://digital-law-online.info/lpdi1.0/treatise55.html>: open like comprising, PIY 1997 p. 9/18R: 'having only' is closed like consisting of"
 \bheat capacity\b,"Possibly indefinite if type of heat capacity (constant pressure or constant volume) is not mentioned. # 17/179,850"
 \bhigh\b,Possible relative term. See MPEP 2173.05(b).
 \bhot\b,Possible relative term. See MPEP 2173.05(b).
