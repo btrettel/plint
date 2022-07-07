@@ -54,7 +54,7 @@ regex,warning
 \bheat capacity\b,"Possibly indefinite if type of heat capacity (constant pressure or constant volume) is not mentioned. # 17/179,850"
 \bhigh\b,Possible relative term. See MPEP 2173.05(b).
 \bhot\b,Possible relative term. See MPEP 2173.05(b).
-\bi.e.\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # Not really exemplary, but still confusing. 16898241
+\bi.e.\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # Not really exemplary, but still confusing. 16898241"
 \b(improved|improvement)\b,Possible Jepson format claim. See MPEP 2173.III. # 16197089
 \b(including|includes)\b,"Non-standard open transitional phrase. See MPEP 2111.03.I. # <http://digital-law-online.info/lpdi1.0/treatise55.html>: open like comprising, PIY 1997 p. 9/18R: open like comprising"
 \binexactly\b,Possible relative term. See MPEP 2173.05(b).
@@ -158,4 +158,4 @@ regex,warning
 \bvirtually\b,Possible relative term. See MPEP 2173.05(b).
 \bwide\b,Possible relative term. See MPEP 2173.05(b).
 \bwide\b,Possible relative term. See MPEP 2173.05(b).
-", that is\b",Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # Not really exemplary, but still confusing. 16898241
+", that is\b","Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # Not really exemplary, but still confusing. 16898241"
