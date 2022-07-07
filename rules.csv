@@ -15,20 +15,28 @@ regex,warning
 \b(at least one|one or more) of (.+?) or (.+?)\b,"Should be interpreted as 'at least one of A, or at least one of B'. See SuperGuide Corp. v. DirecTV Enterprises, Inc. (358 F.3d 870 (Fed. Cir. 2004)). # <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/i0pnysf/>"
 \bbeside\b,Possible relative term. See MPEP 2173.05(b).
 \bbig\b,Possible relative term. See MPEP 2173.05(b).
+\bcharacteristically\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\bcharacterized by\b,Non-standard open transitional phrase. See MPEP 2111.03.I.
 \bcirca\b,Possible relative term. See MPEP 2173.05(b).
 \bclosely\b,Possible relative term. See MPEP 2173.05(b).
 \bclose to\b,Possible relative term. See MPEP 2173.05(b).
 \bcold\b,Possible relative term. See MPEP 2173.05(b).
+\bcommonly\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bcomparable\b,Possible relative term. See MPEP 2173.05(b).
 \bcomparatively\b,Possible relative term. See MPEP 2173.05(b).
 \bcomponent\b,Possible 112(f) invocation. See MPEP 2181.
+\bcomposed of\b,Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV. # <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>
 \bconfigured (to|for)\b,Possible 112(f) invocation. See MPEP 2181.
 \bconsiderable\b,Possible relative term. See MPEP 2173.05(b).
+\b(containing|contains)\b,Non-standard open transitional phrase. See MPEP 2111.03.I.
 \bconvenient\b,Possible subjective term. See MPEP 2173.05(b).
+\bconventionally\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\bcustomarily\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bdesigned (to|for)\b,Possible 112(f) invocation. See MPEP 2181.
 \bdevice\b,Possible 112(f) invocation. See MPEP 2181.
 \bdistant\b,Possible relative term. See MPEP 2173.05(b).
 \beffective amount\b,Possible subjective term. See MPEP 2173.05(c).
+\be.g.\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \belement\b,Possible 112(f) invocation. See MPEP 2181.
 \belongated\b,Possible relative term. See MPEP 2173.05(b).
 \bessentially\b,Possible relative term. See MPEP 2173.05(b).
@@ -38,14 +46,21 @@ regex,warning
 \bfigure\b,Possible reference to figure. See MPEP 2173.05(s).
 \bfor example\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bfragile\b,Possibly indefinite functional language. See MPEP 2173.05(g).
-\bgenerally\b,Possible relative term. See MPEP 2173.05(b).
-\bheat capacity\b,Possibly indefinite if type of heat capacity (constant pressure or constant volume) is not mentioned. # 17/179,850
+\bfrequently\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\bgeneral\b,Possible relative term. See MPEP 2173.05(b). Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\bgenerally\b,Possible relative term. See MPEP 2173.05(b). Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\bgradually\b,Possible relative term. See MPEP 2173.05(b). # 16491320
+\b(having|has)\b,"Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV. # <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>, <http://digital-law-online.info/lpdi1.0/treatise55.html>: open like comprising, PIY 1997 p. 9/18R: "having only" is closed like consisting of"
+\bheat capacity\b,"Possibly indefinite if type of heat capacity (constant pressure or constant volume) is not mentioned. # 17/179,850"
 \bhigh\b,Possible relative term. See MPEP 2173.05(b).
 \bhot\b,Possible relative term. See MPEP 2173.05(b).
+\bi.e.\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # Not really exemplary, but still confusing. 16898241
+\b(improved|improvement)\b,Possible Jepson format claim. See MPEP 2173.III. # 16197089
+\b(including|includes)\b,"Non-standard open transitional phrase. See MPEP 2111.03.I. # <http://digital-law-online.info/lpdi1.0/treatise55.html>: open like comprising, PIY 1997 p. 9/18R: open like comprising"
 \binexactly\b,Possible relative term. See MPEP 2173.05(b).
-\bin lieu of\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
-\bin place of\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
-\binstead of\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # 16910171
+\bin lieu of\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\bin place of\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\binstead of\b,"Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # 16910171, <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>"
 \bin the region of\b,Possible relative term. See MPEP 2173.05(b).
 \bin the region of\b,Possible relative term. See MPEP 2173.05(b).
 \bit\b,Possible ambiguous pronoun.
@@ -62,8 +77,8 @@ regex,warning
 \bmoderate\b,Possible relative term. See MPEP 2173.05(b).
 \bmoderately\b,Possible relative term. See MPEP 2173.05(b).
 \bmodule\b,Possible 112(f) invocation. See MPEP 2181.
-\bmolecular mass\b,Possibly indefinite if type of molecular mass is not mentioned. # <Teva Pharm. USA, Inc. v. Sandoz, Inc., No. 2012-1567 (Fed. Cir. June 18, 2015)>
-\bmolecular weight\b,Possibly indefinite if type of molecular weight is not mentioned. # <Teva Pharm. USA, Inc. v. Sandoz, Inc., No. 2012-1567 (Fed. Cir. June 18, 2015)>
+\bmolecular mass\b,"Possibly indefinite if type of molecular mass is not mentioned. # <Teva Pharm. USA, Inc. v. Sandoz, Inc., No. 2012-1567 (Fed. Cir. June 18, 2015)>"
+\bmolecular weight\b,"Possibly indefinite if type of molecular weight is not mentioned. # <Teva Pharm. USA, Inc. v. Sandoz, Inc., No. 2012-1567 (Fed. Cir. June 18, 2015)>"
 \bmost of\b,Possible relative term. See MPEP 2173.05(b).
 \bnarrow\b,Possible relative term. See MPEP 2173.05(b).
 \bnear\b,Possible relative term. See MPEP 2173.05(b).
@@ -72,6 +87,7 @@ regex,warning
 \bneighbor\b,Possible relative term. See MPEP 2173.05(b).
 \bneighborhood of\b,Possible relative term. See MPEP 2173.05(b).
 \bneighbour\b,Possible relative term. See MPEP 2173.05(b).
+\bnormally\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bnot far from\b,Possible relative term. See MPEP 2173.05(b).
 \bnot far off\b,Possible relative term. See MPEP 2173.05(b).
 \bnot quite\b,Possible relative term. See MPEP 2173.05(b).
@@ -79,56 +95,67 @@ regex,warning
 \boptionally\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 \b(or|and) the like\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.09.
 \border of\b,Possible relative term. See MPEP 2173.05(b).
+\bordinarily\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\bornamental\b,Possible subjective term. See MPEP 2173.05(c). # 16162122
 \bor so\b,Possible relative term. See MPEP 2173.05(b).
+\bpliable\b,Possible relative term. See MPEP 2173.05(b). # 16162122
 \bporous\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \bpractically\b,Possible subjective term. See MPEP 2173.05(c).
-\bpredetermined\b,Possibly indefinite if how the element is predetermined is not discussed in the specs. See PTAB decision in app. no. 15/359,628.
-\bpreferably\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
+\bpredetermined\b,"Possibly indefinite if how the element is predetermined is not discussed in the specs. See PTAB decision in app. no. 15/359,628."
+\bpreferably\b,Possible invalid alternative limitation. See MPEP 2173.05(h). # 16608171
 \bproper amount\b,Possible relative term. See MPEP 2173.05(b).
 \bproper\b,Possible subjective term. See MPEP 2173.05(c).
 \bproperly\b,Possible subjective term. See MPEP 2173.05(c).
 \bproximal\b,Possible relative term. See MPEP 2173.05(b).
 \bproximate\b,Possible relative term. See MPEP 2173.05(b).
 \bproximity\b,Possible relative term. See MPEP 2173.05(b).
-\brather than\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\bquickly\b,Possible relative term. See MPEP 2173.05(b). # 16491320
+\brather than\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \breasonably\b,Possible relative term. See MPEP 2173.05(b).
 \brelatively\b,Possible relative term. See MPEP 2173.05(b).
-\bremoved\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
-\bremoving\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
-\breplaced\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # replaced by: 16589226, 16561252 (but these weren't rejected)
-\breplacement\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
-\breplacing\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\bremoved\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\bremoving\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\breplaced\b,"Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # replaced by: 16589226, 16561252 (but these weren't rejected)"
+\breplacement\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\breplacing\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \broughly\b,Possible relative term. See MPEP 2173.05(b).
 \bsimilar\b,Possible relative term. See MPEP 2173.05(b).
 \bsized (to|for)\b,Possible 112(f) invocation. See MPEP 2181.
 \bskinny\b,Possible relative term. See MPEP 2173.05(b).
 \bslow\b,Possible relative term. See MPEP 2173.05(b).
+\bslowly\b,Possible relative term. See MPEP 2173.05(b). # 16491320
 \bsmall\b,Possible relative term. See MPEP 2173.05(b).
 \bsomewhat\b,Possible relative term. See MPEP 2173.05(b).
 \bso that\b,Possible 112(f) invocation. See MPEP 2181.
-\bspecific heat\b,Possibly indefinite if type of specific heat (constant pressure or constant volume) is not mentioned. # 17/179,850
+\bspecific heat\b,"Possibly indefinite if type of specific heat (constant pressure or constant volume) is not mentioned. # 17/179,850"
 \bspongy\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \bstep for\b,Possible 112(f) invocation. See MPEP 2181.
 \bstructure\b,Possible 112(f) invocation. See MPEP 2181.
 \bsubstantial\b,Possible relative term. See MPEP 2173.05(b).
 \bsubstantially\b,Possible relative term. See MPEP 2173.05(b).
-\bsubstitute\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
-\bsubstituting\b,Possible 112(d). Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
-\bsuch as\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.10.
+\bsubstitute\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\bsubstituting\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
+\bsuch as\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.10. # 16771509
 \bsuperior\b,Possible relative term. See MPEP 2173.05(b).
 \bsystem\b,Possible 112(f) invocation. See MPEP 2181.
 \btable\b,Possible reference to table. See MPEP 2173.05(s).
 #\bthat\b,Possible ambiguous pronoun.
 \bthereabouts\b,Possible relative term. See MPEP 2173.05(b).
+\bthere (is|are) no\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>
 \bthese\b,Possible ambiguous pronoun.
 \bthick\b,Possible relative term. See MPEP 2173.05(b).
 \bthin\b,Possible relative term. See MPEP 2173.05(b).
 \bthis\b,Possible ambiguous pronoun.
 \bthose\b,Possible ambiguous pronoun.
 \btype\b,Possible relative term. See MPEP 2173.05(b). Possible indefinite use of trademark or trade name. See MPEP 2173.05(u).
+\btypical\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\btypically\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bunit\b,Possible 112(f) invocation. See MPEP 2181.
 \bunobtrusive\b,Possible subjective term. See MPEP 2173.05(b).
+\busual\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\busually\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bvicinity\b,Possible relative term. See MPEP 2173.05(b).
 \bvirtually\b,Possible relative term. See MPEP 2173.05(b).
 \bwide\b,Possible relative term. See MPEP 2173.05(b).
 \bwide\b,Possible relative term. See MPEP 2173.05(b).
+", that is\b",Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # Not really exemplary, but still confusing. 16898241

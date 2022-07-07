@@ -5,7 +5,7 @@
 # TODO: Check for invalid multiple dependencies.
 # TODO: Check for features of other softwares.
 # TODO: --reject option to write rejections to text file. Then you can delete the ones you don't want.
-# TODO: Have list of common trademarks and trade names to check for. Teflon, Inconel. MPEP 2173.05(u).
+# TODO: Have list of common trademarks and trade names to check for. Teflon, Inconel. See MPEP 2173.05(u) and FP 07-35-01.
 # TODO: "Use" claim detection: method or process without word step?
 # TODO: Clean up antecedent basis code.
 # TODO: Check for antecedent basis issues for plural elements. Check for inconsistencies in how plural elements are referred to, for example, "two widgets" and later "the widget". (Though as-is, if I annotate the claim, it will note this problem.) ClaimMaster does the latter.
@@ -15,13 +15,15 @@
 # TODO: For --specs, also check that each element has a reference number. If an element does not, that could indicate a drawing objection is needed for that element.
 # TODO: Add ability to annotate the claim to ignore a particular word for the rules.
 # TODO: Add --stats to print out the number of words in each claim and other statistics.
-# TODO: Check for duplicate rules in plint.py.
+# TODO: Check for duplicate rules in rules file.
+# TODO: Check that rules file has only two columns.
 # TODO: Add ability to comment out words for the rules. Add this to the documentation after the JSON paragraph after doing so: If a user wishes to prevent rules from being applied to a particular word, they can add "#" to the beginning of the word. For example, they could change *element* to *#element*.
 # TODO: Look at typo for ideas: Statistical method of finding mistakes in patent claims? <https://ieeexplore.ieee.org/abstract/document/6593963>
 # TODO: Look at readability indices to identify convoluted parts of claims to double check.
 # <https://en.wikipedia.org/wiki/Readability>
 # <https://stackoverflow.com/questions/46759492/syllable-count-in-python>
 # <https://en.wikipedia.org/wiki/Automated_readability_index>: No syllables needed.
+# TODO: Detect ranges of numbers, print warning when multiple are found in one claim as that could indicate a 112(b) issue. For dependent claims, check that the range is fully within the range of the independent claims. See TC 3700 112(b) refresher for examples.
 
 import argparse
 import sys
@@ -61,7 +63,7 @@ def remove_punctuation(text):
 def remove_ab_notation(text):
     return text.replace(' |', '').replace('! ', '').replace('@ ', '')
 
-def find_new_elements(claim_words, new_elements):
+def find_new_elements(claim_words, new_elements, claim_number):
     capture_element = False
     element = []
     
@@ -81,9 +83,24 @@ def find_new_elements(claim_words, new_elements):
         
         # Guess where the end of the claim element is.
         if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.startswith('|') or (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
-            
             if element != []:
-                new_elements.add(' '.join(element))
+                element_str = ' '.join(element)
+                
+                # Check if claim element is defined twice, for example, claim 1 introduces "a fastener" and claim 2 also introduces "a fastener", but it is unclear if claim 2 should have said "the fastener". Example: App. no. 16162122.
+                message = 'Claim {} introduces "{}" more than once.'.format(claim_number, element_str)
+                assert_warn(not(element_str in new_elements), message)
+                
+                if element_str in new_elements:
+                    display_warning = True
+                    for rule_filter in rule_filters:
+                        if re.search(rule_filter, message):
+                            display_warning = False
+                    
+                    if display_warning and not(element_str in dav_keywords):
+                        dav_keywords.add(element_str)
+                
+                new_elements.add(element_str)
+                element = []
             
             # Stop capturing the element.
             capture_element = False
@@ -91,7 +108,7 @@ def find_new_elements(claim_words, new_elements):
         if (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
             # Start capturing the element.
             capture_element = True
-            element = []
+            element = [] # This is redundant with the earlier `element = []` line, but I'm leaving it here anyway.
     
     return new_elements
 
@@ -119,6 +136,7 @@ def find_old_elements(claim_words):
             
             if element != []:
                 old_elements.add(' '.join(element))
+                element = []
             
             # Stop capturing the element.
             capture_element = False
@@ -126,15 +144,15 @@ def find_old_elements(claim_words):
         if (claim_word == 'the') or (claim_word == 'said') or (claim_word == '@'):
             # Start capturing the element.
             capture_element = True
-            element = []
+            element = [] # This is redundant with the earlier `element = []` line, but I'm leaving it here anyway.
     
     return old_elements
 
 def extract_claim_words_and_annotate(claim_text):
     # Annotate plural claim element starting terms. This is hacky, but should work.
     # Note that plural claim element starting terms act differently than singular claim element starting terms like "a" or "an". For plurals, the claim element starting term itself becomes part of the claim element. So if I switch to annotating "a" and "an" in this part of the code, then I'd have to have a different section to add the ' ! ' *after* the starting term, in contrast to *before* as done below.
-    # Other claim element starting terms: a plurality (already handled as it starts with a), two, three, etc.
-    plural_starting_terms = {'at least one', 'one or more'}
+    # Other plural terms already handled as they start with a or an: a plurality, a number of
+    plural_starting_terms = {'at least one', 'one or more', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'}
     
     for plural_starting_term in plural_starting_terms:
         # Replace old claim element starting terms temporarily to make next replacement work right.
@@ -154,10 +172,10 @@ def extract_claim_words_and_annotate(claim_text):
 parser = argparse.ArgumentParser(description="patent claim linter: analyses patent claims for 112(b), 112(f), and other issues")
 parser.add_argument("file", help="claim file to read")
 parser.add_argument("-ab", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
-parser.add_argument("--filter", help="filter out warnings with this regex", nargs='*')
+parser.add_argument("--filter", help="filter out warnings with this regex", nargs='*', default=[])
 parser.add_argument("--rules", help="rules file to read", default=None)
 parser.add_argument("--json", action="store_true", help="use a JSON rules file (default is CSV)", default=False)
-parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-05')
+parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-06')
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
 
@@ -172,7 +190,9 @@ if args.test:
     claim_text = "A contraption comprising: an enclosure |, a display |, a button |, and at least one widget | mounted on the enclosure, wherein the enclosure | is green, the button | is yellow, and the at least one widget | is blue."
     claim_words = extract_claim_words_and_annotate(claim_text)
     
-    new_elements = find_new_elements(claim_words, set())
+    assert claim_words == ['a', 'contraption', 'comprising:', 'an', 'enclosure', '|,', 'a', 'display', '|,', 'a', 'button', '|,', 'and', '!', 'at', 'least', 'one', 'widget', '|', 'mounted', 'on', 'the', 'enclosure,', 'wherein', 'the', 'enclosure', '|', 'is', 'green,', 'the', 'button', '|', 'is', 'yellow,', 'and', 'the', 'at', 'least', 'one', 'widget', '|', 'is', 'blue.']
+    
+    new_elements = find_new_elements(claim_words, set(), 1)
     
     assert new_elements == {'enclosure', 'button', 'display', 'at least one widget'}
     
@@ -228,6 +248,7 @@ claim_numbers = set()
 new_elements_in_claims = {}
 claims_text = []
 first_claim = True
+dav_keywords = set()
 
 with open(args.file) as claim_file:
     line = claim_file.readline()
@@ -255,6 +276,7 @@ with open(args.file) as claim_file:
         # Advance line
         line = claim_file.readline()
 
+# Add the last claim.
 claims_text.append(claim_text_with_number.strip())
 
 for claim_text_with_number in claims_text:
@@ -306,7 +328,17 @@ for claim_text_with_number in claims_text:
                     continue
             
             match_bool, match_str = re_matches(rule['regex'], remove_ab_notation(claim_text.lower()))
-            assert_warn(not(match_bool), 'Claim {} recites "{}". {}'.format(claim_number, match_str, rule['warning'].split('#')[0].strip()))
+            message = 'Claim {} recites "{}". {}'.format(claim_number, match_str, rule['warning'].split('#')[0].strip())
+            assert_warn(not(match_bool), message)
+            
+            if match_bool:
+                display_warning = True
+                for rule_filter in rule_filters:
+                    if re.search(rule_filter, message):
+                        display_warning = False
+                
+                if display_warning and not(match_str in dav_keywords):
+                    dav_keywords.add(match_str)
     
     if args.ant_basis:
         # Check for antecedent basis issues.
@@ -315,16 +347,37 @@ for claim_text_with_number in claims_text:
             new_elements = new_elements_in_claims[parent_claim]
         else:
             new_elements = set()
-        new_elements = find_new_elements(claim_words, new_elements)
+        new_elements = find_new_elements(claim_words, new_elements, claim_number)
         
         old_elements = find_old_elements(claim_words)
         
         for old_element in old_elements:
-            assert_warn(old_element in new_elements, 'Claim {} has a possible antecedent basis issue for "{}". See MPEP 2173.05(e).'.format(claim_number, old_element))
+            message = 'Claim {} has a possible antecedent basis issue for "{}". See MPEP 2173.05(e).'.format(claim_number, old_element)
+            assert_warn(old_element in new_elements, message)
+            
+            if not(old_element in new_elements):
+                display_warning = True
+                for rule_filter in rule_filters:
+                    if re.search(rule_filter, message):
+                        display_warning = False
+                
+                if display_warning and not(old_element in dav_keywords):
+                    dav_keywords.add(old_element)
         
         new_elements_in_claims[claim_number] = new_elements
     
     prev_claim_number = claim_number
+
+dav_search_string = ''
+for dav_keyword in dav_keywords:
+    if ' ' in dav_keyword:
+        dav_search_string += '"'+dav_keyword+'" '
+    else:
+        dav_search_string += dav_keyword+' '
+dav_search_string = dav_search_string.strip()
+
+if dav_search_string != '':
+    print('DAV claims viewer search string:', dav_search_string)
 
 print('# of claims: {}'.format(number_of_claims))
 print('Indep. claims: {}'.format(number_of_indep_claims))

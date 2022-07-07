@@ -69,9 +69,11 @@ Warnings can be disabled from the command line by filtering out any part of the 
 
     plint.py claims.txt --filter "112\(f\)"
 
-Then no warnings where the text contains "112(f)" will be printed. (The parentheses are escaped as parentheses have a special function in regular expressions.) Multiple filters can be applied as well:
+Then no warnings where the text contains "112(f)" will be printed. (The quotes are necessary to prevent the shell from interpreting the parentheses. And the parentheses are escaped as parentheses have a special function in regular expressions.) Multiple filters can be applied as well:
 
-    plint.py claims.txt --filter "112\(f\)" "antecedent"
+    plint.py claims.txt --filter "112\(f\)" antecedent
+
+(As can be seen, no quotes or parentheses are necessary for single words without any special characters like "antecedent". However, multiple words will require quotes, for example: "antecedent basis" should be quoted.)
 
 The filtering applies to both hard-coded checks and rules from a rules file.
 
@@ -93,6 +95,16 @@ The special syntax for antecedent basis issues is as follows: When the start of 
     wherein the enclosure | is green,
     the button | is yellow, and
     the at least one widget | is blue.
+
+If a specific claim element is introduced more than once, a warning will be printed. For example, the following claim will produce a warning:
+
+    1. A device comprising:
+    a widget;
+    a widget.
+
+## DAV claims viewer search string
+
+If any warnings are printed, plint.py will display a string which can be pasted into the DAV claims viewer to highlight the terms found to have issues in the claims.
 
 ## Exit statuses
 
