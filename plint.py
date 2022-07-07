@@ -24,6 +24,11 @@
 # <https://stackoverflow.com/questions/46759492/syllable-count-in-python>
 # <https://en.wikipedia.org/wiki/Automated_readability_index>: No syllables needed.
 # TODO: Detect ranges of numbers, print warning when multiple are found in one claim as that could indicate a 112(b) issue. For dependent claims, check that the range is fully within the range of the independent claims. See TC 3700 112(b) refresher for examples.
+# TODO: Print some checks for equations like dimensional homogeneity, no singularities. (equation|formula|=)
+# TODO: Check alderucci_using_2020 for more ideas.
+# TODO: From my notes: "Can't claim a hole alone. Need to claim a wall, etc., and then claim the hole in that." Other terms to consider: gap, opening
+# TODO: Give warnings for "consisting of" and "consisting essentially of".
+# TODO: <https://www.ipwatchdog.com/2021/10/20/ten-common-patent-claim-drafting-mistakes-avoid/id=139032/>: "The use of words, such as, exactly, can, could, must, might, prior art, large, small, heavy, above, below, right, left, etc., should be avoided in the claims as a best practice."
 
 import argparse
 import sys
