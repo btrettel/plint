@@ -108,6 +108,12 @@ If a specific claim element is introduced more than once, a warning will be prin
 
 If any warnings are printed, plint.py will display a string which can be pasted into the DAV claims viewer to highlight the terms found to have issues in the claims.
 
+## Writing the output to a file
+
+The `--outfile` flag will write the warnings and DAV claims viewer search string to `{file}.out`, where `file` is the input file. For example, the following will write to `claims.txt.out`:
+
+    plint.py claims.txt --outfile
+
 ## Exit statuses
 
 - 0 means the claims pass all tests.
