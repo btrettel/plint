@@ -75,7 +75,7 @@ Then no warnings where the text contains "112(f)" will be printed. (The quotes a
 
 (As can be seen, no quotes or parentheses are necessary for single words without any special characters like "antecedent". However, multiple words will require quotes, for example: "antecedent basis" should be quoted.)
 
-The filtering applies to both hard-coded checks and rules from a rules file.
+The filtering applies to all warnings, not just warnings from a rules file.
 
 ## Antecedent basis checking
 
