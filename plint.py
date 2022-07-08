@@ -38,10 +38,10 @@ import copy
 
 # <https://stackoverflow.com/a/14981125/1124489>
 def eprint(*args, **kwargs):
-    if outfile is None:
+    if not(outfile):
         print(*args, file=sys.stderr, **kwargs)
     else:
-        with open(outfile, 'a') as f:
+        with open(args.file+'.out', 'a') as f:
             print(*args, file=f, **kwargs)
 
 def assert_warn(bool_input, message):
@@ -184,7 +184,7 @@ parser = argparse.ArgumentParser(description="patent claim linter: analyses pate
 parser.add_argument("file", help="claim file to read")
 parser.add_argument("-ab", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
 parser.add_argument("--filter", help="filter out warnings with this regex", nargs='*', default=[])
-parser.add_argument("--outfile", help="output warnings to this file", default=None)
+parser.add_argument("--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("--rules", help="rules file to read", default=None)
 parser.add_argument("--json", action="store_true", help="use a JSON rules file (default is CSV)", default=False)
 parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-07')
@@ -218,8 +218,8 @@ if args.test:
 rule_filters = args.filter
 
 outfile = args.outfile
-if not(outfile is None):
-    open(outfile, 'w').close()
+if outfile:
+    open(args.file+'.out', 'w').close()
 
 if args.json:
     file_ext = '.json'
