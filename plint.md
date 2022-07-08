@@ -87,14 +87,16 @@ To check the demo claims on Linux:
 
 The special syntax for antecedent basis issues is as follows: When the start of a new element is not detected, add the word "!" before the element. When the start of an element previously introduced is not detected, add the word "@" before the element. When the end of an element is not detected, add the word "|" after the element. When an article should not create an element, add "#" to the beginning of that word. See [demo-claims.txt](demo-claims.txt) below for this notation in use.
 
-    1. A contraption comprising:
+    1. A contraption | comprising:
     an enclosure |,
-    a display |,
-    a button |, and
+    a display,
+    a button, and
     at least one widget | mounted on the enclosure,
     wherein the enclosure | is green,
     the button | is yellow, and
     the at least one widget | is blue.
+
+This example shows that "|" can be added right before a comma or other punctuation mark and the claim will still be parsed properly. However, it is not necessary to place "|" in front of a comma.
 
 If a specific claim element is introduced more than once, a warning will be printed. For example, the following claim will produce a warning:
 

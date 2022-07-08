@@ -26,18 +26,23 @@
 # TODO: Detect ranges of numbers, print warning when multiple are found in one claim as that could indicate a 112(b) issue. For dependent claims, check that the range is fully within the range of the independent claims. See TC 3700 112(b) refresher for examples.
 # TODO: Print some checks for equations like dimensional homogeneity, no singularities. (equation|formula|=)
 # TODO: Check alderucci_using_2020 for more ideas.
-# TODO: From my notes: "Can't claim a hole alone. Need to claim a wall, etc., and then claim the hole in that." Other terms to consider: gap, opening
+# TODO: From my notes: "Can't claim a hole alone. Need to claim a wall, etc., and then claim the hole in that." Other terms to consider: gap, opening, aperture
 # TODO: Give warnings for "consisting of" and "consisting essentially of".
-# TODO: <https://www.ipwatchdog.com/2021/10/20/ten-common-patent-claim-drafting-mistakes-avoid/id=139032/>: "The use of words, such as, exactly, can, could, must, might, prior art, large, small, heavy, above, below, right, left, etc., should be avoided in the claims as a best practice."
+# TODO: Switch --outfile to instead write to file+'.out' to save time when running the script.
 
 import argparse
 import sys
 import os
 import re
+import copy
 
 # <https://stackoverflow.com/a/14981125/1124489>
 def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+    if outfile is None:
+        print(*args, file=sys.stderr, **kwargs)
+    else:
+        with open(outfile, 'a') as f:
+            print(*args, file=f, **kwargs)
 
 def assert_warn(bool_input, message):
     global number_of_warnings
@@ -68,12 +73,13 @@ def remove_punctuation(text):
 def remove_ab_notation(text):
     return text.replace(' |', '').replace('! ', '').replace('@ ', '')
 
-def find_new_elements(claim_words, new_elements, claim_number):
+def find_new_elements(claim_words, new_elements_copy, claim_number):
+    new_elements = copy.deepcopy(new_elements_copy) # Needed to prevent the list of claim elements from including claim elements not in the dependency tree due to Python's shallow copying.
     capture_element = False
     element = []
     
     # find all new claim elements
-    for claim_word in claim_words[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
+    for claim_word in claim_words: #[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
         if capture_element:
             if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.'):
                 claim_word_cut = claim_word[0:-1]
@@ -91,7 +97,7 @@ def find_new_elements(claim_words, new_elements, claim_number):
             if element != []:
                 element_str = ' '.join(element)
                 
-                # Check if claim element is defined twice, for example, claim 1 introduces "a fastener" and claim 2 also introduces "a fastener", but it is unclear if claim 2 should have said "the fastener". Example: App. no. 16162122.
+                # Check if claim element is defined twice, for example, claim 1 introduces "a fastener" and claim 2 also introduces "a fastener", but it is unclear if claim 2 should have said "the fastener". Examples: App. nos. 16162122 and 16633492.
                 message = 'Claim {} introduces "{}" more than once.'.format(claim_number, element_str)
                 assert_warn(not(element_str in new_elements), message)
                 
@@ -123,7 +129,7 @@ def find_old_elements(claim_words):
     old_elements = set()
     
     # find all old claim elements
-    for claim_word in claim_words[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
+    for claim_word in claim_words: #[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
         if capture_element:
             if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.'):
                 claim_word_cut = claim_word[0:-1]
@@ -174,13 +180,14 @@ def extract_claim_words_and_annotate(claim_text):
     
     return claim_words
 
-parser = argparse.ArgumentParser(description="patent claim linter: analyses patent claims for 112(b), 112(f), and other issues")
+parser = argparse.ArgumentParser(description="patent claim linter: analyses patent claims for 112(b), 112(d), 112(f), and other issues")
 parser.add_argument("file", help="claim file to read")
 parser.add_argument("-ab", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
 parser.add_argument("--filter", help="filter out warnings with this regex", nargs='*', default=[])
+parser.add_argument("--outfile", help="output warnings to this file", default=None)
 parser.add_argument("--rules", help="rules file to read", default=None)
 parser.add_argument("--json", action="store_true", help="use a JSON rules file (default is CSV)", default=False)
-parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-06')
+parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-07')
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
 
@@ -192,14 +199,14 @@ if args.test:
     
     assert remove_punctuation('an element; another element') == 'an element another element'
     
-    claim_text = "A contraption comprising: an enclosure |, a display |, a button |, and at least one widget | mounted on the enclosure, wherein the enclosure | is green, the button | is yellow, and the at least one widget | is blue."
+    claim_text = "A contraption | comprising: an enclosure |, a display, a button, and at least one widget | mounted on the enclosure, wherein the enclosure | is green, the button | is yellow, and the at least one widget | is blue."
     claim_words = extract_claim_words_and_annotate(claim_text)
     
-    assert claim_words == ['a', 'contraption', 'comprising:', 'an', 'enclosure', '|,', 'a', 'display', '|,', 'a', 'button', '|,', 'and', '!', 'at', 'least', 'one', 'widget', '|', 'mounted', 'on', 'the', 'enclosure,', 'wherein', 'the', 'enclosure', '|', 'is', 'green,', 'the', 'button', '|', 'is', 'yellow,', 'and', 'the', 'at', 'least', 'one', 'widget', '|', 'is', 'blue.']
+    assert claim_words == ['a', 'contraption', '|', 'comprising:', 'an', 'enclosure', '|,', 'a', 'display,', 'a', 'button,', 'and', '!', 'at', 'least', 'one', 'widget', '|', 'mounted', 'on', 'the', 'enclosure,', 'wherein', 'the', 'enclosure', '|', 'is', 'green,', 'the', 'button', '|', 'is', 'yellow,', 'and', 'the', 'at', 'least', 'one', 'widget', '|', 'is', 'blue.']
     
     new_elements = find_new_elements(claim_words, set(), 1)
     
-    assert new_elements == {'enclosure', 'button', 'display', 'at least one widget'}
+    assert new_elements == {'enclosure', 'button', 'display', 'at least one widget', 'contraption'}
     
     old_elements = find_old_elements(claim_words)
     assert old_elements == {'button', 'enclosure', 'at least one widget'}
@@ -209,6 +216,10 @@ if args.test:
     exit()
 
 rule_filters = args.filter
+
+outfile = args.outfile
+if not(outfile is None):
+    open(outfile, 'w').close()
 
 if args.json:
     file_ext = '.json'
@@ -382,7 +393,7 @@ for dav_keyword in dav_keywords:
 dav_search_string = dav_search_string.strip()
 
 if dav_search_string != '':
-    print('DAV claims viewer search string:', dav_search_string)
+    eprint('DAV claims viewer search string:', dav_search_string)
 
 print('# of claims: {}'.format(number_of_claims))
 print('Indep. claims: {}'.format(number_of_indep_claims))

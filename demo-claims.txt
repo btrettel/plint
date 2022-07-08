@@ -1,7 +1,7 @@
-1. A contraption comprising:
+1. A contraption | comprising:
 an enclosure |,
-a display |,
-a button |, and
+a display,
+a button, and
 at least one widget | mounted on the enclosure,
 wherein the enclosure | is green,
 the button | is yellow, and
