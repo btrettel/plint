@@ -55,29 +55,27 @@ The following hard-coded checks are made:
 - A check for multiple dependent claims to manually check.
 - A check that dependent claims refer back to existing claims.
 
-## Rules file
+## Warnings file
 
-A rules file is used to identify possibly problematic claim language.
+A warnings file is used to identify possibly problematic claim language.
 
-The standard rules file ([rules.csv](rules.csv)) can be modified to add or remove rules as desired by the user. The format of this file is as follows: The first column is "regex", which contains regular expressions to match against the claims. The second column is "warning", which lists the warning displayed when the regex is matched. The file must start with a line listing the columns as "regex" and "warning".
+The standard warnings file ([warnings.csv](warnings.csv)) can be modified to add or remove warnings as desired by the user. The format of this file is as follows: The first column is "regex", which contains regular expressions to match against the claims. The second column is "message", which lists the message displayed when the regex is matched. The file must start with a line listing the columns as "regex" and "message".
 
-As an example, consider the following rule:
+As an example, consider the following line:
 
     \belement\b,Possible 112(f) invocation. See MPEP 2181.
 
-The `\b` code means *word boundary* in regular expressions, so this rule will match the word *element* but not match *elemental*. After the comma is the message displayed, including a convenient MPEP reference useful to determine whether claim language caught by this rule meets 112(f).
+The `\b` code means *word boundary* in regular expressions, so this line will match the word *element* but not match *elemental*. After the comma is the message displayed, including a convenient MPEP reference useful to determine whether claim language caught by this line meets 112(f).
 
-An external rules file can be called with the `--rules` flag.
+An external warnings file can be called with the `--warnings` flag.
 
-The `--json` flag allows a similarly structured JSON rules file to be read instead of the standard CSV file.
+Specific warnings can be disabled in a warnings file without the line being deleted by adding "#" to the beginning of the regex column of a warning. Comments can be added in the warning column; all text after "#" will not be printed in plint.
 
-Rules can be disabled in a rules file without being deleted by adding "#" to the beginning of the regex column of a rule. Comments can be added in the warning column; all text after "#" will not be printed in plint.
-
-Rules with warning text containing the terms "112(d)" or "DEPONLY" will only apply to dependent claims. This is true even if "DEPONLY" is only printed in a comment.
+Warnings with warning text containing the terms "112(d)" or "DEPONLY" will only apply to dependent claims. This is true even if "DEPONLY" is only printed in a comment.
 
 ## Filtering out warnings
 
-Warnings can be disabled from the command line by filtering out any part of the warning message printed using the `--filter` flag followed by one or more regular expressions. For example, to filter out all rules containing the text "112(f)":
+Warnings can be disabled from the command line by filtering out any part of the warning message printed using the `--filter` flag followed by one or more regular expressions. For example, to filter out all warnings containing the text "112(f)":
 
     plint.py claims.txt --filter "112\(f\)"
 
@@ -87,7 +85,7 @@ Then no warnings where the text contains "112(f)" will be printed. (The quotes a
 
 (As can be seen, no quotes or parentheses are necessary for single words without any special characters like "antecedent". However, multiple words will require quotes, for example: "antecedent basis" should be quoted.)
 
-The filtering applies to all warnings, not just warnings from a rules file.
+The filtering applies to all warnings, not just warnings from a warnings file.
 
 ## Antecedent basis checking
 

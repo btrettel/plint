@@ -221,14 +221,30 @@ if not os.path.isfile(args.warnings):
     eprint('Warnings file does not exist:', args.warnings)
     sys.exit(1)
 
-# Opening CSV file
+# Opening CSV file.
 # Needs to be "MS-DOS" format, not UTF-8. For some reason the really old version of Python the USPTO has doesn't like Unicode CSV files.
-rules_csv = csv.DictReader(open(args.warnings, 'r', encoding="ascii"))
-rules = []
-for rule in rules_csv:
-    rules.append(rule)
 
-print(len(rules), "warnings loaded.")
+try:
+    # Check that it only has two columns first.
+    with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
+        csv_reader = csv.reader(warnings_csv_file, delimiter=',')
+        
+        for row in csv_reader:
+            assert len(row) == 2, "Warnings file has line without two columns: "+row[0]
+    
+    with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
+        warnings_csv = csv.DictReader(warnings_csv_file)
+        warnings = []
+        prev_regex = ''
+        for warning in warnings_csv:
+            assert warning['regex'] != prev_regex, "Duplicate regex in warnings file: {}".format(warning['regex'])
+            prev_regex = warning['regex']
+            warnings.append(warning)
+        
+        print(len(warnings), "warnings loaded.")
+except:
+    eprint("Error when opening warnings file.")
+    sys.exit(1)
 
 prev_claim_number      = 0
 number_of_claims       = 0
@@ -312,15 +328,15 @@ for claim_text_with_number in claims_text:
             
             assert_warn(parent_claim in claim_numbers, "Dependent claim {} depends on non-existent claim {}.".format(claim_number, parent_claim))
     
-    for rule in rules:
-        if not rule['regex'].startswith('#'):
-            # For independent claims, skip rules that only apply to dependent claims.
+    for warning in warnings:
+        if not warning['regex'].startswith('#'):
+            # For independent claims, skip warnings that only apply to dependent claims.
             if not(dependent):
-                if ('112(d)' in rule['warning']) or ('DEPONLY' in rule['warning']) :
+                if ('112(d)' in warning['message']) or ('DEPONLY' in warning['message']) :
                     continue
             
-            match_bool, match_str = re_matches(rule['regex'], remove_ab_notation(claim_text.lower()))
-            message = 'Claim {} recites "{}". {}'.format(claim_number, match_str, rule['warning'].split('#')[0].strip())
+            match_bool, match_str = re_matches(warning['regex'].lower(), remove_ab_notation(claim_text.lower()))
+            message = 'Claim {} recites "{}". {}'.format(claim_number, match_str, warning['message'].split('#')[0].strip())
             assert_warn(not(match_bool), message)
             
             if match_bool:

@@ -2,17 +2,14 @@
 
 - Check for invalid multiple dependencies.
 - Check for features of other softwares.
-- --reject option to write rejections to text file. Then you can delete the ones you don't want.
-- Have list of common trademarks and trade names to check for. Teflon, Inconel. See MPEP 2173.05(u) and FP 07-35-01.
+- `--reject` option to write rejections to text file. Then you can delete the ones you don't want.
 - "Use" claim detection: method or process without word step?
 - Check classification for patent documents on patent analysis for more ideas.
 - Check for synonyms of the relative terms you already have for more.
-- Optional argument --specs to check that each element is mentioned in the specs.
-- For --specs, also check that each element has a reference number. If an element does not, that could indicate a drawing objection is needed for that element.
+- Optional argument `--specs` to check that each element is mentioned in the specs.
+- For `--specs`, also check that each element has a reference number. If an element does not, that could indicate a drawing objection is needed for that element.
 - Add ability to annotate the claim to ignore a particular word for the rules.
-- Add --stats to print out the number of words in each claim and other statistics.
-- Check for duplicate rules in rules file.
-- Check that rules file has only two columns.
+- Add `--stats` to print out the number of words in each claim and other statistics.
 - Add ability to comment out words for the rules. Add this to the documentation after the JSON paragraph after doing so: If a user wishes to prevent rules from being applied to a particular word, they can add "#" to the beginning of the word. For example, they could change *element* to *#element*.
 - Look at typo for ideas: Statistical method of finding mistakes in patent claims? <https://ieeexplore.ieee.org/abstract/document/6593963>
 - Look at readability indices to identify convoluted parts of claims to double check.
@@ -31,5 +28,21 @@
 - Use "{" and "}" for new elements, and "[" and "]" for old elements? Will these conflict with possible claim text? They will be more readable.
 - Rewrite to handle filtering without duplicate code.
 - Think about how to reduce the amount of manual annotation needed.
+- Give warnings for more than 3 independent claims and more than 20 total claims (or whatever the number for that is; check), in order to get the extra hour.
 
-- Add tests in pytest format.
+***
+
+Just do it with logic:
+
+1. Identify all instances of starting term using regex to properly get the word boundaries.
+2. Identify all instances of starting term prefixed with the or said: \b(the|said) at least one\b
+3. If the or said is not before the starting term, annotate the starting term.
+
+***
+
+https://www.geeksforgeeks.org/python-extract-substrings-between-brackets/
+
+>>> import re
+>>> test_str = "A (device) comprising a (widget) and a (display), where the (diameter of the (widget)) is larger than the (diameter of the (display))."
+>>> re.findall(r'\(.*?\)', test_str)
+['(device)', '(widget)', '(display)', '(diameter of the (widget)', '(diameter of the (display)']
