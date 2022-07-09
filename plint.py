@@ -1,47 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# <https://stackoverflow.com/a/68612842>
-
-# TODO: Check for invalid multiple dependencies.
-# TODO: Check for features of other softwares.
-# TODO: --reject option to write rejections to text file. Then you can delete the ones you don't want.
-# TODO: Have list of common trademarks and trade names to check for. Teflon, Inconel. See MPEP 2173.05(u) and FP 07-35-01.
-# TODO: "Use" claim detection: method or process without word step?
-# TODO: Clean up antecedent basis code.
-# TODO: Check for antecedent basis issues for plural elements. Check for inconsistencies in how plural elements are referred to, for example, "two widgets" and later "the widget". (Though as-is, if I annotate the claim, it will note this problem.) ClaimMaster does the latter.
-# TODO: Check classification for patent documents on patent analysis for more ideas.
-# TODO: Check for synonyms of the relative terms you already have for more.
-# TODO: Optional argument --specs to check that each element is mentioned in the specs.
-# TODO: For --specs, also check that each element has a reference number. If an element does not, that could indicate a drawing objection is needed for that element.
-# TODO: Add ability to annotate the claim to ignore a particular word for the rules.
-# TODO: Add --stats to print out the number of words in each claim and other statistics.
-# TODO: Check for duplicate rules in rules file.
-# TODO: Check that rules file has only two columns.
-# TODO: Add ability to comment out words for the rules. Add this to the documentation after the JSON paragraph after doing so: If a user wishes to prevent rules from being applied to a particular word, they can add "#" to the beginning of the word. For example, they could change *element* to *#element*.
-# TODO: Look at typo for ideas: Statistical method of finding mistakes in patent claims? <https://ieeexplore.ieee.org/abstract/document/6593963>
-# TODO: Look at readability indices to identify convoluted parts of claims to double check.
-# <https://en.wikipedia.org/wiki/Readability>
-# <https://stackoverflow.com/questions/46759492/syllable-count-in-python>
-# <https://en.wikipedia.org/wiki/Automated_readability_index>: No syllables needed.
-# TODO: Detect ranges of numbers, print warning when multiple are found in one claim as that could indicate a 112(b) issue. For dependent claims, check that the range is fully within the range of the independent claims. See TC 3700 112(b) refresher for examples.
-# TODO: Print some checks for equations like dimensional homogeneity, no singularities. (equation|formula|=)
-# TODO: Check alderucci_using_2020 for more ideas.
-# TODO: From my notes: "Can't claim a hole alone. Need to claim a wall, etc., and then claim the hole in that." Other terms to consider: gap, opening, aperture
-# TODO: Give warnings for "consisting of" and "consisting essentially of".
-# TODO: Switch --outfile to instead write to file+'.out' to save time when running the script.
 
 import argparse
+import csv
 import sys
 import os
 import re
 import copy
 
+# This work was prepared or accomplished by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
+
+parser = argparse.ArgumentParser(description="patent claim linter: analyzes patent claims for 112(b), 112(d), 112(f), and other issues")
+parser.add_argument("file", help="claim file to read")
+parser.add_argument("-a", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
+parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
+parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
+parser.add_argument("-v", "--version", action="version", version="plint version 2022-07-08")
+parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
+parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
+args = parser.parse_args()
+
 # <https://stackoverflow.com/a/14981125/1124489>
 def eprint(*args, **kwargs):
-    if not(outfile):
+    if not(outfile_bool):
         print(*args, file=sys.stderr, **kwargs)
     else:
-        with open(args.file+'.out', 'a') as f:
+        with open(outfile, 'a') as f:
             print(*args, file=f, **kwargs)
 
 def assert_warn(bool_input, message):
@@ -79,7 +63,7 @@ def find_new_elements(claim_words, new_elements_copy, claim_number):
     element = []
     
     # find all new claim elements
-    for claim_word in claim_words: #[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
+    for claim_word in claim_words:
         if capture_element:
             if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.'):
                 claim_word_cut = claim_word[0:-1]
@@ -89,11 +73,11 @@ def find_new_elements(claim_words, new_elements_copy, claim_number):
             if claim_word.startswith('#'):
                 claim_word = claim_word[1:]
             
-            if not((claim_word == 'a') or (claim_word == 'an') or (claim_word == '!') or claim_word.startswith('|')):
+            if not((claim_word == '!') or (claim_word == '@') or claim_word.startswith('|')):
                 element.append(claim_word_cut)
         
         # Guess where the end of the claim element is.
-        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.startswith('|') or (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
+        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.startswith('|') or (claim_word == '!') or (claim_word == '@'):
             if element != []:
                 element_str = ' '.join(element)
                 
@@ -119,7 +103,9 @@ def find_new_elements(claim_words, new_elements_copy, claim_number):
         if (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
             # Start capturing the element.
             capture_element = True
-            element = [] # This is redundant with the earlier `element = []` line, but I'm leaving it here anyway.
+            
+            # Note that unlike earlier versions of plint, this will continue capturing if it was already capturing. So, for example, "a center of a widget" will return a single element, not "a center of a widget" and "a widget".
+            # TODO: Run find_new_elements() on the returned element to get the "sub-element". Use "\" to split up sub-elements. Some old elements could be found too, which would require making this function output old elements too. Or is that not the case? The old elements are found in a different pass, so they should still be found.
     
     return new_elements
 
@@ -129,7 +115,7 @@ def find_old_elements(claim_words):
     old_elements = set()
     
     # find all old claim elements
-    for claim_word in claim_words: #[1:]: # The [1:] on claim words ensures that the preamble is not captured as it will skip the first article.
+    for claim_word in claim_words:
         if capture_element:
             if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.'):
                 claim_word_cut = claim_word[0:-1]
@@ -139,11 +125,11 @@ def find_old_elements(claim_words):
             if claim_word.startswith('#'):
                 claim_word = claim_word[1:]
             
-            if not((claim_word == 'the') or (claim_word == 'said') or (claim_word == '@') or claim_word.startswith('|')):
+            if not((claim_word == '!') or (claim_word == '@') or claim_word.startswith('|')):
                 element.append(claim_word_cut)
         
         # Guess where the end of the claim element is.
-        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.startswith('|') or (claim_word == 'the') or (claim_word == 'said') or (claim_word == '@'):
+        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.startswith('|') or (claim_word == '!') or (claim_word == '@'):
             
             if element != []:
                 old_elements.add(' '.join(element))
@@ -155,7 +141,9 @@ def find_old_elements(claim_words):
         if (claim_word == 'the') or (claim_word == 'said') or (claim_word == '@'):
             # Start capturing the element.
             capture_element = True
-            element = [] # This is redundant with the earlier `element = []` line, but I'm leaving it here anyway.
+            
+            # Note that unlike earlier versions of plint, this will continue capturing if it was already capturing. So, for example, "the center of the widget" will return a single element, not "the center of the widget" and "the widget".
+            # TODO: Run find_old_elements() on the returned element to get the "sub-element". Use "\" to split up sub-elements. Some new elements could be found too, which would require making this function output new elements too. Or is that not the case? The new elements are found in a different pass, so they should still be found.
     
     return old_elements
 
@@ -166,8 +154,13 @@ def extract_claim_words_and_annotate(claim_text):
     plural_starting_terms = {'at least one', 'one or more', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'}
     
     for plural_starting_term in plural_starting_terms:
+        # Simpler regex version of this code:
+        # match: "\b(the|said) "+plural_starting_term+"\b"
+        # replacement: 
+        
         # Replace old claim element starting terms temporarily to make next replacement work right.
         claim_text = claim_text.replace('the '+plural_starting_term, ' %'+plural_starting_term)
+        # TODO: This will work for terms that start with the. Make it work for terms that start with said too.
         
         # Annotate new claim element starting terms.
         claim_text = claim_text.replace(' '+plural_starting_term, ' ! '+plural_starting_term)
@@ -179,17 +172,6 @@ def extract_claim_words_and_annotate(claim_text):
     claim_words = claim_text.lower().split(' ')
     
     return claim_words
-
-parser = argparse.ArgumentParser(description="patent claim linter: analyses patent claims for 112(b), 112(d), 112(f), and other issues")
-parser.add_argument("file", help="claim file to read")
-parser.add_argument("-ab", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
-parser.add_argument("--filter", help="filter out warnings with this regex", nargs='*', default=[])
-parser.add_argument("--outfile", action="store_true", help="output warnings to {file}.out", default=False)
-parser.add_argument("--rules", help="rules file to read", default=None)
-parser.add_argument("--json", action="store_true", help="use a JSON rules file (default is CSV)", default=False)
-parser.add_argument('--version', action='version', version='%(prog)s version 2022-07-07')
-parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
-args = parser.parse_args()
 
 if args.test:
     match_bool, match_str = re_matches('\\btest\\b', 'This is a test.')
@@ -217,43 +199,36 @@ if args.test:
 
 rule_filters = args.filter
 
-outfile = args.outfile
-if outfile:
-    open(args.file+'.out', 'w').close()
+outfile_bool = args.outfile
+if outfile_bool:
+    outfile = args.file+'.out'
+    open(outfile, 'w').close()
 
-if args.json:
-    file_ext = '.json'
-    import json
-else:
-    file_ext = '.csv'
-    import csv
+file_ext = '.csv'
 
-if args.rules is None:
-    args.rules = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rules'+file_ext)
+if args.warnings is None:
+    args.warnings = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'warnings'+file_ext)
 
-if not args.rules.endswith(file_ext):
-    eprint('Rules file must be a {} file:'.format(file_ext), args.rules)
+if not args.warnings.endswith(file_ext):
+    eprint('Warnings file must be a {} file:'.format(file_ext), args.warnings)
     sys.exit(1)
 
 if not os.path.isfile(args.file):
     eprint('Claims file does not exist:', args.file)
     sys.exit(1)
 
-if not os.path.isfile(args.rules):
-    eprint('Rules file does not exist:', args.rules)
+if not os.path.isfile(args.warnings):
+    eprint('Warnings file does not exist:', args.warnings)
     sys.exit(1)
 
-if args.json:
-    # Opening JSON file
-    data = json.load(open(args.rules))
-    rules = data['rules']
-else:
-    # Opening CSV file
-    # Needs to be "MS-DOS" format, not UTF-8. For some reason the really old version of Python the USPTO has doesn't like Unicode CSV files.
-    rules_csv = csv.DictReader(open(args.rules, 'r', encoding="ascii"))
-    rules = []
-    for rule in rules_csv:
-        rules.append(rule)
+# Opening CSV file
+# Needs to be "MS-DOS" format, not UTF-8. For some reason the really old version of Python the USPTO has doesn't like Unicode CSV files.
+rules_csv = csv.DictReader(open(args.warnings, 'r', encoding="ascii"))
+rules = []
+for rule in rules_csv:
+    rules.append(rule)
+
+print(len(rules), "warnings loaded.")
 
 prev_claim_number      = 0
 number_of_claims       = 0
@@ -266,6 +241,7 @@ claims_text = []
 first_claim = True
 dav_keywords = set()
 
+# Construct list with text of claims including number.
 with open(args.file) as claim_file:
     line = claim_file.readline()
     

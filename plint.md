@@ -1,6 +1,18 @@
-# plint.py: Patent Claim Linter
+# plint: patent claim linter
+
+plint analyzes a text file containing patent claims for 112(b), 112(d), 112(f), and other issues.
+
+## Legal
+
+This work was prepared or accomplished by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
 
 ## Usage
+
+First, keep in mind MPEP 2173.02.II:
+
+> Examiners should note that Office policy is not to employ *per se* rules to make technical rejections. Examples of claim language which have been held to be indefinite set forth in MPEP § 2173.05(d) are fact specific and should not be applied as *per se* rules.
+
+Warnings produced by plint are *possible* rejections or objections. Each should be carefully checked as many warnings will not be valid rejections or objections.
 
 ### Windows
 
@@ -14,7 +26,7 @@ If you want to run the script directly instead of through Python, you can add ;.
 
     .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL;.PY
 
-Then I can run plint.py as follows:
+Then I can run plint as follows:
 
     plint.py .\claims.txt
 
@@ -26,7 +38,7 @@ On Linux, the plint.py script can be run from the directory it is in as follows:
 
 claims.txt is the file you wish to read, which is plain text containing the patent document claims. Each claim is numbered with a period after the number, for example: "1."
 
-Alternatively, you can add the directory plint.py is in to your PATH and then run plint.py as follows:
+Alternatively, you can add the directory plint.py is in to your PATH and then run plint as follows:
 
     plint.py claims.txt
 
@@ -59,7 +71,7 @@ An external rules file can be called with the `--rules` flag.
 
 The `--json` flag allows a similarly structured JSON rules file to be read instead of the standard CSV file.
 
-Rules can be disabled in a rules file without being deleted by adding "#" to the beginning of the regex column of a rule. Comments can be added in the warning column; all text after "#" will not be printed in plint.py.
+Rules can be disabled in a rules file without being deleted by adding "#" to the beginning of the regex column of a rule. Comments can be added in the warning column; all text after "#" will not be printed in plint.
 
 Rules with warning text containing the terms "112(d)" or "DEPONLY" will only apply to dependent claims. This is true even if "DEPONLY" is only printed in a comment.
 
@@ -79,7 +91,7 @@ The filtering applies to all warnings, not just warnings from a rules file.
 
 ## Antecedent basis checking
 
-Checking for antecedent basis issues requires using the optional flag `-ab` or `--ant-basis`. This is optional because the feature requires the claims file to use a special syntax as it is difficult to automatically recognize the start and end of claim elements. plint.py will recognize that the terms "a", "an", "at least one", and "one or more" will appear before new claim elements and that the words "the" or "said" will appear before claim elements previously introduced. plint.py will also know that a claim element ends when a semi-colon, period, comma, colon, "a", or "an" appear.
+Checking for antecedent basis issues requires using the optional flag `-a` or `--ant-basis`. This is optional because the feature requires the claims file to use a special syntax as it is difficult to automatically recognize the start and end of claim elements. plint will recognize that the terms "a", "an", "at least one", and "one or more" will appear before new claim elements and that the words "the" or "said" will appear before claim elements previously introduced. plint will also know that a claim element ends when a semi-colon, period, comma, or colon appear.
 
 To check the demo claims on Linux:
 
@@ -106,16 +118,16 @@ If a specific claim element is introduced more than once, a warning will be prin
 
 ## DAV claims viewer search string
 
-If any warnings are printed, plint.py will display a string which can be pasted into the DAV claims viewer to highlight the terms found to have issues in the claims.
+If any warnings are printed, plint will display a string which can be pasted into the DAV claims viewer to highlight the terms found to have issues in the claims.
 
 ## Writing the output to a file
 
-The `--outfile` flag will write the warnings and DAV claims viewer search string to `{file}.out`, where `file` is the input file. For example, the following will write to `claims.txt.out`:
+The optional `-o` or `--outfile` flag will write the warnings and DAV claims viewer search string to `{file}.out`, where `file` is the input file. For example, the following will write to `claims.txt.out`:
 
     plint.py claims.txt --outfile
 
 ## Exit statuses
 
 - 0 means the claims pass all tests.
-- 1 means that a fatal error occurred in the parsing of the claims. Typically the claims will be written in a way that violates plint.py's expectations for how a claim will be structured.
+- 1 means that a fatal error occurred in the parsing of the claims. Typically the claims will be written in a way that violates plint's expectations for how a claim will be structured.
 - 2 means that one or more warnings were made.

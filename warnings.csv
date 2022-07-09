@@ -180,3 +180,5 @@ regex,warning
 \bwide\b,Possible relative term. See MPEP 2173.05(b).
 \bwide\b,Possible relative term. See MPEP 2173.05(b).
 ", that is\b","Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # Not really exemplary, but still confusing. 16898241"
+\bideally\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+(\([^(]+\)),Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
