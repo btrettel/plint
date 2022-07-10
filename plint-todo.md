@@ -21,7 +21,27 @@
 - Check alderucci_using_2020 for more ideas.
 - From my notes: "Can't claim a hole alone. Need to claim a wall, etc., and then claim the hole in that." Other terms to consider: gap, opening, aperture
 - Give warnings for "consisting of" and "consisting essentially of".
-- Change rules.csv to warnings.csv and change associated variables and text in the documentation.
+- `--verbose` flag
+    - Print how claims are annotated for antecedent basis.
+- `--debug` flag
+    - Lists rules as they are loaded.
+- Make an actual version number.
+- 101 rejections: Claiming a human:
+    - MOPP 14.131: ""when in use", "when held by an operator"
+        - <https://www.gov.uk/guidance/manual-of-patent-practice-mopp/section-14-the-application>
+    - <https://www.uspto.gov/web/offices/pac/mpep/s2105.html>
+    - <https://patentlyo.com/patent/2012/12/ex-parte-kamrava.html>
+        - embryo
+    - <https://www.degruyter.com/document/doi/10.1515/jbbbl-2021-2002/html?lang=en>
+        - fetus
+        - embryo
+        - chimera
+        - human
+- (reaction|combustion) rate
+    - Check notes for 16401465 ("combustion rate").
+- <https://www.jpo.go.jp/e/system/laws/rule/guideline/patent/tukujitu_kijun/document/index/02_0203_e.pdf>
+- flow rate: mass or volumetric?
+- vague terms: amount, quantity, substance, material
 
 - The antecedent basis checker isn't correct, because it's possible for plint to pass an element introduced after being referred to, or in other words, an element referred to first with "the" or "said" and later referred to with "a" or "an". The script only checks that every old element has a corresponding new element. It also needs to track the locations of where each are mentioned.
 - Rewrite antecedent basis code to first annotate each claim with "!", "@", and "|". That will simplify later processing.

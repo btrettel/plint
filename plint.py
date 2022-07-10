@@ -13,6 +13,7 @@ import copy
 parser = argparse.ArgumentParser(description="patent claim linter: analyzes patent claims for 112(b), 112(d), 112(f), and other issues")
 parser.add_argument("file", help="claim file to read")
 parser.add_argument("-a", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
+parser.add_argument("-d", "--debug", action="store_true", help="print debugging information", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("-v", "--version", action="version", version="plint version 2022-07-08")
@@ -224,27 +225,27 @@ if not os.path.isfile(args.warnings):
 # Opening CSV file.
 # Needs to be "MS-DOS" format, not UTF-8. For some reason the really old version of Python the USPTO has doesn't like Unicode CSV files.
 
-try:
-    # Check that it only has two columns first.
-    with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
-        csv_reader = csv.reader(warnings_csv_file, delimiter=',')
-        
-        for row in csv_reader:
-            assert len(row) == 2, "Warnings file has line without two columns: "+row[0]
+# Check that it only has two columns first.
+with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
+    csv_reader = csv.reader(warnings_csv_file, delimiter=",")
     
-    with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
-        warnings_csv = csv.DictReader(warnings_csv_file)
-        warnings = []
-        prev_regex = ''
-        for warning in warnings_csv:
-            assert warning['regex'] != prev_regex, "Duplicate regex in warnings file: {}".format(warning['regex'])
-            prev_regex = warning['regex']
-            warnings.append(warning)
-        
-        print(len(warnings), "warnings loaded.")
-except:
-    eprint("Error when opening warnings file.")
-    sys.exit(1)
+    for row in csv_reader:
+        assert len(row) == 2, "Warnings file has line without two columns: "+row[0]
+
+with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
+    warnings_csv = csv.DictReader(warnings_csv_file, delimiter=",")
+    warnings = []
+    prev_regex = ''
+    line_num = 1
+    for warning in warnings_csv:
+        assert warning['regex'] != prev_regex, "Duplicate regex in warnings file: {}".format(warning['regex'])
+        prev_regex = warning['regex']
+        warnings.append(warning)
+        line_num += 1
+        if args.debug:
+            print(line_num, warning['regex'])
+    
+    print(len(warnings), "warnings loaded.")
 
 prev_claim_number      = 0
 number_of_claims       = 0
