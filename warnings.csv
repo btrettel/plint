@@ -159,9 +159,8 @@ regex,message
 \b(particle|drop|droplet) (diameter|radius|size)\b,"Possible indefinite parameter if type not specified. # EPO GL F-IV, 4.11 on parameters in general, <https://www.carpmaels.com/unclear-essential-parameters/>"
 \bparticularly\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # EPO GL F-IV, 4.9"
 \bperfect\b,Possible subjective term. See MPEP 2173.05(b).
-\bperhaps\b,"Possible invalid alternative limitation. See MPEP 2173.05(h).
-\bpliable\b,Possible relative term. See MPEP 2173.05(b). # 16162122
-\bpliable\b,"Possible relative term. See MPEP 2173.05(b). # Found definite in Niazi Licensing Corp. v. St. Jude Medical S.C., Inc., Case No. 21-1864 (Fed. Cir. Apr. 11, 2022)."
+\bperhaps\b,"Possible invalid alternative limitation. See MPEP 2173.05(h)."
+\bpliable\b,"Possible relative term. See MPEP 2173.05(b). # 16162122, found definite in Niazi Licensing Corp. v. St. Jude Medical S.C., Inc., Case No. 21-1864 (Fed. Cir. Apr. 11, 2022)."
 \bporous\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \bpractically\b,Possible subjective term. See MPEP 2173.05(c).
 \b(predetermined|pre-determined)\b,"Possibly indefinite if how the element is predetermined is not discussed in the specs. See PTAB decision in app. no. 15/359,628." # Also: MOPP 14.129
