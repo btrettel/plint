@@ -16,7 +16,8 @@ parser.add_argument("-a", "--ant-basis", action="store_true", help="check for an
 parser.add_argument("-d", "--debug", action="store_true", help="print debugging information", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 2022-07-08")
+parser.add_argument("-v", "--version", action="version", version="plint version 2022-07-10")
+parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -58,121 +59,127 @@ def remove_punctuation(text):
 def remove_ab_notation(text):
     return text.replace(' |', '').replace('! ', '').replace('@ ', '')
 
-def find_new_elements(claim_words, new_elements_copy, claim_number):
-    new_elements = copy.deepcopy(new_elements_copy) # Needed to prevent the list of claim elements from including claim elements not in the dependency tree due to Python's shallow copying.
-    capture_element = False
-    element = []
+def annotate_claim_text(claim_text):
+    claim_text = claim_text.lower()
     
-    # find all new claim elements
-    for claim_word in claim_words:
-        if capture_element:
-            if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.'):
-                claim_word_cut = claim_word[0:-1]
-            else:
-                claim_word_cut = claim_word
-            
-            if claim_word.startswith('#'):
-                claim_word = claim_word[1:]
-            
-            if not((claim_word == '!') or (claim_word == '@') or claim_word.startswith('|')):
-                element.append(claim_word_cut)
-        
-        # Guess where the end of the claim element is.
-        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.startswith('|') or (claim_word == '!') or (claim_word == '@'):
-            if element != []:
-                element_str = ' '.join(element)
-                
-                # Check if claim element is defined twice, for example, claim 1 introduces "a fastener" and claim 2 also introduces "a fastener", but it is unclear if claim 2 should have said "the fastener". Examples: App. nos. 16162122 and 16633492.
-                message = 'Claim {} introduces "{}" more than once.'.format(claim_number, element_str)
-                assert_warn(not(element_str in new_elements), message)
-                
-                if element_str in new_elements:
-                    display_warning = True
-                    for rule_filter in rule_filters:
-                        if re.search(rule_filter, message):
-                            display_warning = False
-                    
-                    if display_warning and not(element_str in dav_keywords):
-                        dav_keywords.add(element_str)
-                
-                new_elements.add(element_str)
-                element = []
-            
-            # Stop capturing the element.
-            capture_element = False
-        
-        if (claim_word == 'a') or (claim_word == 'an') or (claim_word == '!'):
-            # Start capturing the element.
-            capture_element = True
-            
-            # Note that unlike earlier versions of plint, this will continue capturing if it was already capturing. So, for example, "a center of a widget" will return a single element, not "a center of a widget" and "a widget".
-            # TODO: Run find_new_elements() on the returned element to get the "sub-element". Use "\" to split up sub-elements. Some old elements could be found too, which would require making this function output old elements too. Or is that not the case? The old elements are found in a different pass, so they should still be found.
-    
-    return new_elements
-
-def find_old_elements(claim_words):
-    capture_element = False
-    element = []
-    old_elements = set()
-    
-    # find all old claim elements
-    for claim_word in claim_words:
-        if capture_element:
-            if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.'):
-                claim_word_cut = claim_word[0:-1]
-            else:
-                claim_word_cut = claim_word
-            
-            if claim_word.startswith('#'):
-                claim_word = claim_word[1:]
-            
-            if not((claim_word == '!') or (claim_word == '@') or claim_word.startswith('|')):
-                element.append(claim_word_cut)
-        
-        # Guess where the end of the claim element is.
-        if claim_word.endswith(';') or claim_word.endswith(',') or claim_word.endswith(':') or claim_word.endswith('.') or claim_word.startswith('|') or (claim_word == '!') or (claim_word == '@'):
-            
-            if element != []:
-                old_elements.add(' '.join(element))
-                element = []
-            
-            # Stop capturing the element.
-            capture_element = False
-        
-        if (claim_word == 'the') or (claim_word == 'said') or (claim_word == '@'):
-            # Start capturing the element.
-            capture_element = True
-            
-            # Note that unlike earlier versions of plint, this will continue capturing if it was already capturing. So, for example, "the center of the widget" will return a single element, not "the center of the widget" and "the widget".
-            # TODO: Run find_old_elements() on the returned element to get the "sub-element". Use "\" to split up sub-elements. Some new elements could be found too, which would require making this function output new elements too. Or is that not the case? The new elements are found in a different pass, so they should still be found.
-    
-    return old_elements
-
-def extract_claim_words_and_annotate(claim_text):
     # Annotate plural claim element starting terms. This is hacky, but should work.
-    # Note that plural claim element starting terms act differently than singular claim element starting terms like "a" or "an". For plurals, the claim element starting term itself becomes part of the claim element. So if I switch to annotating "a" and "an" in this part of the code, then I'd have to have a different section to add the ' ! ' *after* the starting term, in contrast to *before* as done below.
+    # Note that plural claim element starting terms act differently than singular claim element starting terms like "a" or "an". For plurals, the claim element starting term itself becomes part of the claim element.
     # Other plural terms already handled as they start with a or an: a plurality, a number of
+    if args.debug:
+        print(claim_text)
+    
     plural_starting_terms = {'at least one', 'one or more', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'}
     
     for plural_starting_term in plural_starting_terms:
-        # Simpler regex version of this code:
-        # match: "\b(the|said) "+plural_starting_term+"\b"
-        # replacement: 
+        #print(plural_starting_term)
         
-        # Replace old claim element starting terms temporarily to make next replacement work right.
-        claim_text = claim_text.replace('the '+plural_starting_term, ' %'+plural_starting_term)
-        # TODO: This will work for terms that start with the. Make it work for terms that start with said too.
-        
-        # Annotate new claim element starting terms.
-        claim_text = claim_text.replace(' '+plural_starting_term, ' ! '+plural_starting_term)
-        
-        # Reverse replacement for old claim element starting terms.
-        claim_text = claim_text.replace(' %'+plural_starting_term, 'the '+plural_starting_term)
+        plural_starting_term_not_annotated = True
+        while plural_starting_term_not_annotated:
+            # This is done iteratively because when the text is annotated, some of the starting positions change. The first iteration changes the first one that needs to be changed, the second changes the second one, etc.
+            
+            # Identify all instances of a plural starting term using regex to properly get the word boundaries.
+            res_alls = re.finditer("\\b{}\\b".format(plural_starting_term), claim_text)
+            
+            # Identify all instances of a plural starting term prefixed with the, said, [, or {.
+            res_dones = re.finditer("(\\bthe |\\bsaid |\[|\{)"+plural_starting_term+"\\b", claim_text)
+            done_starts = set()
+            if not(res_dones is None):
+                for res_done in res_dones:
+                    if res_done.group().startswith("the "):
+                        len_to_add = 4
+                    elif res_done.group().startswith("said "):
+                        len_to_add = 5
+                    elif res_done.group().startswith("[") or res_done.group().startswith("{"):
+                        len_to_add = 1
+                    else:
+                        eprint("Unexpected plural starting term article:", res_done.group())
+                        sys.exit(1)
+                    done_starts.add(res_done.start()+len_to_add)
+            
+            # If the or said is not before the plural starting term, annotate the plural starting term.
+            broke = False
+            if not(res_alls is None):
+                for res_all in res_alls:
+                    if not(res_all.start() in done_starts):
+                        #print(res_all.group())
+                        claim_text = claim_text[0:res_all.start()]+"{"+claim_text[res_all.start():]
+                        #print(claim_text)
+                        broke = True
+                        break
+                if broke:
+                    continue
+            
+            plural_starting_term_not_annotated = False
     
-    # Finally, extract the claim words.
-    claim_words = claim_text.lower().split(' ')
+    # Annotate "a"
+    claim_text = re.sub("\\ba \\b", "a {", claim_text)
     
-    return claim_words
+    # Annotate "an"
+    claim_text = re.sub("\\ban \\b", "an {", claim_text)
+    
+    # Annotate "the"
+    claim_text = re.sub("\\bthe \\b", "the [", claim_text)
+    
+    # Annotate "said"
+    claim_text = re.sub("\\bsaid \\b", "said [", claim_text)
+    
+    # Remove annotations for commented out terms.
+    claim_text = re.sub("\#a \[", "a ", claim_text)
+    claim_text = re.sub("\#an \[", "an ", claim_text)
+    claim_text = re.sub("\#the \[", "the ", claim_text)
+    claim_text = re.sub("\#said \[", "said ", claim_text)
+    
+    # Turn punctuation marks into claim element endings.
+    if args.debug:
+        print(claim_text)
+    
+    loc = 0
+    curly_bracket = False
+    square_bracket = False
+    while loc < len(claim_text):
+        char = claim_text[loc]
+        
+        if (char == ',') or (char == ';') or (char == ':'):
+            if curly_bracket:
+                claim_text = claim_text[0:loc]+"}"+claim_text[loc:]
+                curly_bracket = False
+                loc = loc + 2
+            
+            if square_bracket:
+                claim_text = claim_text[0:loc]+"]"+claim_text[loc:]
+                square_bracket = False
+                
+                loc = loc + 2
+        elif char == "{":
+            assert not(curly_bracket), 'Should not be in curly bracket at index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            curly_bracket = True
+        elif char == "}":
+            assert curly_bracket, 'Should be in curly bracket at index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            curly_bracket = False
+        elif char == "[":
+            assert not(square_bracket), 'Should not be in square bracket at index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            square_bracket = True
+        elif char == "]":
+            assert square_bracket, 'Should be in square bracket at index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            square_bracket = False
+        
+        loc += 1
+    
+    if curly_bracket:
+        claim_text = claim_text[0:loc-1]+"}"+claim_text[loc-1:]
+        curly_bracket = False
+    
+    if square_bracket:
+        claim_text = claim_text[0:loc-1]+"]"+claim_text[loc-1:]
+        square_bracket = False
+    
+    if args.verbose:
+        print(claim_text)
+    
+    assert claim_text.count("{") == claim_text.count("}"), "Error in annotation of new claim elements. Number of left curly brackets does not match number of right curly brackets."
+    assert claim_text.count("[") == claim_text.count("]"), "Error in annotation of old claim elements. Number of left square brackets does not match number of right square brackets."
+    
+    return claim_text
 
 if args.test:
     match_bool, match_str = re_matches('\\btest\\b', 'This is a test.')
@@ -182,17 +189,12 @@ if args.test:
     
     assert remove_punctuation('an element; another element') == 'an element another element'
     
-    claim_text = "A contraption | comprising: an enclosure |, a display, a button, and at least one widget | mounted on the enclosure, wherein the enclosure | is green, the button | is yellow, and the at least one widget | is blue."
-    claim_words = extract_claim_words_and_annotate(claim_text)
+    claim_text = "A contraption} comprising: an enclosure, a display, at least one button, and at least one widget} mounted on the enclosure, wherein the enclosure] is green, the at least one button] is yellow, and the at least one widget] is blue."
     
-    assert claim_words == ['a', 'contraption', '|', 'comprising:', 'an', 'enclosure', '|,', 'a', 'display,', 'a', 'button,', 'and', '!', 'at', 'least', 'one', 'widget', '|', 'mounted', 'on', 'the', 'enclosure,', 'wherein', 'the', 'enclosure', '|', 'is', 'green,', 'the', 'button', '|', 'is', 'yellow,', 'and', 'the', 'at', 'least', 'one', 'widget', '|', 'is', 'blue.']
+    # Test annotated claim.
+    annotated_claim_text = annotate_claim_text(claim_text)
     
-    new_elements = find_new_elements(claim_words, set(), 1)
-    
-    assert new_elements == {'enclosure', 'button', 'display', 'at least one widget', 'contraption'}
-    
-    old_elements = find_old_elements(claim_words)
-    assert old_elements == {'button', 'enclosure', 'at least one widget'}
+    assert annotated_claim_text == "a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue."
     
     print('All tests passed.')
     
@@ -258,7 +260,9 @@ claims_text = []
 first_claim = True
 dav_keywords = set()
 
-# Construct list with text of claims including number.
+if args.debug:
+    print("Constructing list with text of claims including number...")
+
 with open(args.file) as claim_file:
     line = claim_file.readline()
     
@@ -288,12 +292,15 @@ with open(args.file) as claim_file:
 # Add the last claim.
 claims_text.append(claim_text_with_number.strip())
 
+if args.debug:
+    print("Processing the claims list...")
+
 for claim_text_with_number in claims_text:
     number_of_claims += 1
     
     claim_number_str = claim_text_with_number.split('.', 1)[0]
     claim_text = claim_text_with_number.split('.', 1)[1].strip()
-    claim_words = extract_claim_words_and_annotate(claim_text)
+    claim_words = claim_text.split(' ')
     
     assert claim_number_str.isdigit(), 'Invalid claim number: {}'.format(claim_number_str)
     
@@ -329,6 +336,9 @@ for claim_text_with_number in claims_text:
             
             assert_warn(parent_claim in claim_numbers, "Dependent claim {} depends on non-existent claim {}.".format(claim_number, parent_claim))
     
+    if args.debug:
+        print("Going through warnings...")
+    
     for warning in warnings:
         if not warning['regex'].startswith('#'):
             # For independent claims, skip warnings that only apply to dependent claims.
@@ -350,30 +360,81 @@ for claim_text_with_number in claims_text:
                     dav_keywords.add(match_str)
     
     if args.ant_basis:
-        # Check for antecedent basis issues.
+        if args.debug:
+            print("Checking for antecedent basis issues...")
+        
+        if args.verbose:
+            print("Claim {} annotated: ".format(claim_number), end="")
+        
+        annotated_claim_text = annotate_claim_text(claim_text)
+        
+        new_elements = re.finditer(r"\{.*?\}", annotated_claim_text)
+        old_elements = re.finditer(r"\[.*?\]", annotated_claim_text)
+        
+        # TODO: Import new elements from dependent claims.
         
         if dependent:
-            new_elements = new_elements_in_claims[parent_claim]
+            new_elements_dict = new_elements_in_claims[parent_claim]
+            #new_elements = copy.deepcopy(new_elements_copy)
+            new_elements_set = set(new_elements_dict.keys())
         else:
-            new_elements = set()
-        new_elements = find_new_elements(claim_words, new_elements, claim_number)
+            new_elements_set = set()
+            new_elements_dict = {}
         
-        old_elements = find_old_elements(claim_words)
-        
-        for old_element in old_elements:
-            message = 'Claim {} has a possible antecedent basis issue for "{}". See MPEP 2173.05(e).'.format(claim_number, old_element)
-            assert_warn(old_element in new_elements, message)
+        for new_element_iter in new_elements:
+            new_element = new_element_iter.group()[1:-1]
             
-            if not(old_element in new_elements):
+            # Check if claim element is defined twice, for example, claim 1 introduces "a fastener" and claim 2 also introduces "a fastener", but it is unclear if claim 2 should have said "the fastener". Examples: App. nos. 16162122 and 16633492.
+            message = 'Claim {} introduces "{}" more than once.'.format(claim_number, new_element)
+            assert_warn(not(new_element in new_elements_set), message)
+            
+            if new_element in new_elements_set:
                 display_warning = True
                 for rule_filter in rule_filters:
                     if re.search(rule_filter, message):
                         display_warning = False
                 
-                if display_warning and not(old_element in dav_keywords):
+                if display_warning:
+                    dav_keywords.add(new_element)
+            else:
+                new_elements_set.add(new_element)
+                new_elements_dict[new_element] = new_element_iter.start()
+        
+        for old_element_iter in old_elements:
+            old_element = old_element_iter.group()[1:-1]
+            old_element_index = old_element_iter.start()
+            
+            #print("Old element:", old_element, old_element_index)
+            
+            ab_bool = False
+            for new_element in new_elements_set:
+                new_element_index = new_elements_dict[new_element]
+                
+                #print("New element:", new_element, new_element_index)
+                
+                if old_element == new_element:
+                    if new_element_index < old_element_index:
+                        #print("Valid:", old_element)
+                        ab_bool = True
+                        break
+            
+            message = 'Claim {} has a possible antecedent basis issue for "{}". See MPEP 2173.05(e).'.format(claim_number, old_element)
+            assert_warn(ab_bool, message)
+            
+            if not(ab_bool):
+                display_warning = True
+                for rule_filter in rule_filters:
+                    if re.search(rule_filter, message):
+                        display_warning = False
+                
+                if display_warning:
                     dav_keywords.add(old_element)
         
-        new_elements_in_claims[claim_number] = new_elements
+        new_elements_dict_zeroed = {}
+        for new_element in new_elements_set:
+            new_elements_dict_zeroed[new_element] = 0
+        
+        new_elements_in_claims[claim_number] = new_elements_dict_zeroed
     
     prev_claim_number = claim_number
 

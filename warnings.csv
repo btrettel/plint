@@ -6,6 +6,7 @@ regex,message
 #\badjacent\b,Possible relative term. See MPEP 2173.05(b).
 \baesthetically pleasing\b,Possible subjective term. See MPEP 2173.05(b).
 \balmost\b,Possible relative term. See MPEP 2173.05(b).
+\balternatively\b,Possible 112(d) rejection. Could be removing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \bamply\b,Possible relative term. See MPEP 2173.05(b).
 \bany one of the previous claims\b,Possible multiple dependent claim. Manually check validity. See MPEP 608.01(i).
 \bapparatus\b,Possible 112(f) invocation. See MPEP 2181.

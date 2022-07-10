@@ -89,24 +89,30 @@ The filtering applies to all warnings, not just warnings from a warnings file.
 
 ## Antecedent basis checking
 
-Checking for antecedent basis issues requires using the optional flag `-a` or `--ant-basis`. This is optional because the feature requires the claims file to use a special syntax as it is difficult to automatically recognize the start and end of claim elements. plint will recognize that the terms "a", "an", "at least one", and "one or more" will appear before new claim elements and that the words "the" or "said" will appear before claim elements previously introduced. plint will also know that a claim element ends when a semi-colon, period, comma, or colon appear.
+Checking for antecedent basis issues requires using the optional flag `-a` or `--ant-basis`. This is optional because the feature requires the claims file to use a special syntax as it is difficult to automatically recognize the start and end of claim elements. plint will recognize that the terms "a", "an", "at least one", and "one or more" will appear before new claim elements and that the words "the" or "said" will appear before claim elements previously introduced. plint will also know that a claim element ends when a semi-colon, comma, or colon appear, and at the end of a claim.
 
 To check the demo claims on Linux:
 
-    ./plint.py -ab demo-claims.txt
+    ./plint.py -a demo-claims.txt
 
-The special syntax for antecedent basis issues is as follows: When the start of a new element is not detected, add the word "!" before the element. When the start of an element previously introduced is not detected, add the word "@" before the element. When the end of an element is not detected, add the word "|" after the element. When an article should not create an element, add "#" to the beginning of that word. See [demo-claims.txt](demo-claims.txt) below for this notation in use.
+The special syntax for antecedent basis issues is as follows: When the start of a new element is not detected, add `{` before the element. When the start of an element previously introduced is not detected, add the `[` before the element. When the end of a new element is not detected, add `}` after the element. When the end of an element previously introduced is not detected, add `]` after the element. When an article should not create an element, add "#" to the beginning of that word. See [demo-claims.txt](demo-claims.txt) below for this notation in use.
 
-    1. A contraption | comprising:
-    an enclosure |,
+    1. A contraption} comprising:
+    an enclosure,
     a display,
-    a button, and
-    at least one widget | mounted on the enclosure,
-    wherein the enclosure | is green,
-    the button | is yellow, and
-    the at least one widget | is blue.
+    at least one button, and
+    at least one widget} mounted on the enclosure,
+    wherein the enclosure] is green,
+    the at least one button] is yellow, and
+    the at least one widget] is blue.
 
-This example shows that "|" can be added right before a comma or other punctuation mark and the claim will still be parsed properly. However, it is not necessary to place "|" in front of a comma.
+Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print how plint is interpreting the claim. For example, plint's interpretation of the demo claim is:
+
+    Claim 1 annotated: a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue.
+
+The antecedent basis functionality of plint may be fragile and will likely require some iteration until a claim is annotated in a way that plint likes.
+
+At present, plint won't work with nested elements, for example: `{a center of [the widget]}`. That'll need to be annotated like this: `{a center of #the widget}`. Then plint will think it's all just one element.
 
 If a specific claim element is introduced more than once, a warning will be printed. For example, the following claim will produce a warning:
 
