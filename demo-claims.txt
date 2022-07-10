@@ -6,9 +6,3 @@ at least one widget} mounted on the enclosure,
 wherein the enclosure] is green,
 the at least one button] is yellow, and
 the at least one widget] is blue.
-
-2. The contraption] of claim 1, further comprising:
-a light.
-
-3. The contraption] of claim 1, further comprising:
-where the light] is green.
