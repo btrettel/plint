@@ -57,7 +57,7 @@ def remove_punctuation(text):
     return text.replace(',', '').replace(';', '').replace('.', '')
 
 def remove_ab_notation(text):
-    return text.replace(' |', '').replace('! ', '').replace('@ ', '')
+    return text.replace('{', '').replace('}', '').replace('[', '').replace(']', '').replace('#', '')
 
 def annotate_claim_text(claim_text):
     claim_text = claim_text.lower()
@@ -371,11 +371,9 @@ for claim_text_with_number in claims_text:
         new_elements = re.finditer(r"\{.*?\}", annotated_claim_text)
         old_elements = re.finditer(r"\[.*?\]", annotated_claim_text)
         
-        # TODO: Import new elements from dependent claims.
-        
+        # Import new elements from parent claims.
         if dependent:
-            new_elements_dict = new_elements_in_claims[parent_claim]
-            #new_elements = copy.deepcopy(new_elements_copy)
+            new_elements_dict = copy.deepcopy(new_elements_in_claims[parent_claim])
             new_elements_set = set(new_elements_dict.keys())
         else:
             new_elements_set = set()
@@ -404,17 +402,12 @@ for claim_text_with_number in claims_text:
             old_element = old_element_iter.group()[1:-1]
             old_element_index = old_element_iter.start()
             
-            #print("Old element:", old_element, old_element_index)
-            
             ab_bool = False
             for new_element in new_elements_set:
                 new_element_index = new_elements_dict[new_element]
                 
-                #print("New element:", new_element, new_element_index)
-                
                 if old_element == new_element:
                     if new_element_index < old_element_index:
-                        #print("Valid:", old_element)
                         ab_bool = True
                         break
             
