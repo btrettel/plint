@@ -16,7 +16,9 @@
     - <https://stackoverflow.com/questions/46759492/syllable-count-in-python>
     - <https://en.wikipedia.org/wiki/Automated_readability_index>: No syllables needed.
 - Detect ranges of numbers, print warning when multiple are found in one claim as that could indicate a 112(b) issue. For dependent claims, check that the range is fully within the range of the independent claims. See TC 3700 112(b) refresher for examples.
-- Print some checks for equations like dimensional homogeneity, no singularities. (equation|formula|=)
+- Print some checks for equations like dimensional homogeneity, no singularities.
+    - `\b(equation|formula)\b`
+    - `=`
 - Check alderucci_using_2020 for more ideas.
 - From my notes: "Can't claim a hole alone. Need to claim a wall, etc., and then claim the hole in that." Other terms to consider: gap, opening, aperture
 - Give warnings for "consisting of" and "consisting essentially of".
@@ -32,7 +34,8 @@
         - embryo
         - chimera
         - human
-- (reaction|combustion) rate
+- `\b(reaction|reacting|combustion|combusting) rate\b`
+    - `\brate of (reaction|reacting|combustion|combusting)\b`
     - Check notes for 16401465 ("combustion rate").
 - <https://www.jpo.go.jp/e/system/laws/rule/guideline/patent/tukujitu_kijun/document/index/02_0203_e.pdf>
 - flow rate: mass or volumetric?
@@ -41,6 +44,7 @@
 - Think about how to reduce the amount of manual annotation needed.
 - Give warnings for more than 3 independent claims and more than 20 total claims (or whatever the number for that is; check), in order to get the extra hour.
 - Reorganize code to have unit tests for everything including the antecedent basis checking.
+- Add `|` back to automatically figure out whether element is new or old?
 
 ***
 

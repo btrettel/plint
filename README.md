@@ -2,9 +2,9 @@
 
 plint analyzes a text file containing patent claims for 112(b), 112(d), 112(f), and other issues.
 
-plint is designed to run on the ancient version of Python the USPTO puts on their computers, so they won't use the latest developments in Python. And the Python installation is limited to the standard library, so NLTK can not be used.
+plint is designed to run on the ancient version of Python the USPTO has on their computers, so plint won't use the latest features of Python. And the USPTO Python version is limited to the standard library, so NLTK can not be used.
 
-## Legal
+## Disclaimer
 
 This work was prepared or accomplished by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
 
