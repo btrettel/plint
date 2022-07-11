@@ -97,16 +97,16 @@ To check the demo claims on Linux:
 
     ./plint.py -a demo-claims.txt
 
-The special syntax for antecedent basis issues is as follows: When the start of a new element is not detected, add `{` before the element. When the start of an element previously introduced is not detected, add the `[` before the element. When the end of a new element is not detected, add `}` after the element. When the end of an element previously introduced is not detected, add `]` after the element. When an article should not create an element, add "#" to the beginning of that word. See [demo-claims.txt](demo-claims.txt) below for this notation in use.
+The special syntax for antecedent basis issues is as follows: When the start of a new element is not detected, add `{` before the element. When the start of an element previously introduced is not detected, add the `[` before the element. When the end of a new element is not detected, add `}` after the element. When the end of an element previously introduced is not detected, add `]` after the element. Alternatively, if you want plint to automatically determine which type of element is ending, use `|`. When an article should not create an element, add "#" to the beginning of that word. See [demo-claims.txt](demo-claims.txt) below for this notation in use.
 
-    1. A contraption} comprising:
+    1. A contraption| comprising:
     an enclosure,
     a display,
     at least one button, and
-    at least one widget} mounted on the enclosure,
-    wherein the enclosure] is green,
-    the at least one button] is yellow, and
-    the at least one widget] is blue.
+    at least one widget| mounted on the enclosure,
+    wherein the enclosure| is green,
+    the at least one button| is yellow, and
+    the at least one widget| is blue.
 
 Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print how plint is interpreting the claim. For example, plint's interpretation of the demo claim is:
 
@@ -114,7 +114,7 @@ Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print 
 
 The antecedent basis functionality of plint may be fragile and will likely require some iteration until a claim is annotated in a way that plint likes.
 
-At present, plint won't work with nested elements, for example: `{a center of [the widget]}`. That'll need to be annotated like this: `{a center of #the widget}`. Then plint will think it's all just one element.
+At present, plint won't work with nested elements. For example: `a center of the widget|` would ideally be interpreted as `a {center of [the widget]}`, but that's not how plint will work at the moment. That'll need to be annotated like this: `a center of #the widget|`, interpreted as `a {center of the widget}`. Then plint will think it's all just one element.
 
 If a specific claim element is introduced more than once, a warning will be printed. For example, the following claim will produce a warning:
 

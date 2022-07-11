@@ -1,8 +1,8 @@
-1. A contraption} comprising:
+1. A contraption| comprising:
 an enclosure,
 a display,
 at least one button, and
-at least one widget} mounted on the enclosure,
-wherein the enclosure] is green,
-the at least one button] is yellow, and
-the at least one widget] is blue.
+at least one widget| mounted on the enclosure,
+wherein the enclosure| is green,
+the at least one button| is yellow, and
+the at least one widget| is blue.

@@ -16,7 +16,7 @@ parser.add_argument("-a", "--ant-basis", action="store_true", help="check for an
 parser.add_argument("-d", "--debug", action="store_true", help="print debugging information", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 2022-07-10")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.1.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
@@ -68,7 +68,8 @@ def annotate_claim_text(claim_text):
     if args.debug:
         print(claim_text)
     
-    plural_starting_terms = {'at least one', 'one or more', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'}
+    # Note: I just realized that (for example) 'two or more' would conflict with 'two'. I guess putting 'two or more' first will annotate this properly, but I haven't verified this yet.
+    plural_starting_terms = {'at least one', 'one or more', 'more than one', 'two or more', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'}
     
     for plural_starting_term in plural_starting_terms:
         #print(plural_starting_term)
@@ -124,8 +125,8 @@ def annotate_claim_text(claim_text):
     claim_text = re.sub("\\bsaid \\b", "said [", claim_text)
     
     # Remove annotations for commented out terms.
-    claim_text = re.sub("\#a \[", "a ", claim_text)
-    claim_text = re.sub("\#an \[", "an ", claim_text)
+    claim_text = re.sub("\#a \{", "a ", claim_text)
+    claim_text = re.sub("\#an \{", "an ", claim_text)
     claim_text = re.sub("\#the \[", "the ", claim_text)
     claim_text = re.sub("\#said \[", "said ", claim_text)
     
@@ -143,24 +144,36 @@ def annotate_claim_text(claim_text):
             if curly_bracket:
                 claim_text = claim_text[0:loc]+"}"+claim_text[loc:]
                 curly_bracket = False
-                loc = loc + 2
+                loc = loc + 1
             
             if square_bracket:
                 claim_text = claim_text[0:loc]+"]"+claim_text[loc:]
                 square_bracket = False
                 
-                loc = loc + 2
+                loc = loc + 1
+        if char == '|': # This will exclude the pipe symbol from the output.
+            if curly_bracket:
+                claim_text = claim_text[0:loc]+"}"+claim_text[loc+1:]
+                curly_bracket = False
+            
+            if square_bracket:
+                claim_text = claim_text[0:loc]+"]"+claim_text[loc+1:]
+                square_bracket = False
         elif char == "{":
-            assert not(curly_bracket), 'Should not be in curly bracket at index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            assert not(curly_bracket), 'Curly bracket started inside of curly bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            assert not(square_bracket), 'Curly bracket started inside of square bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
             curly_bracket = True
         elif char == "}":
-            assert curly_bracket, 'Should be in curly bracket at index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            assert curly_bracket, 'Curly bracket ended without corresponding starting curly bracket. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            assert not(square_bracket), 'Curly bracket ended inside of square bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
             curly_bracket = False
         elif char == "[":
-            assert not(square_bracket), 'Should not be in square bracket at index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            assert not(square_bracket), 'Square bracket started inside of square bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            assert not(curly_bracket), 'Square bracket started inside of curly bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
             square_bracket = True
         elif char == "]":
-            assert square_bracket, 'Should be in square bracket at index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            assert square_bracket, 'Square bracket ended without corresponding starting square bracket. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
+            assert not(curly_bracket), 'Square bracket ended inside of curly bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
             square_bracket = False
         
         loc += 1
@@ -383,7 +396,7 @@ for claim_text_with_number in claims_text:
             new_element = new_element_iter.group()[1:-1]
             
             # Check if claim element is defined twice, for example, claim 1 introduces "a fastener" and claim 2 also introduces "a fastener", but it is unclear if claim 2 should have said "the fastener". Examples: App. nos. 16162122 and 16633492.
-            message = 'Claim {} introduces "{}" more than once.'.format(claim_number, new_element)
+            message = 'Claim {} introduces "{}" more than once. Unclear if the "{}" is the same in both instances.'.format(claim_number, new_element)
             assert_warn(not(new_element in new_elements_set), message)
             
             if new_element in new_elements_set:

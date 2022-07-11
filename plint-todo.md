@@ -20,7 +20,7 @@
     - `\b(equation|formula)\b`
     - `=`
 - Check alderucci_using_2020 for more ideas.
-- From my notes: "Can't claim a hole alone. Need to claim a wall, etc., and then claim the hole in that." Other terms to consider: gap, opening, aperture
+- From my notes: "Can't claim a hole alone. Need to claim a wall, etc., and then claim the hole in that." Terms to consider: hole(s), gap(s), opening(s), aperture(s), space, spacing
 - Give warnings for "consisting of" and "consisting essentially of".
 - Make an actual version number.
 - 101 rejections: Claiming a human:
@@ -44,7 +44,6 @@
 - Think about how to reduce the amount of manual annotation needed.
 - Give warnings for more than 3 independent claims and more than 20 total claims (or whatever the number for that is; check), in order to get the extra hour.
 - Reorganize code to have unit tests for everything including the antecedent basis checking.
-- Add `|` back to automatically figure out whether element is new or old?
 
 ***
 
