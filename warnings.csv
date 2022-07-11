@@ -53,7 +53,7 @@ regex,message
 \bconsisting essentially of\b,"Need to determine what the 'basic and novel characteristic(s)' are in order to interpret. See MPEP 2111.03.III. # <https://wspla.org/wp-content/uploads/2020/07/2020-06-24-Recent-ish-Developments-in-Indefiniteness.pdf>"
 \bcontaining\b,"Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV. # <https://patentfile.org/patent-writing-tip-comprises-vs-consisting-of/>, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
 \b(containing|contains)\b,Non-standard open transitional phrase. See MPEP 2111.03.I.
-\bconvenient\b,Possible subjective term. See MPEP 2173.05(b).
+\bconvenient\b,Possible subjective term. See MPEP 2173.05(b). # <https://www.pbwt.com/ny-patent-decisions-blog/who-knows-what-most-convenient-is-judge-failla-rules-claims-are-indefinite>
 \bconventionally\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bconvention\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bcustomarily\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
@@ -61,6 +61,7 @@ regex,message
 \bdesirably\b,"Possible invalid alternative limitation. See MPEP 2173.05(h)."
 \bdevice\b,Possible 112(f) invocation. See MPEP 2181.
 \bdistant\b,Possible relative term. See MPEP 2173.05(b).
+\bdurable\b,Possible relative term. See MPEP 2173.05(b).
 \beasily\b,Possible relative term. See MPEP 2173.05(b).
 \beasy\b,Possible relative term. See MPEP 2173.05(b).
 \beffective\b,Possible subjective term. See MPEP 2173.05(c). # was effective amount
@@ -76,6 +77,7 @@ regex,message
 \bfast\b,Possible relative term. See MPEP 2173.05(b).
 \bfat\b,Possible relative term. See MPEP 2173.05(b).
 \bfigure\b,"Possible reference to figure. See MPEP 2173.05(s). # EPO GL F-IV, 4.17"
+\bflexible\b,Possible relative term. See MPEP 2173.05(b).
 \bfor example\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # EPO GL F-IV, 4.9"
 \bfragile\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \bfrequently\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
@@ -116,6 +118,7 @@ regex,message
 \blight\b,Possible relative term. See MPEP 2173.05(b).
 \blightweight\b,Possible relative term. See MPEP 2173.05(b).
 \blike\b,Possible relative term. See MPEP 2173.05(b).
+\blofty\b,Possible relative term. See MPEP 2173.05(b). # <Guangdong Alison Hi-Tech Co. v. International Trade Commission>
 \blong\b,Possible relative term. See MPEP 2173.05(b).
 \bloosely\b,Possible relative term. See MPEP 2173.05(b).
 \blow\b,Possible relative term. See MPEP 2173.05(b).
