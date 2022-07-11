@@ -142,4 +142,4 @@ The optional `-o` or `--outfile` flag will write the warnings and DAV claims vie
 
 - jplatpat-cls.py: List most popular JPFI and IPC classifications given one or more search result CSV files from [J-PlatPat](https://www.j-platpat.inpit.go.jp/).
 - jplatpat-to-brs.py: Convert a search result CSV file from J-PlatPat to a list of JP patent document IDs in BRS format, that is, that can be read by PE2E Search.
-- TODO: Implementation of [search theory from Phillip Morse](https://apps.dtic.mil/sti/citations/AD0702920) to more efficiently search.
+- TODO: Implementation of [search theory from Philip M. Morse](https://apps.dtic.mil/sti/citations/AD0702920) to more efficiently search.
