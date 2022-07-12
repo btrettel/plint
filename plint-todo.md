@@ -44,6 +44,17 @@
 - Think about how to reduce the amount of manual annotation needed.
 - Give warnings for more than 3 independent claims and more than 20 total claims (or whatever the number for that is; check), in order to get the extra hour.
 - Reorganize code to have unit tests for everything including the antecedent basis checking.
+- Types of relative terms:
+    - imprecise (like what you have at present)
+    - relative without reference (Check that claim mentions what it is relative to.)
+        - increases/increasing
+        - decreases/decreasing
+        - more/greater
+        - less
+        - reduces/reducing
+        - narrows
+        - narrower # 15525613
+- Get ends of claim elements from numbered elements in specs? Scan specs for text between a/an and a number?
 
 ***
 
