@@ -8,6 +8,7 @@ regex,message
 \balmost\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \balternatively\b,Possible 112(d) rejection. Could be removing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \bamply\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\b(and/or|or/and)\b,"Prefer 'at least one of A and B' instead. Not indefinite, but some examines think so. See PTAB decision in app. no. 11/565,411. # <https://patentlyo.com/patent/2014/01/uspto-approves-of-andor-claim-limitation.html>"
 \bany one of the previous claims\b,Possible multiple dependent claim. Manually check validity. See MPEP 608.01(i).
 \b(aperture|apertures)\b,Possibly indefinite if what the aperture/apertures is/are in or between is not stated.
 \bapparatus\b,Possible 112(f) invocation. See MPEP 2181.
@@ -30,11 +31,13 @@ regex,message
 \bbetter\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \bbig\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bBluetooth\b,"Possible trademark or trade name in claim. See MPEP 2173.05(u) and FP 07-35-01. Likely acceptable as it refers to a standard. # MOPP 14.137"
+\bbottom\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity. # MOPP 14.131
 \bbrighter\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \bbroad\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bbroadly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bby way of example\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # 16484624
 \bcan\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # <http://www.intelproplaw.com/ip_forum/index.php/topic,31734.0.html>"
+\bcentral\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bcharacterised by\b,Non-standard open transitional phrase. See MPEP 2111.03.I.
 \bcharacterised in that\b,Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV.
 \bcharacteristically\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
@@ -95,7 +98,7 @@ regex,message
 \bfaster\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \bfat\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bfigure\b,"Possible reference to figure. See MPEP 2173.05(s). # EPO GL F-IV, 4.17"
-\bflexible\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15960187
+\bflexible\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15960187, 14355159 (non-flexible)"
 \bflow rate\b,"Possible indefinite parameter if type not specified (mass or volumetric). # EPO GL F-IV, 4.11 on parameters in general"
 \bfor example\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # EPO GL F-IV, 4.9"
 \bfragile\b,Possibly indefinite functional language. See MPEP 2173.05(g).
@@ -115,6 +118,7 @@ regex,message
 \bheavily\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bheavy\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bhigh\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15826532 claim 2, 15130523, EPO GL F-IV, 4.6.1"
+\bhigher\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity. Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b). # 16521534
 \bhighly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 14685003
 \b(hole|holes)\b,Possibly indefinite if what the hole/holes is/are in or between is not stated.
 \bhot\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -137,8 +141,9 @@ regex,message
 \binsignificantly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \binstead of\b,"Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # 16910171, <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>"
 \bin the region of\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\bit\b,Possible ambiguous pronoun. # 16486624
-\bits\b,Possible ambiguous pronoun.
+\bit\b,"Possible ambiguous pronoun. # 16486624, 16434517"
+\bit's\b,Possible ambiguous pronoun.
+\bits\b,Possible ambiguous pronoun. # 17106103
 \blarge\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \blargely\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bleft\b,Possible overly narrow term.
@@ -153,6 +158,7 @@ regex,message
 \blonger\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \bloosely\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 14484119
 \blow\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 14396197
+\blower\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity. Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b). # MOPP 14.131
 \bmachine\b,Possible 112(f) invocation. See MPEP 2181.
 \bmainly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bmanner\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15743140
@@ -163,6 +169,7 @@ regex,message
 \bmeans\b,Possible 112(f) invocation. See MPEP 2181.
 \bmechanism\b,Possible 112(f) invocation. See MPEP 2181.
 \bmember\b,Possible 112(f) invocation. See MPEP 2181.
+\bmiddle\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity. Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # MOPP 14.131
 \bmoderate\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bmoderately\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bmodule\b,Possible 112(f) invocation. See MPEP 2181.
@@ -211,6 +218,7 @@ regex,message
 \b(predetermined|pre-determined)\b,"Possibly indefinite if how the element is predetermined is not discussed in the specs. See PTAB decision in app. no. 15/359,628." # Also: MOPP 14.129
 \bpredominantly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bpreferably\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # 16608171, EPO GL F-IV, 4.9"
+\bpreferred\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # 16434517, EPO GL F-IV, 4.9"
 \b(preset|pre-set)\b,"Possibly indefinite if how the element is preset is not discussed in the specs. See PTAB decision in app. no. 15/359,628 on 'predetermined'." # Also: MOPP 14.129
 \bpressure\b,"Possible indefinite parameter if type not specified (static, dynamic, or total). # EPO GL F-IV, 4.11 on parameters in general"
 \bprevail\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -219,7 +227,7 @@ regex,message
 \bproper amount\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \bproper\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \bproperly\b,Possible subjective term. See MPEP 2173.05(b)(IV).
-\bproximal\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\bproximal\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16521534
 \bproximate\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bproximity\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16486624
 \bquickly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16491320
@@ -248,10 +256,10 @@ regex,message
 \broughly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \broutine\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \broutinely\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
-\bsaid\b,"Prefer 'the'. Some consider 'said' archaic and likely to be misunderstood during litigation. # <http://ip-updates.blogspot.com/2006/01/when-to-use-said-in-patent-claims.html>"
+\bsaid\b,"Prefer 'the' instead. Some consider 'said' archaic and likely to be misunderstood during litigation. # <http://ip-updates.blogspot.com/2006/01/when-to-use-said-in-patent-claims.html>"
 \bshallow\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 14745311
 \bshallowly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\bshaped\b,Possible subjective term. See MPEP 2173.05(b)(IV). # 16612037
+\bshaped\b,"Possible subjective term. See MPEP 2173.05(b)(IV). # 16612037, 16434517"
 \bshort\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16602155, 16527680"
 \bshorter\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \bsignificant\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -289,7 +297,8 @@ regex,message
 \btable\b,"Possible reference to table. See MPEP 2173.05(s). # EPO GL F-IV, 4.17"
 \btall\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bTeflon\b,"Possible trademark or trade name in claim. See MPEP 2173.05(u) and FP 07-35-01."
-#\bthat\b,Possible ambiguous pronoun.
+\bthat\b,Possible ambiguous pronoun.
+\bthat's\b,Possible ambiguous pronoun.
 \bthereabouts\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bthere (is|are) no\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>
 \bthese\b,Possible ambiguous pronoun.
@@ -300,6 +309,7 @@ regex,message
 \btight\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \btightly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 14027027
 \btiny\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\btop\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity. # MOPP 14.131
 \btraditional\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \btraditionally\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \btradition\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
@@ -308,6 +318,7 @@ regex,message
 \btypically\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bunit\b,Possible 112(f) invocation. See MPEP 2181.
 \bunobtrusive\b,Possible subjective term. See MPEP 2173.05(b)(IV).
+\bupper\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity. Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # MOPP 14.131
 \bupward\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity.
 \bupwardly\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity. # MOPP 14.131
 \busual\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.

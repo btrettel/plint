@@ -68,4 +68,5 @@
     - <https://www.knobbe.com/blog/preamble-found-limiting-where-it-supplied-antecedent-basis-other-claim-limitations>
     - <http://www.intelproplaw.com/ip_forum/index.php/topic,32443.0.html>
 - <http://www.intelproplaw.com/ip_forum/index.php/topic,32339.0.html>
-- Some examiners don't like "if"? <http://www.intelproplaw.com/ip_forum/index.php/topic,30711.0.html>
+- Some examiners don't like "if"? <http://www.intelproplaw.com/ip_forum/index.php/topic,30711.msg142871.html#msg142871>
+- <https://patentdefenses.klarquist.com/particular-and-distinct-claims-aka-indefiniteness-sec-1122b-other-than-sec-1126f/>

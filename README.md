@@ -1,5 +1,7 @@
 # plint: patent claim linter
 
+Current version: 0.1.3
+
 plint analyzes a text file containing patent claims for 112(b), 112(d), 112(f), and other issues.
 
 plint is designed to run on the ancient version of Python the USPTO has on their computers, so plint won't use the latest features of Python. And the USPTO Python version is limited to the standard library, so NLTK can not be used.
@@ -12,7 +14,7 @@ This work was prepared or accomplished by Ben Trettel in his personal capacity. 
 
 First, keep in mind MPEP 2173.02.II:
 
-> Examiners should note that Office policy is not to employ *per se* rules to make technical rejections. Examples of claim language which have been held to be indefinite set forth in MPEP § 2173.05(d) are fact specific and should not be applied as *per se* rules.
+> Examiners should note that Office policy is not to employ *per se* rules to make technical rejections. Examples of claim language which have been held to be indefinite set forth in MPEP 2173.05(d) are fact specific and should not be applied as *per se* rules.
 
 Warnings produced by plint are *possible* rejections or objections. Each should be carefully checked as many warnings will not be valid rejections or objections.
 
@@ -43,6 +45,10 @@ claims.txt is the file you wish to read, which is plain text containing the pate
 Alternatively, you can add the directory plint.py is in to your PATH and then run plint as follows:
 
     plint.py claims.txt
+
+### Verbose and debug modes
+
+A verbose mode which prints additional information can be enabled with `-V` or `--verbose`. At the moment, this will only display how plint is interpreting the claim when doing the antecedent basis analysis. A debug mode which will print even more information can be enabled with `-d` or `--debug`.
 
 ## Hard-coded checks
 
@@ -115,7 +121,18 @@ The special syntax for antecedent basis issues is as follows: When the start of 
     the at least one button| is yellow, and
     the at least one widget| is blue.
 
-Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print how plint is interpreting the claim. For example, plint's interpretation of the demo claim is:
+As commas, semi-colons, colons, and the end of a claim terminate claim elements, it is not necessary to annotate claims like the following, though doing so is harmless:
+
+    1. A contraption| comprising:
+    an enclosure|,
+    a display|,
+    at least one button|, and
+    at least one widget| mounted on the enclosure|,
+    wherein the enclosure| is green,
+    the at least one button| is yellow, and
+    the at least one widget| is blue.
+
+Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print how plint is interpreting the claim when doing the antecedent basis analysis. For example, plint's interpretation of the demo claim is:
 
     Claim 1 annotated: a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue.
 
