@@ -55,6 +55,7 @@ The following hard-coded checks are made:
 - A check that each independent claim starts with 'A' or 'An'. This is not required but is typical. See MPEP 608.01(m) for the requirements.
 - A check that each dependent claim starts with 'The'. This is not required but is typical. See MPEP 608.01(m) for the requirements.
 - A check for multiple dependent claims to manually check.
+- A check that dependent claims do not refer back to themselves.
 - A check that dependent claims refer back to existing claims.
 
 ## Warnings file
@@ -74,6 +75,12 @@ An external warnings file can be called with the `--warnings` flag.
 Specific warnings can be disabled in a warnings file without the line being deleted by adding "#" to the beginning of the regex column of a warning. Comments can be added in the warning column; all text after "#" will not be printed in plint.
 
 Warnings with warning text containing the terms "112(d)" or "DEPONLY" will only apply to dependent claims. This is true even if "DEPONLY" is only printed in a comment.
+
+### Standard warnings file philosophy
+
+In warnings.csv, before adding a line related to patent prosecution, I ask whether more than 1% of examiners would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. warnings.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possible face.
+
+I also include some lines meant to point out unnecessarily narrow claim limitations that may be of interest outside of patent prosecution.
 
 ## Filtering out warnings
 

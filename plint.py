@@ -14,9 +14,10 @@ parser = argparse.ArgumentParser(description="patent claim linter: analyzes pate
 parser.add_argument("file", help="claim file to read")
 parser.add_argument("-a", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
 parser.add_argument("-d", "--debug", action="store_true", help="print debugging information", default=False)
+parser.add_argument("-e", "--examiner", action="store_true", help="examiner mode: display messages relevant to USPTO patent examiners", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.1.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.1.1")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
@@ -24,7 +25,7 @@ args = parser.parse_args()
 
 # <https://stackoverflow.com/a/14981125/1124489>
 def eprint(*args, **kwargs):
-    if not(outfile_bool):
+    if not(use_outfile):
         print(*args, file=sys.stderr, **kwargs)
     else:
         with open(outfile, 'a') as f:
@@ -215,10 +216,7 @@ if args.test:
 
 rule_filters = args.filter
 
-outfile_bool = args.outfile
-if outfile_bool:
-    outfile = args.file+'.out'
-    open(outfile, 'w').close()
+use_outfile = False
 
 file_ext = '.csv'
 
@@ -261,6 +259,12 @@ with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
             print(line_num, warning['regex'])
     
     print(len(warnings), "warnings loaded.")
+
+# Set the use_outfile after checking that the file exists, otherwise, if the claims file doesn't exist, the error message will be printed to the output file.
+use_outfile = args.outfile
+if use_outfile:
+    outfile = args.file+'.out'
+    open(outfile, 'w').close()
 
 prev_claim_number      = 0
 number_of_claims       = 0
@@ -347,6 +351,7 @@ for claim_text_with_number in claims_text:
             except:
                 eprint('Dependent claim {} has invalid parent claim number: {}'.format(claim_number, parent_claim_str))
             
+            assert_warn(not(parent_claim == claim_number), "Dependent claim {} depends on itself.".format(claim_number))
             assert_warn(parent_claim in claim_numbers, "Dependent claim {} depends on non-existent claim {}.".format(claim_number, parent_claim))
     
     if args.debug:
@@ -396,7 +401,7 @@ for claim_text_with_number in claims_text:
             new_element = new_element_iter.group()[1:-1]
             
             # Check if claim element is defined twice, for example, claim 1 introduces "a fastener" and claim 2 also introduces "a fastener", but it is unclear if claim 2 should have said "the fastener". Examples: App. nos. 16162122 and 16633492.
-            message = 'Claim {} introduces "{}" more than once. Unclear if the "{}" is the same in both instances.'.format(claim_number, new_element)
+            message = 'Claim {} introduces "{}" more than once. Unclear if the "{}" is the same in both instances.'.format(claim_number, new_element, new_element)
             assert_warn(not(new_element in new_elements_set), message)
             
             if new_element in new_elements_set:
@@ -424,7 +429,7 @@ for claim_text_with_number in claims_text:
                         ab_bool = True
                         break
             
-            message = 'Claim {} has a possible antecedent basis issue for "{}". See MPEP 2173.05(e).'.format(claim_number, old_element)
+            message = 'Claim {} recites "{}", which possibly lacks antecedent basis. See MPEP 2173.05(e).'.format(claim_number, old_element)
             assert_warn(ab_bool, message)
             
             if not(ab_bool):
@@ -459,6 +464,14 @@ print('# of claims: {}'.format(number_of_claims))
 print('Indep. claims: {}'.format(number_of_indep_claims))
 print('Depen. claims: {}'.format(number_of_dep_claims))
 print('Warnings: {}'.format(number_of_warnings))
+
+if args.examiner:
+    if (number_of_indep_claims >= 4) and (number_of_dep_claims >= 25):
+        eprint("Application has 4 or more independent claims and 25 or more total claims, and consequently is eligible for 1 hour of attribute time. See Examiner PAP, Oct. 2021.")
+    elif number_of_indep_claims >= 4:
+        eprint("Application has 4 or more independent claims and consequently is eligible for 1 hour of attribute time. See Examiner PAP, Oct. 2021.")
+    elif number_of_dep_claims >= 25:
+        eprint("Application has 25 or more total claims and consequently is eligible for 1 hour of attribute time. See Examiner PAP, Oct. 2021.")
 
 assert number_of_claims == (number_of_indep_claims + number_of_dep_claims)
 
