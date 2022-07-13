@@ -2,6 +2,29 @@
 
 - Check for invalid multiple dependencies.
 - Check for features of other softwares.
+    - <https://specif.io/bluepencil/>
+        - <https://appsource.microsoft.com/en-us/product/office/wa104381917?tab=overview>
+    - <https://antecedent-ip.com/product/aip-patentchecker/>
+    - <https://www.bots4ip.com/product/inspat-proofreading-patent-claims/>
+    - <https://patentpal.com/>
+    - <http://www.lanaconsult.com/products.htm#AutoPat>
+    - <https://groups.google.com/g/misc.legal.computing/c/1StCrr-FX80/m/hqcKDSkpKjkJ>
+    - <https://groups.google.com/g/misc.legal.moderated/c/04WqcZJSwN8/m/fsQiC_AgYiMJ>
+    - <https://www.patentclaimmaster.com/>
+        - <https://www.patentclaimmaster.com/blog/tag/patent-proofreading-tools/>
+        - <https://www.patentclaimmaster.com/blog/tag/patent-drafting-tools/>
+        - <https://www.patentclaimmaster.com/blog/tutorial-checking-claims-for-antecedent-basis-issues/>
+        - <https://www.patentclaimmaster.com/blog/patent-drafting-without-section-112-errors/>
+        - <https://www.patentclaimmaster.com/helpdesk/knowledgebase.php?category=7>
+    - PatentOptimizer
+        - <https://www.lexisnexisip.com/knowledge-center/avoiding-section-112b-rejections-with-patent-drafting-tools/>
+        - <https://www.lexisnexisip.com/knowledge-center/patent-tools-for-avoiding-office-actions/>
+    - PatentBots
+        - <https://www.patentbots.com/patentoptimizer-alternative>>
+- Check papers for more ideas.
+    - "Using AI to Analyze Patent Claim Indefiniteness"
+    - "Patent Claim Structure Recognition"
+    - "The "UNLIMITLESS": On How to Remedy the Inadequacies of a Language-Based System for Patent Claims"
 - `--reject` option to write rejections to text file. Then you can delete the ones you don't want.
 - "Use" claim detection: method or process without word step?
 - Check classification for patent documents on patent analysis for more ideas.
@@ -19,7 +42,6 @@
 - Print some checks for equations like dimensional homogeneity, no singularities.
     - `\b(equation|formula)\b`
     - `=`
-- Check alderucci_using_2020 for more ideas.
 - 101 rejections: Claiming a human:
     - MOPP 14.131: ""when in use", "when held by an operator"
         - <https://www.gov.uk/guidance/manual-of-patent-practice-mopp/section-14-the-application>
@@ -40,6 +62,10 @@
     - Get ends of claim elements from numbered elements in specs? Scan specs for text between a/an and a number?
 - Reorganize code to have unit tests for everything including the antecedent basis checking.
 - Allow annotation to make "upper and lower nozzles" (in 17201601) introduce an upper nozzle and a lower nozzle.
-- Check for preamble-limiting terms. Annotate the end of the preamble to find them?
+    - <http://www.intelproplaw.com/ip_forum/index.php/topic,31823.0.html>
+- Check for preamble-limiting terms. Annotate the end of the preamble to find them? First punctuation mark ends the preamble?
     - <https://www.patentclaimmaster.com/blog/tutorial-checking-claims-for-antecedent-basis-issues/>
     - <https://www.knobbe.com/blog/preamble-found-limiting-where-it-supplied-antecedent-basis-other-claim-limitations>
+    - <http://www.intelproplaw.com/ip_forum/index.php/topic,32443.0.html>
+- <http://www.intelproplaw.com/ip_forum/index.php/topic,32339.0.html>
+- Some examiners don't like "if"? <http://www.intelproplaw.com/ip_forum/index.php/topic,30711.0.html>
