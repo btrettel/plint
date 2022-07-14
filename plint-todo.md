@@ -30,8 +30,11 @@
 - Check classification for patent documents on patent analysis for more ideas.
 - Check for synonyms of the relative terms you already have for more.
 - Optional argument `--specs` to check that each element is mentioned in the specs.
+    - <https://patentlyo.com/patent/2015/04/strengthen-assurance-practices.html#comment-290499>
+        - > Second, I am pretty sure the office is not examining to determine whether claim terms are actually used in the specification. This is especially important if a claim term in question is used to distinguish the prior art.
 - For `--specs`, also check that each element has a reference number. If an element does not, that could indicate a drawing objection is needed for that element.
 - Add `--stats` to print out the number of words in each claim and other statistics.
+- With `--stats`, one could use proximity to 112(f) terms to determine which elements are functionally defined. Then one could count the number of times that element is mentioned in the specs to get an estimate for how detailed the description is. If it's not presented in detail, then that could lead to a 112(a) or 112(b) problem.
 - Add ability to annotate the claim to ignore a particular word for the warnings file. Add this to the documentation after doing so: If a user wishes to prevent rules from being applied to a particular word, they can add "#" to the beginning of the word. For example, they could change *element* to *#element*.
 - Look at typo for ideas: Statistical method of finding mistakes in patent claims? <https://ieeexplore.ieee.org/abstract/document/6593963>
 - Look at readability indices to identify convoluted parts of claims to double check.
@@ -54,7 +57,7 @@
         - chimera
         - human
 - <https://www.jpo.go.jp/e/system/laws/rule/guideline/patent/tukujitu_kijun/document/index/02_0203_e.pdf>
-- vague terms: amount, quantity, substance, material
+- vague terms, check how defined in specs or else they might have 112 issues: amount, quantity, substance, material, device, module, element
 - Rewrite to handle filtering and DAV search string without duplicate code.
     - At the same time, rewrite so that you don't need to use assert_warn to print a warning.
     - warning(message, dav_keyword) will add dav_keyword to list and display the message.
@@ -70,3 +73,4 @@
 - <http://www.intelproplaw.com/ip_forum/index.php/topic,32339.0.html>
 - Some examiners don't like "if"? <http://www.intelproplaw.com/ip_forum/index.php/topic,30711.msg142871.html#msg142871>
 - <https://patentdefenses.klarquist.com/particular-and-distinct-claims-aka-indefiniteness-sec-1122b-other-than-sec-1126f/>
+- <https://www.reddit.com/r/patentexaminer/comments/vrjxz8/how_to_quickly_spot_112b_indefiniteness_issues/>

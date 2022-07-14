@@ -84,7 +84,7 @@ Warnings with warning text containing the terms "112(d)" or "DEPONLY" will only 
 
 ### Standard warnings file philosophy
 
-In warnings.csv, before adding a line related to patent prosecution, I ask whether more than 1% of examiners would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. warnings.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possible face.
+plint will emulate a nitpicky examiner. In warnings.csv, before adding a line related to patent prosecution, I ask whether more than 1% of examiners would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. warnings.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possible face.
 
 I also include some lines meant to point out unnecessarily narrow claim limitations that may be of interest outside of patent prosecution.
 
