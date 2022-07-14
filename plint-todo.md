@@ -71,6 +71,8 @@
     - <https://www.knobbe.com/blog/preamble-found-limiting-where-it-supplied-antecedent-basis-other-claim-limitations>
     - <http://www.intelproplaw.com/ip_forum/index.php/topic,32443.0.html>
 - <http://www.intelproplaw.com/ip_forum/index.php/topic,32339.0.html>
-- Some examiners don't like "if"? <http://www.intelproplaw.com/ip_forum/index.php/topic,30711.msg142871.html#msg142871>
+- Some examiners don't like "if"?
+    - <http://www.intelproplaw.com/ip_forum/index.php/topic,30711.msg142871.html#msg142871>
+    - MPEP 2111.04.II Contingent Limitations
 - <https://patentdefenses.klarquist.com/particular-and-distinct-claims-aka-indefiniteness-sec-1122b-other-than-sec-1126f/>
 - <https://www.reddit.com/r/patentexaminer/comments/vrjxz8/how_to_quickly_spot_112b_indefiniteness_issues/>
