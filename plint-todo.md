@@ -1,6 +1,5 @@
 # plint to-do list
 
-- Add an AGPL header to all the .py files.
 - Rewrite to handle filtering and DAV search string without duplicate code.
     - At the same time, rewrite so that you don't need to use assert_warn to print a warning.
     - warning(message, dav_keyword) will add dav_keyword to list and display the message.

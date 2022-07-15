@@ -34,7 +34,7 @@ parser.add_argument("-e", "--examiner", action="store_true", help="examiner mode
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
-parser.add_argument("-v", "--version", action="version", version="plint version 0.2.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.2.1")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)

@@ -1,6 +1,6 @@
 # plint: patent claim linter
 
-Current version: 0.2.0
+Current version: 0.2.1
 
 plint analyzes a text file containing patent claims for 112(b), 112(d), 112(f), and other issues.
 
@@ -177,6 +177,10 @@ If a specific claim element is introduced more than once, a warning will be prin
     1. A device comprising:
     a widget;
     a widget.
+
+## Specifications checking
+
+If the optional `-s` or `--spec` flag is provided with a text file containing the specifications of the patent application, plint will perform additional checks against the specifications. At the moment, this feature will do nothing unless the antecedent basis checking feature is also used. If both the specification checking and antecedent basis checking features are used, plint will check to make sure that all elements mentioned in the claims are present in the specifications.
 
 ## DAV claims viewer search string
 
