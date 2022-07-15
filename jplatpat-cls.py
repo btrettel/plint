@@ -1,10 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import argparse
-import csv
+# jplatpat-cls.py
+# Copyright (C) 2022 Ben Trettel
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # This work was prepared or accomplished by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
+
+import argparse
+import csv
 
 # <https://stackoverflow.com/a/14981125/1124489>
 def eprint(*args, **kwargs):

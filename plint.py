@@ -1,14 +1,30 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# plint
+# Copyright (C) 2022 Ben Trettel
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# This work was prepared or accomplished by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
+
 import argparse
 import csv
 import sys
 import os
 import re
 import copy
-
-# This work was prepared or accomplished by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
 
 parser = argparse.ArgumentParser(description="patent claim linter: analyzes patent claims for 112(b), 112(d), 112(f), and other issues")
 parser.add_argument("file", help="claim file to read")
@@ -17,7 +33,8 @@ parser.add_argument("-d", "--debug", action="store_true", help="print debugging 
 parser.add_argument("-e", "--examiner", action="store_true", help="examiner mode: display messages relevant to USPTO patent examiners", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.1.3")
+parser.add_argument("-s", "--spec", help="specification text file to read")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.2.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
@@ -58,7 +75,27 @@ def remove_punctuation(text):
     return text.replace(',', '').replace(';', '').replace('.', '')
 
 def remove_ab_notation(text):
-    return text.replace('{', '').replace('}', '').replace('[', '').replace(']', '').replace('#', '')
+    # Remove annotation characters
+    text = text.replace('{', '').replace('}', '').replace('[', '').replace(']', '').replace('#', '').replace('|', '').replace('!', '')
+    
+    # Remove text added for antecedent basis checking only.
+    assert (text.count("`") % 2) == 0, "Unclosed '`' detected in claim annotation, aborting."
+    loc = 0
+    print_text = True
+    cleaned_text = ""
+    while loc < len(text):
+        if text[loc] == "`":
+            print_text = not(print_text)
+        elif print_text:
+            cleaned_text += text[loc]
+        
+        loc += 1
+    assert not("`" in cleaned_text), "Somehow a '`' character survived the cleaning."
+    
+    # Remove unnecessary spaces
+    cleaned_text = cleaned_text.strip()
+    
+    return cleaned_text
 
 def annotate_claim_text(claim_text):
     claim_text = claim_text.lower()
@@ -66,6 +103,9 @@ def annotate_claim_text(claim_text):
     if args.debug:
         print("Input claim text:", claim_text)
         print("Annotating plural claim element starting terms...")
+    
+    # Remove character that adds text to claims for the antecedent basis checker to make antecedent basis work.
+    claim_text = claim_text.replace("`", "")
     
     # Annotate plural claim element starting terms. This is hacky, but should work.
     # Note that plural claim element starting terms act differently than singular claim element starting terms like "a" or "an". For plurals, the claim element starting term itself becomes part of the claim element.
@@ -167,6 +207,9 @@ def annotate_claim_text(claim_text):
             if square_bracket:
                 claim_text = claim_text[0:loc]+"]"+claim_text[loc+1:]
                 square_bracket = False
+        if char == '!': # This will exclude the exclamation point and the character before it from the output. Then it'll got back one to capture the end of the element properly
+            claim_text = claim_text[0:loc-1]+claim_text[loc+1:]
+            loc -= 2 # Go back two now, will change to just one later when loc += 1 is encountered.
         elif char == "{":
             assert not(curly_bracket), 'Curly bracket started inside of curly bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
             assert not(square_bracket), 'Curly bracket started inside of square bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
@@ -199,6 +242,7 @@ def annotate_claim_text(claim_text):
     
     assert claim_text.count("{") == claim_text.count("}"), "Error in annotation of new claim elements. Number of left curly brackets does not match number of right curly brackets."
     assert claim_text.count("[") == claim_text.count("]"), "Error in annotation of old claim elements. Number of left square brackets does not match number of right square brackets."
+    assert not("|" in claim_text), "Error in annotation of end of a claim element. Look for '|' by itself in the annotated claim."
     
     return claim_text
 
@@ -216,6 +260,12 @@ if args.test:
     annotated_claim_text = annotate_claim_text(claim_text)
     
     assert annotated_claim_text == "a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue."
+    
+    claim_text = "This is a test. `Commented out`"
+    
+    cleaned_claim_text = remove_ab_notation(claim_text)
+    
+    assert cleaned_claim_text == "This is a test."
     
     print('All tests passed.')
     
@@ -330,6 +380,7 @@ for claim_text_with_number in claims_text:
     claim_number_str = claim_text_with_number.split('.', 1)[0]
     claim_text = claim_text_with_number.split('.', 1)[1].strip()
     claim_words = claim_text.split(' ')
+    cleaned_claim_text = remove_ab_notation(claim_text.lower())
     
     assert claim_number_str.isdigit(), 'Invalid claim number: {}'.format(claim_number_str)
     
@@ -341,41 +392,53 @@ for claim_text_with_number in claims_text:
     
     assert claim_number > prev_claim_number, 'Claim {} is out of order'.format(claim_number)
     
-    claim_len = len(claim_text)
+    claim_len = len(cleaned_claim_text)
     if claim_len < shortest_claim_len:
         shortest_claim_number = claim_number
     
-    assert_warn(claim_text.endswith('.'), 'Claim {} does not end with a period. See MPEP 608.01(m).'.format(claim_number))
+    assert_warn(cleaned_claim_text.endswith('.'), 'Claim {} does not end with a period. See MPEP 608.01(m).'.format(claim_number))
     
-    if not 'claim' in claim_text.lower():
+    parent_claim = None
+    
+    if not 'claim' in cleaned_claim_text.lower():
         # independent claim
         dependent = False
         number_of_indep_claims += 1
         
-        assert_warn(claim_text.startswith('A ') or claim_text.startswith('An '), "Independent claim {} does not start with 'A' or 'An'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
+        assert_warn(cleaned_claim_text.startswith('a ') or cleaned_claim_text.startswith('an '), "Independent claim {} does not start with 'A' or 'An'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
     else:
         # dependent claim
         dependent = True
         number_of_dep_claims += 1
         
-        assert_warn(claim_text.startswith('The '), "Dependent claim {} does not start with 'The'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
+        assert_warn(cleaned_claim_text.startswith('the '), "Dependent claim {} does not start with 'The'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
         
-        if 'claims' in claim_text.lower():
-            assert_warn(claim_text.startswith('The '), "Claim {} is multiple dependent. Manually check validity. See MPEP 608.01(i).".format(claim_number))
+        if 'claims' in cleaned_claim_text.lower():
+            # TODO: This won't be filtered out by --filter.
+            eprint("Claim {} is possibly multiple dependent. Manually check validity. See MPEP 608.01(i).".format(claim_number))
+            number_of_warnings += 1
         else:
             try:
                 parent_claim_str = remove_punctuation(claim_words[claim_words.index('claim') + 1])
                 parent_claim = int(parent_claim_str)
             except:
                 # TODO: This won't be filtered out by --filter.
-                eprint('Dependent claim {} has invalid parent claim number: {}'.format(claim_number, parent_claim_str))
+                eprint('Dependent claim {} possibly has invalid parent claim number: {}'.format(claim_number, parent_claim_str))
+                number_of_warnings += 1
+                parent_claim = None
             
             assert_warn(not(parent_claim == claim_number), "Dependent claim {} depends on itself. Potential 112(d) rejection.".format(claim_number))
-            assert_warn(parent_claim > claim_number, "Dependent claim {} depends on claim {}, which is not a preceding claim. See MPEP 608.01(n).IV".format(claim_number, parent_claim))
+            assert_warn(parent_claim < claim_number, "Dependent claim {} depends on claim {}, which is not a preceding claim. See MPEP 608.01(n).IV".format(claim_number, parent_claim))
             assert_warn(parent_claim in claim_numbers, "Dependent claim {} depends on non-existent claim {}. Potential 112(d) rejection.".format(claim_number, parent_claim))
+    
+    if dependent:
+        assert not(parent_claim is None), "Parent claim undefined for dependent claim {}?".format(claim_number)
     
     if args.debug:
         print("Going through warnings...")
+    
+    if args.verbose:
+        print("Claim {} as being checked for warnings:".format(claim_number), cleaned_claim_text)
     
     for warning in warnings:
         if not warning['regex'].startswith('#'):
@@ -384,7 +447,7 @@ for claim_text_with_number in claims_text:
                 if ('112(d)' in warning['message']) or ('DEPONLY' in warning['message']) :
                     continue
             
-            match_bool, match_str = re_matches(warning['regex'].lower(), remove_ab_notation(claim_text.lower()))
+            match_bool, match_str = re_matches(warning['regex'].lower(), cleaned_claim_text)
             message = 'Claim {} recites "{}". {}'.format(claim_number, match_str, warning['message'].split('#')[0].strip())
             assert_warn(not(match_bool), message)
             
@@ -411,7 +474,15 @@ for claim_text_with_number in claims_text:
         
         # Import new elements from parent claims.
         if dependent:
-            new_elements_dict = copy.deepcopy(new_elements_in_claims[parent_claim])
+            if args.debug:
+                print("Importing new claim elements from claim {} for claim {}...".format(parent_claim, claim_number))
+                print(new_elements_in_claims[parent_claim])
+            
+            new_elements_dict = {}
+            for new_element in new_elements_in_claims[parent_claim]:
+                new_elements_dict[new_element] = 0
+            
+            #new_elements_dict = copy.deepcopy(new_elements_in_claims[parent_claim])
             new_elements_set = set(new_elements_dict.keys())
         else:
             new_elements_set = set()
@@ -461,13 +532,47 @@ for claim_text_with_number in claims_text:
                 if display_warning:
                     dav_keywords.add(old_element)
         
-        new_elements_dict_zeroed = {}
-        for new_element in new_elements_set:
-            new_elements_dict_zeroed[new_element] = 0
-        
-        new_elements_in_claims[claim_number] = new_elements_dict_zeroed
+        new_elements_in_claims[claim_number] = new_elements_dict
     
     prev_claim_number = claim_number
+
+if args.debug and args.ant_basis:
+    for claim_number in claim_numbers:
+        print("New elements in claim {}:".format(claim_number), new_elements_in_claims[claim_number])
+
+if args.spec and args.ant_basis:
+    all_elements = set()
+    for claim_number in claim_numbers:
+        for element in new_elements_in_claims[claim_number]:
+            #print(claim_number, element)
+            all_elements.add(element)
+    
+    spec_appearances_of_element = {}
+    for element in all_elements:
+        spec_appearances_of_element[element] = 0
+    
+    with open(args.spec, "r", encoding="utf-8") as spec_file:
+        line = spec_file.readline()
+        
+        while line:
+            line = line.replace('\n', '')
+            
+            for element in all_elements:
+                if element in line:
+                    spec_appearances_of_element[element] += line.count(element)
+            
+            # Advance line
+            line = spec_file.readline()
+    
+    for element in spec_appearances_of_element:
+        if spec_appearances_of_element[element] == 0:
+            # TODO: This won't be filtered out by --filter.
+            eprint("Claim element that does not appear in the spec:", element)
+            number_of_warnings += 1
+        elif spec_appearances_of_element[element] <= 2:
+            # TODO: This won't be filtered out by --filter.
+            eprint("Claim element that appears in the spec 2 or fewer times:", element)
+            number_of_warnings += 1
 
 # Check for 37 CFR 1.75(g) compliance.
 assert_warn(shortest_claim_number == 1, "Shortest length claim (by characters) is claim {}. However, claim 1 is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(claim_number))

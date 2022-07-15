@@ -1,14 +1,20 @@
 # plint: patent claim linter
 
-Current version: 0.1.3
+Current version: 0.2.0
 
 plint analyzes a text file containing patent claims for 112(b), 112(d), 112(f), and other issues.
 
+By default, plint will emulate a nitpicky examiner. When making the default warnings files (warnings.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. warnings.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possible face. If this is too nitpicky for your tastes, you're welcome to make your own warnings file or modify the existing file. plint is highly customizable.
+
+I also include some lines meant to point out unnecessarily narrow claim limitations that may be of interest outside of patent prosecution.
+
 plint is designed to run on the ancient version of Python the USPTO has on their computers, so plint won't use the latest features of Python. And the USPTO Python version is limited to the standard library, so NLTK can not be used.
 
-## Disclaimer
+## Legal
 
 This work was prepared or accomplished by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
+
+plint is licensed under the GNU Affero General Public License v3.0.
 
 ## Usage
 
@@ -16,7 +22,7 @@ First, keep in mind MPEP 2173.02.II:
 
 > Examiners should note that Office policy is not to employ *per se* rules to make technical rejections. Examples of claim language which have been held to be indefinite set forth in MPEP 2173.05(d) are fact specific and should not be applied as *per se* rules.
 
-Warnings produced by plint are *possible* rejections or objections. Each should be carefully checked as many warnings will not be valid rejections or objections.
+Warnings produced by plint are *possible* rejections or objections. Each should be carefully checked as many warnings will not be valid rejections or objections. As stated above, by default plint is nitpicky, so likely most of the warnings will not be valid rejections or objections.
 
 ### Windows
 
@@ -50,6 +56,20 @@ Alternatively, you can add the directory plint.py is in to your PATH and then ru
 
 A verbose mode which prints additional information can be enabled with `-V` or `--verbose`. At the moment, this will only display how plint is interpreting the claim when doing the antecedent basis analysis. A debug mode which will print even more information can be enabled with `-d` or `--debug`.
 
+### How I use plint
+
+When examining patents, I typically save the patent claims to a file named {application number}-claims.txt. For example, for application number 16811358, I will save 16811358-claims.txt. I then annotate the claims for the antecedent basis checker as described below. This will require some iteration to get right, so I will run plint as follows, modify the claim annotation in response to the warnings and parsing errors displayed, and repeat until plint parses the entire claim set:
+
+    plint -a -d .\16811358-claims.txt
+
+As discussed above, `-d` is debug mode, which will enabled verbose mode as well. Debug and verbose modes display more information, and this extra information may be useful when iteratively annotating the claims.
+
+Once I am confident that I annotated the claim for antecedent basis properly, I will remove the `-d` flag and add `-o` to save the output to a file:
+
+    plint -a -o .\16811358-claims.txt
+
+Then I will check each line in 16811358-claims.txt. Most of the warnings will not lead to rejections or objections, but all should be checked. After reading the warnings, I made decide to annotate the claim differently if plint is still not interpreting the claim properly.
+
 ## Hard-coded checks
 
 The following hard-coded checks are made:
@@ -63,6 +83,7 @@ The following hard-coded checks are made:
 - A check for multiple dependent claims to manually check.
 - A check that dependent claims do not refer back to themselves.
 - A check that dependent claims refer back to existing claims.
+- A check that claim 1 is the shortest claim as a spot check for 37 CFR 1.75(g) compliance. See MPEP 608.01(i).
 
 ## Warnings file
 
@@ -81,12 +102,6 @@ An external warnings file can be called with the `--warnings` flag.
 Specific warnings can be disabled in a warnings file without the line being deleted by adding "#" to the beginning of the regex column of a warning. Comments can be added in the warning column; all text after "#" will not be printed in plint.
 
 Warnings with warning text containing the terms "112(d)" or "DEPONLY" will only apply to dependent claims. This is true even if "DEPONLY" is only printed in a comment.
-
-### Standard warnings file philosophy
-
-plint will emulate a nitpicky examiner. In warnings.csv, before adding a line related to patent prosecution, I ask whether more than 1% of examiners would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. warnings.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possible face.
-
-I also include some lines meant to point out unnecessarily narrow claim limitations that may be of interest outside of patent prosecution.
 
 ## Filtering out warnings
 
@@ -110,7 +125,20 @@ To check the demo claims on Linux:
 
     ./plint.py -a demo-claims.txt
 
-The special syntax for antecedent basis issues is as follows: When the start of a new element is not detected, add `{` before the element. When the start of an element previously introduced is not detected, add the `[` before the element. When the end of a new element is not detected, add `}` after the element. When the end of an element previously introduced is not detected, add `]` after the element. Alternatively, if you want plint to automatically determine which type of element is ending, use `|`. When an article should not create an element, add "#" to the beginning of that word. See [demo-claims.txt](demo-claims.txt) below for this notation in use.
+### Special syntax for antecedent basis analysis
+
+- When the start of a new element is not detected, add `{` before the element.
+- When the start of an element previously introduced is not detected, add the `[` before the element.
+- When the end of a new element is not detected, add `}` after the element.
+- When the end of an element previously introduced is not detected, add `]` after the element.
+- Alternatively, if you want plint to automatically determine which type of element is ending, use `|`.
+- When an article should not create an element, add `#` to the beginning of that word. For terms that introduce multiple elements that contain multiple words (like "at least one"), it is necessary to place the `#` not at the first term (for example: `at #least one`) for the moment.
+- When a claim element was introduced properly as a singular element but later referred to as plural, the character `!` can be used to erase the plural. For example, `[expected traffic delays!;` will be interpreted as `[expected traffic delay]`.
+- Sometimes getting plint to properly parse claim elements requires adding text. Text put between backticks (`` ` ``) will be added to the claim for the antecedent basis check but not used otherwise. Here are some examples:
+    - The limitation "upper and lower nozzles" should introduce a "upper nozzle" and a "lower nozzle". So, "upper and lower nozzles" could be annotated as `` {upper `nozzle| `and {lower nozzles!| ``.
+    - Sometimes claim elements are introduced properly as a plural element but later referred in plural. For example, a claim may introduce "adjacent TMEs" but later refer to "each adjacent TME". The latter can be annotated as `` each {adjacent TME`s`| `` to add the plural for the antecedent basis checker.
+
+See [demo-claims.txt](demo-claims.txt) below for the basic notation (`|`) in use.
 
     1. A contraption| comprising:
     an enclosure,
@@ -132,11 +160,15 @@ As commas, semi-colons, colons, and the end of a claim terminate claim elements,
     the at least one button| is yellow, and
     the at least one widget| is blue.
 
+### Verbose mode
+
 Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print how plint is interpreting the claim when doing the antecedent basis analysis. For example, plint's interpretation of the demo claim is:
 
     Claim 1 annotated: a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue.
 
-The antecedent basis functionality of plint may be fragile and will likely require some iteration until a claim is annotated in a way that plint likes.
+### Shortcomings of the antecedent basis checker
+
+The antecedent basis checker is fragile and will likely require some iteration until a claim is annotated in a way that plint likes.
 
 At present, plint won't work with nested elements. For example: `a center of the widget|` would ideally be interpreted as `a {center of [the widget]}`, but that's not how plint will work at the moment. That'll need to be annotated like this: `a center of #the widget|`, interpreted as `a {center of the widget}`. Then plint will think it's all just one element.
 

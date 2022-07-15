@@ -8,7 +8,7 @@ regex,message
 \balmost\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \balternatively\b,Possible 112(d) rejection. Could be removing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \bamply\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\b(and/or|or/and)\b,"Prefer 'at least one of A and B' instead. Not indefinite, but some examines think so. See PTAB decision in app. no. 11/565,411. # <https://patentlyo.com/patent/2014/01/uspto-approves-of-andor-claim-limitation.html>"
+\b(and/or|or/and)\b,"Prefer 'at least one of A and B' instead. Not indefinite, but some examiners think so. See PTAB decision in app. no. 11/565,411. # <https://patentlyo.com/patent/2014/01/uspto-approves-of-andor-claim-limitation.html>"
 \bany one of the previous claims\b,Possible multiple dependent claim. Manually check validity. See MPEP 608.01(i).
 \b(aperture|apertures)\b,Possibly indefinite if what the aperture/apertures is/are in or between is not stated.
 \bapparatus\b,Possible functional language with 112(f) invocation. See MPEP 2181.
@@ -83,7 +83,7 @@ regex,message
 \beasy\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \beffecacious\b,Possible subjective term. See MPEP 2173.05(b)(IV). # 15283751
 \beffective\b,Possible subjective term. See MPEP 2173.05(b)(IV). # was effective amount
-\be.g.\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\be\.g\.\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \belement\b,Possible functional language with 112(f) invocation. See MPEP 2181.
 \belongated\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bemotional\b,Possible subjective term. See MPEP 2173.05(b)(IV).
@@ -262,6 +262,7 @@ regex,message
 \bshaped\b,"Possible subjective term. See MPEP 2173.05(b)(IV). # 16612037, 16434517"
 \bshort\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16602155, 16527680"
 \bshorter\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
+#\bside\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bsignificant\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bsignificantly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bsimilar\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
