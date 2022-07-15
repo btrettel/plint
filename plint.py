@@ -34,7 +34,7 @@ parser.add_argument("-e", "--examiner", action="store_true", help="examiner mode
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
-parser.add_argument("-v", "--version", action="version", version="plint version 0.2.1")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.3.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
@@ -567,11 +567,11 @@ if args.spec and args.ant_basis:
     for element in spec_appearances_of_element:
         if spec_appearances_of_element[element] == 0:
             # TODO: This won't be filtered out by --filter.
-            eprint("Claim element that does not appear in the spec:", element)
+            eprint("Claim element that does not appear in the spec: {}. Possible drawing objection if element not in drawing. See MPEP 608.02(d). Possible weak disclosure for element, leading to 112(a) issues.".format(element))
             number_of_warnings += 1
         elif spec_appearances_of_element[element] <= 2:
             # TODO: This won't be filtered out by --filter.
-            eprint("Claim element that appears in the spec 2 or fewer times:", element)
+            eprint("Claim element that appears in the spec 2 or fewer times: {}. Possible weak disclosure for element, leading to 112(a) issues.".format(element))
             number_of_warnings += 1
 
 # Check for 37 CFR 1.75(g) compliance.

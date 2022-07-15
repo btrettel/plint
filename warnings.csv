@@ -135,6 +135,7 @@ regex,message
 \bincreases\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \bincreasing\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \binexactly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\Bing\b,Possible functional language due to present participle wording. # <https://www.ssiplaw.com/112f-has-a-hair-trigger-avoiding-means-plus-function-misfires/>
 \bin lieu of\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \bin place of\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \binsignificant\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
