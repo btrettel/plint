@@ -32,9 +32,10 @@ parser.add_argument("-a", "--ant-basis", action="store_true", help="check for an
 parser.add_argument("-d", "--debug", action="store_true", help="print debugging information; automatically enables verbose mode", default=False)
 parser.add_argument("-e", "--examiner", action="store_true", help="examiner mode: display messages relevant to USPTO patent examiners", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
+parser.add_argument("-l", "--adverbs", action="store_true", help="give warnings for likely adverbs (words ending in -ly)", default=False)
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
-parser.add_argument("-v", "--version", action="version", version="plint version 0.3.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.4.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
@@ -336,8 +337,8 @@ new_elements_in_claims = {}
 claims_text = []
 first_claim = True
 dav_keywords = set()
-shortest_claim_len = 1e6
-shortest_claim_number = 0
+shortest_indep_claim_len = 1e6
+shortest_indep_claim_number = 0
 
 if args.debug:
     print("Constructing list with text of claims including number...")
@@ -392,11 +393,11 @@ for claim_text_with_number in claims_text:
     
     assert claim_number > prev_claim_number, 'Claim {} is out of order'.format(claim_number)
     
-    claim_len = len(cleaned_claim_text)
-    if claim_len < shortest_claim_len:
-        shortest_claim_number = claim_number
-    
     assert_warn(cleaned_claim_text.endswith('.'), 'Claim {} does not end with a period. See MPEP 608.01(m).'.format(claim_number))
+    
+    claim_len = len(cleaned_claim_text)
+    if args.debug:
+        print("Length of claim {}: {} characters.".format(claim_number, claim_len))
     
     parent_claim = None
     
@@ -406,6 +407,14 @@ for claim_text_with_number in claims_text:
         number_of_indep_claims += 1
         
         assert_warn(cleaned_claim_text.startswith('a ') or cleaned_claim_text.startswith('an '), "Independent claim {} does not start with 'A' or 'An'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
+        
+        # Keep track of which claim is shortest. This only checks independent claims since the shortest claim must be an independent claim.
+        if claim_len < shortest_indep_claim_len:
+            if args.debug:
+                print("Independent claim {} ({}) is shorter than claim {} ({}).".format(claim_number, claim_len, shortest_indep_claim_number, shortest_indep_claim_len))
+            
+            shortest_indep_claim_len = claim_len
+            shortest_indep_claim_number = claim_number
     else:
         # dependent claim
         dependent = True
@@ -439,6 +448,17 @@ for claim_text_with_number in claims_text:
     
     if args.verbose:
         print("Claim {} as being checked for warnings:".format(claim_number), cleaned_claim_text)
+    
+    # Check for adverbs.
+    # <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>
+    if args.adverbs:
+        possible_adverbs_iter = re.finditer(r"\b\w*ly\b", cleaned_claim_text)
+        
+        for possible_adverb_iter in possible_adverbs_iter:
+            possible_adverb = possible_adverb_iter.group()
+            
+            # TODO: This won't be filtered out by --filter.
+            eprint('Claim {} recites "{}". Possible adverb. Adverbs are frequently ambiguous.'.format(claim_number, possible_adverb))
     
     for warning in warnings:
         if not warning['regex'].startswith('#'):
@@ -575,7 +595,7 @@ if args.spec and args.ant_basis:
             number_of_warnings += 1
 
 # Check for 37 CFR 1.75(g) compliance.
-assert_warn(shortest_claim_number == 1, "Shortest length claim (by characters) is claim {}. However, claim 1 is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(claim_number))
+assert_warn(shortest_indep_claim_number == 1, "Shortest length claim (by characters) is claim {}. However, claim 1 is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(claim_number))
 
 dav_search_string = ''
 for dav_keyword in dav_keywords:

@@ -1,5 +1,31 @@
 # plint to-do list
 
+- Add to documentation: examiner mode, adverb mode (not default due to false positives).
+- Add an intro to regex in the docs:
+    - `\b`
+    - `\B`
+    - `\w`
+    - alternatives like (case A|case B)
+    - not matching these cases like `\bup to (?!including|excluding|and including|and excluding)\b`
+    - matching anything between: `.*`, `(.+?)`, `\w*` others that are more narrow?
+- Ambiguity detection
+    - gleich_ambiguity_2010
+        - `\bup to (?!including|excluding|and including|and excluding)\b`
+            - Check existing rules to see if they can be made more narrow with the `?!` notation to exclude certain valid forms. I recall wanting to do something like this before but not figuring out the right regex.
+                - Things with the message "Possible indefinite parameter if type not specified" could meet this. For example, "volumetric flow rate" should not match but "flow rate" by itself should match.
+                - Also, check things with messages like "Possibly indefinite if what the aperture/apertures is/are in or between is not stated." "aperture in" should not match.
+                - "Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).": For example, "greater than" should not match but "greater" by itself should.
+        - `\b/\b`: Unclear slashes. For example, "The System shall use HTML/DOC documents" could be interpreted as allowing for HTML *or* DOC documents, or some sort of "HTML/DOC" form that's both in some way. Also: <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427> ("A/B construct")
+    - berry_from_2003
+    - <http://www.gray-area.org/Research/Ambig/>
+    - <https://libguides.newcastle.edu.au/foundation-studies/feedback/ambiguous>
+    - <https://cs.nyu.edu/~davise/ai/ambiguity.html>
+        - <https://cs.nyu.edu/~davise/papers/WinogradSchemas/WS.html>
+    - <https://www.gvsu.edu/cms4/asset/CC3BFEEB-C364-E1A1-A5390F221AC0FD2D/ambiguity.pdf>
+- <http://www.cs.otago.ac.nz/staffpriv/ok/nominals.htm>
+- <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>
+- <https://medium.com/analysts-corner/holy-ambiguity-crapman-ec15c77dc880>
+    - Discusses why minimum and maximum can be indefinite.
 - Rewrite to handle filtering and DAV search string without duplicate code.
     - At the same time, rewrite so that you don't need to use assert_warn to print a warning.
     - warning(message, dav_keyword) will add dav_keyword to list and display the message.
@@ -31,7 +57,6 @@
     - "Using AI to Analyze Patent Claim Indefiniteness"
     - "Patent Claim Structure Recognition"
     - "The "UNLIMITLESS": On How to Remedy the Inadequacies of a Language-Based System for Patent Claims"
-- `--reject` option to write rejections to text file. Then you can delete the ones you don't want.
 - "Use" claim detection: method or process without word step?
 - Check classification for patent documents on patent analysis for more ideas.
 - Check for synonyms of the relative terms you already have for more.
@@ -60,7 +85,7 @@
         - chimera
         - human
 - <https://www.jpo.go.jp/e/system/laws/rule/guideline/patent/tukujitu_kijun/document/index/02_0203_e.pdf>
-- vague terms, check how defined in specs or else they might have 112 issues: amount, quantity, substance, material, device, module, element, member (could be 112(f))
+- vague terms, check how defined in specs or else they might have 112 issues: amount, quantity, substance, material, device, module, element, member (could be 112(f)), quality
 - Think about how to reduce the amount of manual annotation needed.
     - Get ends of claim elements from numbered elements in specs? Scan specs for text between a/an and a number?
 - Check for preamble-limiting terms. Annotate the end of the preamble to find them? First punctuation mark ends the preamble?
@@ -73,3 +98,4 @@
     - MPEP 2111.04.II Contingent Limitations
 - <https://patentdefenses.klarquist.com/particular-and-distinct-claims-aka-indefiniteness-sec-1122b-other-than-sec-1126f/>
 - <https://www.reddit.com/r/patentexaminer/comments/vrjxz8/how_to_quickly_spot_112b_indefiniteness_issues/>
+- basis, based on

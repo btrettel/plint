@@ -1,6 +1,6 @@
 # plint: patent claim linter
 
-Current version: 0.3.0
+Current version: 0.4.0
 
 plint analyzes a text file containing patent claims for 112(b), 112(d), 112(f), and other issues.
 
