@@ -116,3 +116,4 @@
     - <https://en.wiktionary.org/wiki/Appendix:English_contranyms>
     - <https://en.wikipedia.org/wiki/Auto-antonym>
 - Analyze title and abstract for compliance with rules.
+- Add commonly misunderstood words to plint. Lots of phrases you can find under "ambig" in the bmtreport diction file.
