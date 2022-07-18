@@ -1,6 +1,6 @@
 # plint: patent claim linter
 
-Current version: 0.4.0
+Current version: 0.5.0
 
 plint analyzes a text file containing patent claims for 112(b), 112(d), 112(f), and other issues.
 
@@ -135,7 +135,7 @@ To check the demo claims on Linux:
 - When an article should not create an element, add `#` to the beginning of that word. For terms that introduce multiple elements that contain multiple words (like "at least one"), it is necessary to place the `#` not at the first term (for example: `at #least one`) for the moment.
 - When a claim element was introduced properly as a singular element but later referred to as plural, the character `!` can be used to erase the plural. For example, `[expected traffic delays!;` will be interpreted as `[expected traffic delay];`.
 - Sometimes getting plint to properly parse claim elements requires adding text. Text put between backticks (`` ` ``) will be added to the claim for the antecedent basis check but not used otherwise. Here are some examples:
-    - The limitation "upper and lower nozzles" should introduce a "upper nozzle" and a "lower nozzle". So, "upper and lower nozzles" could be annotated as `` {upper `nozzle| `and {lower nozzles!| ``.
+    - The limitation "upper and lower nozzles" should introduce an "upper nozzle" and a "lower nozzle". So, "upper and lower nozzles" could be annotated as `` {upper `nozzle| `and {lower nozzles!| ``.
     - Sometimes claim elements are introduced properly as a plural element but later referred in plural. For example, a claim may introduce "adjacent TMEs" but later refer to "each adjacent TME". The latter can be annotated as `` each {adjacent TME`s`| `` to add the plural for the antecedent basis checker.
 
 See [demo-claims.txt](demo-claims.txt) below for the basic notation (`|`) in use.

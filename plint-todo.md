@@ -1,22 +1,26 @@
 # plint to-do list
 
+- <https://www.blinn.edu/writing-centers/pdfs/Vague-Words-Tables.pdf>
+    - Start at "Good/Great".
+- <https://www.logic.at/lomorevi/LoMoReVI/The%20Vague%20Expression%20of%20Quantity.pdf>
+- <https://www.google.com/search?q=inherently+vague+adjectives>
 - Add to documentation: examiner mode, adverb mode (not default due to false positives).
 - Add an intro to regex in the docs:
     - `\b`
     - `\B`
     - `\w`
+    - `.`
     - alternatives like (case A|case B)
     - not matching these cases like `\bup to (?!including|excluding|and including|and excluding)\b`
     - matching anything between: `.*`, `(.+?)`, `\w*` others that are more narrow?
+- Check existing rules to see if they can be made more narrow with the `?!` notation to exclude certain valid forms. I recall wanting to do something like this before but not figuring out the right regex.
+    - Things with the message "Possible indefinite parameter if type not specified" could meet this. For example, "volumetric flow rate" should not match but "flow rate" by itself should match.
+    - Also, check things with messages like "Possibly indefinite if what the aperture/apertures is/are in or between is not stated." "aperture in" should not match.
+    - "Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).": For example, "greater than" should not match but "greater" by itself should.
 - Ambiguity detection
-    - gleich_ambiguity_2010
-        - `\bup to (?!including|excluding|and including|and excluding)\b`
-            - Check existing rules to see if they can be made more narrow with the `?!` notation to exclude certain valid forms. I recall wanting to do something like this before but not figuring out the right regex.
-                - Things with the message "Possible indefinite parameter if type not specified" could meet this. For example, "volumetric flow rate" should not match but "flow rate" by itself should match.
-                - Also, check things with messages like "Possibly indefinite if what the aperture/apertures is/are in or between is not stated." "aperture in" should not match.
-                - "Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).": For example, "greater than" should not match but "greater" by itself should.
-        - `\b/\b`: Unclear slashes. For example, "The System shall use HTML/DOC documents" could be interpreted as allowing for HTML *or* DOC documents, or some sort of "HTML/DOC" form that's both in some way. Also: <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427> ("A/B construct")
+    - MOSTLY DONE: gleich_ambiguity_2010
     - berry_from_2003
+        - p. 20
     - <http://www.gray-area.org/Research/Ambig/>
     - <https://libguides.newcastle.edu.au/foundation-studies/feedback/ambiguous>
     - <https://cs.nyu.edu/~davise/ai/ambiguity.html>
@@ -26,6 +30,7 @@
 - <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>
 - <https://medium.com/analysts-corner/holy-ambiguity-crapman-ec15c77dc880>
     - Discusses why minimum and maximum can be indefinite.
+    - On the indefiniteness of minimum and maximum, also see: berry_from_2003
 - Rewrite to handle filtering and DAV search string without duplicate code.
     - At the same time, rewrite so that you don't need to use assert_warn to print a warning.
     - warning(message, dav_keyword) will add dav_keyword to list and display the message.
@@ -40,7 +45,6 @@
     - <https://www.bots4ip.com/product/inspat-proofreading-patent-claims/>
     - <https://patentpal.com/>
     - <http://www.lanaconsult.com/products.htm#AutoPat>
-    - <https://groups.google.com/g/misc.legal.computing/c/1StCrr-FX80/m/hqcKDSkpKjkJ>
     - <https://groups.google.com/g/misc.legal.moderated/c/04WqcZJSwN8/m/fsQiC_AgYiMJ>
     - <https://www.patentclaimmaster.com/>
         - <https://www.patentclaimmaster.com/blog/tag/patent-proofreading-tools/>
@@ -54,7 +58,6 @@
     - PatentBots
         - <https://www.patentbots.com/patentoptimizer-alternative>>
 - Check papers for more ideas.
-    - "Using AI to Analyze Patent Claim Indefiniteness"
     - "Patent Claim Structure Recognition"
     - "The "UNLIMITLESS": On How to Remedy the Inadequacies of a Language-Based System for Patent Claims"
 - "Use" claim detection: method or process without word step?
@@ -85,7 +88,7 @@
         - chimera
         - human
 - <https://www.jpo.go.jp/e/system/laws/rule/guideline/patent/tukujitu_kijun/document/index/02_0203_e.pdf>
-- vague terms, check how defined in specs or else they might have 112 issues: amount, quantity, substance, material, device, module, element, member (could be 112(f)), quality
+- vague terms, check how defined in specs or else they might have 112 issues: amount, quantity, substance, material, device, module, element, member (could be 112(f)), quality, data
 - Think about how to reduce the amount of manual annotation needed.
     - Get ends of claim elements from numbered elements in specs? Scan specs for text between a/an and a number?
 - Check for preamble-limiting terms. Annotate the end of the preamble to find them? First punctuation mark ends the preamble?
@@ -99,3 +102,17 @@
 - <https://patentdefenses.klarquist.com/particular-and-distinct-claims-aka-indefiniteness-sec-1122b-other-than-sec-1126f/>
 - <https://www.reddit.com/r/patentexaminer/comments/vrjxz8/how_to_quickly_spot_112b_indefiniteness_issues/>
 - basis, based on
+- <https://www.uspto.gov/patents/initiatives/glossary-initiative>
+- concreteness data
+    - brysbaert_concreteness_2014
+        - 13428_2013_403_MOESM1_ESM.xlsx
+    - <https://www.reilly-coglab.com/data>
+    - <https://websites.psychology.uwa.edu.au/school/mrcdatabase/uwa_mrc.htm>
+- contronyms
+    - <https://www.merriam-webster.com/words-at-play/words-own-opposites>
+        - clip
+    - <https://www.dailywritingtips.com/75-contronyms-words-with-contradictory-meanings/>
+    - <https://www.dictionary.com/e/s/contronyms/>
+    - <https://en.wiktionary.org/wiki/Appendix:English_contranyms>
+    - <https://en.wikipedia.org/wiki/Auto-antonym>
+- Analyze title and abstract for compliance with rules.

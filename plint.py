@@ -35,7 +35,7 @@ parser.add_argument("-f", "--filter", help="filter out warnings with this regex"
 parser.add_argument("-l", "--adverbs", action="store_true", help="give warnings for likely adverbs (words ending in -ly)", default=False)
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
-parser.add_argument("-v", "--version", action="version", version="plint version 0.4.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.5.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
@@ -304,7 +304,7 @@ with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
     csv_reader = csv.reader(warnings_csv_file, delimiter=",")
     
     for row in csv_reader:
-        assert len(row) == 2, "Warnings file has line without two columns: "+row[0]
+        assert len(row) == 2, "The warnings file should have two columns. This line does not: "+row[0]
 
 with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
     warnings_csv = csv.DictReader(warnings_csv_file, delimiter=",")
@@ -461,6 +461,9 @@ for claim_text_with_number in claims_text:
             eprint('Claim {} recites "{}". Possible adverb. Adverbs are frequently ambiguous.'.format(claim_number, possible_adverb))
     
     for warning in warnings:
+        if args.debug:
+            print("Trying regex:", warning['regex'])
+        
         if not warning['regex'].startswith('#'):
             # For independent claims, skip warnings that only apply to dependent claims.
             if not(dependent):
