@@ -52,6 +52,11 @@
         - <https://www.patentclaimmaster.com/blog/tutorial-checking-claims-for-antecedent-basis-issues/>
         - <https://www.patentclaimmaster.com/blog/patent-drafting-without-section-112-errors/>
         - <https://www.patentclaimmaster.com/helpdesk/knowledgebase.php?category=7>
+        - <https://www.patentclaimmaster.com/help/Syntaxforcustomrules.html
+        - <https://www.patentclaimmaster.com/help/Stylisticerrors.html>
+        - <https://www.patentclaimmaster.com/help/Rulesettings.html>
+        - <https://www.patentclaimmaster.com/blog/patent-drafting-without-section-112-errors/>
+            - patent profanity
     - PatentOptimizer
         - <https://www.lexisnexisip.com/knowledge-center/avoiding-section-112b-rejections-with-patent-drafting-tools/>
         - <https://www.lexisnexisip.com/knowledge-center/patent-tools-for-avoiding-office-actions/>
@@ -117,3 +122,8 @@
     - <https://en.wikipedia.org/wiki/Auto-antonym>
 - Analyze title and abstract for compliance with rules.
 - Add commonly misunderstood words to plint. Lots of phrases you can find under "ambig" in the bmtreport diction file.
+- Enablement
+    - Detect prophetic examples.
+        - <https://patentlyo.com/patent/2021/06/disclosed-embodiments-prophetic.html>
+        - MPEP 2164.02
+        - <https://patentlyo.com/patent/2021/07/recent-prophetic-example.html>

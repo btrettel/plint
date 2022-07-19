@@ -170,7 +170,7 @@ regex,message
 \b(instantaneously|instantly|instant|immediate|immediately)\b,Probably never literally true. Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \binstead of\b,"Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # 16910171, <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>"
 \bin the region of\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\bit\b,"Possible ambiguous reference. # 16486624, 16434517"
+\bit\b,"Possible ambiguous reference. # 16486624, 16434517, 16541109"
 \bit's\b,Possible ambiguous reference.
 \bits\b,Possible ambiguous reference. # 17106103
 \blacking\b,Possible 112(d) rejection. Could be removing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
@@ -241,6 +241,7 @@ regex,message
 \b(occasional|occasionally)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \boften\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(only|also|just)\b,Verify that the placement of the word is correct. This word should be right before the word or phrase it limits. # <https://se.uwaterloo.ca/~dberry/handbook/ambiguityHandbook.pdf>
+\b(only|also|just)\.,Possibly indefinite as with this word at the end of a sentence what is being modified is often unclear. # https://lawprofessors.typepad.com/appellate_advocacy/2019/09/three-ways-better-words-can-boost-your-legal-writing-.html
 \b(opening|openings)\b,Possibly indefinite if what the opening/openings is/are in or between is not stated.
 \boptionally\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 \b(or|and|and/or) the like\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.09.
@@ -289,10 +290,7 @@ regex,message
 \breasonably\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(recognizably|recognizable)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(recurrent|recurring)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\breduce\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
-\breduced\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
-\breduces\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
-\breducing\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
+\b(reduce|reduced|reduces|reducing)\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \bregularly\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \brelatively\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bremoved\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
@@ -356,6 +354,7 @@ regex,message
 \bsuitably\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bsuperficial\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bsuperior\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\b(suppress|suppressed|suppresses|suppressing)\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \b(swap|swaps|swapping)\b,Possible 112(d) rejection. Could be removing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \bsystem\b,Possible functional language with 112(f) invocation. See MPEP 2181.
 \btable\b,"Possible reference to table. See MPEP 2173.05(s). # EPO GL F-IV, 4.17"
@@ -412,5 +411,4 @@ regex,message
 \bwithout\b,Possible 112(d) rejection. Could be removing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \b\w*\(s\),"Prefer 'at least one' for clarity. If the application does not have support for all claimed embodiments, then possibly reject under 112(a), scope of enablement. See MPEP 2164.08. # <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/>"
 \bzero or more\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # <http://www.intelproplaw.com/ip_forum/index.php/topic,32004.0.html>"
-\b(only|also|just)\.,Possibly indefinite as with this word at the end of a sentence what is being modified is often unclear. # https://lawprofessors.typepad.com/appellate_advocacy/2019/09/three-ways-better-words-can-boost-your-legal-writing-.html
 (\([^(]+\)),Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
