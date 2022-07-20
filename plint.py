@@ -29,13 +29,14 @@ import copy
 parser = argparse.ArgumentParser(description="patent claim linter: analyzes patent claims for 112(b), 112(d), 112(f), and other issues")
 parser.add_argument("file", help="claim file to read")
 parser.add_argument("-a", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
+parser.add_argument("-c", "--to-claim", help="stop analysis at this claim number", type=int, default=None)
 parser.add_argument("-d", "--debug", action="store_true", help="print debugging information; automatically enables verbose mode", default=False)
 parser.add_argument("-e", "--examiner", action="store_true", help="examiner mode: display messages relevant to USPTO patent examiners", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
 parser.add_argument("-l", "--adverbs", action="store_true", help="give warnings for likely adverbs (words ending in -ly)", default=False)
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
-parser.add_argument("-v", "--version", action="version", version="plint version 0.5.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.6.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
@@ -376,8 +377,6 @@ if args.debug:
     print("Processing the claims list...")
 
 for claim_text_with_number in claims_text:
-    number_of_claims += 1
-    
     claim_number_str = claim_text_with_number.split('.', 1)[0]
     claim_text = claim_text_with_number.split('.', 1)[1].strip()
     claim_words = claim_text.split(' ')
@@ -387,6 +386,13 @@ for claim_text_with_number in claims_text:
     
     claim_number = int(claim_number_str)
     
+    if not(args.to_claim is None):
+        if claim_number > args.to_claim:
+            eprint("Not all claims were analyzed. Stopping at claim {}.".format(args.to_claim))
+            print("Not all claims were analyzed. Stopping at claim {}.".format(args.to_claim))
+            break
+    
+    number_of_claims += 1
     claim_numbers.add(claim_number)
     
     assert not(claim_number == prev_claim_number), 'There are multiple of claim {}.'.format(claim_number)
@@ -457,7 +463,7 @@ for claim_text_with_number in claims_text:
         for possible_adverb_iter in possible_adverbs_iter:
             possible_adverb = possible_adverb_iter.group()
             
-            # TODO: This won't be filtered out by --filter.
+            # TODO: This won't be filtered out by --filter or be added to the search string.
             eprint('Claim {} recites "{}". Possible adverb. Adverbs are frequently ambiguous.'.format(claim_number, possible_adverb))
     
     for warning in warnings:
@@ -589,11 +595,11 @@ if args.spec and args.ant_basis:
     
     for element in spec_appearances_of_element:
         if spec_appearances_of_element[element] == 0:
-            # TODO: This won't be filtered out by --filter.
+            # TODO: This won't be filtered out by --filter or be added to the search string.
             eprint("Claim element that does not appear in the spec: {}. Possible drawing objection if element not in drawing. See MPEP 608.02(d). Possible weak disclosure for element, leading to 112(a) issues.".format(element))
             number_of_warnings += 1
         elif spec_appearances_of_element[element] <= 2:
-            # TODO: This won't be filtered out by --filter.
+            # TODO: This won't be filtered out by --filter or be added to the search string.
             eprint("Claim element that appears in the spec 2 or fewer times: {}. Possible weak disclosure for element, leading to 112(a) issues.".format(element))
             number_of_warnings += 1
 

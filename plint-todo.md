@@ -127,3 +127,34 @@
         - <https://patentlyo.com/patent/2021/06/disclosed-embodiments-prophetic.html>
         - MPEP 2164.02
         - <https://patentlyo.com/patent/2021/07/recent-prophetic-example.html>
+- terms of art, particularly units
+    - \b(standard|normal)\b: check if there is a standard
+    - "volume"
+        - for flow rate (e.g., US app. no. 17099005)
+        - for mass: <https://news.ycombinator.com/item?id=23439247>
+        - some also use amount for volume, so perhaps that should be covered here too
+    - "head" (length) instead of pressure
+    - Btu or kcal when actually Btu/hour or kcal/hour
+    - scfm (with no actual standard) vs. mass flow rate
+        - <http://btrettel.nerfers.com/archives/72>
+        - <https://news.ycombinator.com/item?id=23439304>
+        - \b(scfm|standard cubic feet per minute|standard cfm|normal cubic metre|normal cubic meter)\b
+    - confusion of quantities and rates:
+        - <https://blog.oppedahl.com/?p=7224>
+        - <https://blog.oppedahl.com/?p=7368>
+    - `\b(standard|normal) (temperature and pressure|pressure and temperature|temperature|pressure|temp\.|pres\.)\b`
+        - `\b(STP|NTP)\b`
+        - <https://en.wikipedia.org/wiki/Standard_temperature_and_pressure>
+    - \b(?!absolute |relative |specific )humidity\b
+        - <https://en.wikipedia.org/wiki/Humidity>
+- `\b(operably|operatively)\b`
+    - For example: operably coupled
+        - \b(operably|operatively) (coupled|connected|coupling|connecting|joined|joining)\b
+    - Possible functional language.
+    - <https://www.govinfo.gov/content/pkg/USCOURTS-ilnd-1_10-cv-06763/pdf/USCOURTS-ilnd-1_10-cv-06763-0.pdf>
+        - INTELLECT WIRELESS INC.
+        - operably connected:
+            - "two elements work in concert to create an inflatable chamber, e.g., one which is not air tight but can receive and hold air"
+            - "capable of performing work on effecting the movement of"
+            - "connected in a manner that allows a signal to flow from one point to another point"
+- `\bfor\b` - possible ambiguous reference?

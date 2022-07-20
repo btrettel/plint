@@ -34,7 +34,7 @@ regex,message
 \bbeneficial\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \bbeside\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bbetter\b,Possible subjective term. See MPEP 2173.05(b)(IV).
-\bbetween\b,Possibly indefinite if unclear whether the end points are included in the range. # https://medium.com/analysts-corner/holy-ambiguity-crapman-ec15c77dc880
+\b(between|from (.+?) to (.+?))\b,Possibly indefinite if giving a numerical range and it is unclear whether the end points are included in the range. # https://medium.com/analysts-corner/holy-ambiguity-crapman-ec15c77dc880
 \b/\b,"For A/B, it is possibly unclear whether the limitation means A and B are synonyms, both A and B are required (prefer 'and' in this case), either A or B are required (prefer 'or' in this case), A is the opposite of B (for example, 'approving/disapproving changes'), or 'A/B' is the name of the item. # gleich_ambiguity_2010, <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>"
 \bbig\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bBluetooth\b,"Possible trademark or trade name in claim. See MPEP 2173.05(u) and FP 07-35-01. Likely acceptable as it refers to a standard. # MOPP 14.137"
@@ -125,7 +125,6 @@ regex,message
 \bfragile\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \bfrequent\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bfrequently\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
-\bfrom (.+?) to (.+?)\b,Possibly indefinite if unclear whether the end points are included in the range. # <https://medium.com/analysts-corner/holy-ambiguity-crapman-ec15c77dc880>
 \bfront\b,Possible overly narrow term. Possible subjective term. See MPEP 2173.05(b)(IV). # MOPP 14.131
 \bfull speed\b,Possible subjective term. See MPEP 2173.05(b)(IV). # 15695412
 \bfundamentally\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -243,6 +242,7 @@ regex,message
 \b(only|also|just)\b,Verify that the placement of the word is correct. This word should be right before the word or phrase it limits. # <https://se.uwaterloo.ca/~dberry/handbook/ambiguityHandbook.pdf>
 \b(only|also|just)\.,Possibly indefinite as with this word at the end of a sentence what is being modified is often unclear. # https://lawprofessors.typepad.com/appellate_advocacy/2019/09/three-ways-better-words-can-boost-your-legal-writing-.html
 \b(opening|openings)\b,Possibly indefinite if what the opening/openings is/are in or between is not stated.
+\b(operably|operatively)\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \boptionally\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 \b(or|and|and/or) the like\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.09.
 \bor .* and\b,Possibly unclear associativity. # <https://se.uwaterloo.ca/~dberry/handbook/ambiguityHandbook.pdf>
@@ -268,7 +268,7 @@ regex,message
 \bpreferably\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # 16608171, EPO GL F-IV, 4.9"
 \bpreferred\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # 16434517, EPO GL F-IV, 4.9"
 \b(preset|pre-set)\b,"Possibly indefinite if how the element is preset is not discussed in the specs. See PTAB decision in app. no. 15/359,628 on 'predetermined'." # Also: MOPP 14.129
-\bpressure\b,"Possible indefinite parameter if type not specified (static, dynamic, or total). # EPO GL F-IV, 4.11 on parameters in general"
+\bpressure\b,"Possible indefinite parameter if type not specified (static, dynamic, or total, each of which could be absolute, gauge, or differential). # EPO GL F-IV, 4.11 on parameters in general"
 \bprevail\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bprevails\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bprincipally\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
