@@ -4,7 +4,6 @@
     - Start at "Good/Great".
 - <https://www.logic.at/lomorevi/LoMoReVI/The%20Vague%20Expression%20of%20Quantity.pdf>
 - <https://www.google.com/search?q=inherently+vague+adjectives>
-- Add to documentation: examiner mode, adverb mode (not default due to false positives).
 - Add an intro to regex in the docs:
     - `\b`
     - `\B`
@@ -27,16 +26,15 @@
         - <https://cs.nyu.edu/~davise/papers/WinogradSchemas/WS.html>
     - <https://www.gvsu.edu/cms4/asset/CC3BFEEB-C364-E1A1-A5390F221AC0FD2D/ambiguity.pdf>
 - <http://www.cs.otago.ac.nz/staffpriv/ok/nominals.htm>
+    - <https://en.wikipedia.org/wiki/Nominalization>
 - <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>
 - <https://medium.com/analysts-corner/holy-ambiguity-crapman-ec15c77dc880>
     - Discusses why minimum and maximum can be indefinite.
     - On the indefiniteness of minimum and maximum, also see: berry_from_2003
-- Rewrite to handle filtering and DAV search string without duplicate code.
-    - At the same time, rewrite so that you don't need to use assert_warn to print a warning.
-    - warning(message, dav_keyword) will add dav_keyword to list and display the message.
 - For `--spec`, also check that each element has a reference number. If an element does not, that could indicate a drawing objection is needed for that element.
 - Reorganize code to have unit tests for everything including the antecedent basis checking.
 - Look at overlap of claim elements between independent claims to see if a restriction can be made.
+    - Look at overlap of all the elements in claims dependent on each independent claim.
 - Check for invalid multiple dependencies.
 - Check for features of other softwares.
     - <https://specif.io/bluepencil/>
@@ -93,7 +91,7 @@
         - chimera
         - human
 - <https://www.jpo.go.jp/e/system/laws/rule/guideline/patent/tukujitu_kijun/document/index/02_0203_e.pdf>
-- vague terms, check how defined in specs or else they might have 112 issues: amount, quantity, substance, material, device, module, element, member (could be 112(f)), quality, data
+- vague terms, check how defined in specs or else they might have 112 issues: amount, quantity, substance, material, device, module, element, member (could be 112(f)), quality, data, degree (14355159)
 - Think about how to reduce the amount of manual annotation needed.
     - Get ends of claim elements from numbered elements in specs? Scan specs for text between a/an and a number?
 - Check for preamble-limiting terms. Annotate the end of the preamble to find them? First punctuation mark ends the preamble?
@@ -145,6 +143,7 @@
     - `\b(standard|normal) (temperature and pressure|pressure and temperature|temperature|pressure|temp\.|pres\.)\b`
         - `\b(STP|NTP)\b`
         - <https://en.wikipedia.org/wiki/Standard_temperature_and_pressure>
+        - not ambiguous: negative pressure (if known as static, dynamic, total, etc.)
     - \b(?!absolute |relative |specific )humidity\b
         - <https://en.wikipedia.org/wiki/Humidity>
 - `\b(operably|operatively)\b`
@@ -158,3 +157,9 @@
             - "capable of performing work on effecting the movement of"
             - "connected in a manner that allows a signal to flow from one point to another point"
 - `\bfor\b` - possible ambiguous reference?
+- similar to shaped: `(form|formed|pattern|patterned|contour|contoured)`
+- Think about how to automate these 112(b) rejections: 17214846, 16544191, 16521534, 16488177, 15337325, 16461817
+    - 112(d): 16029634, 16948610
+- Check for similarly named claim elements to help spot typos. Example: 16461817 2022-04-19
+- `--endings` flag: Possibly functional: `\b\w*able\b` words
+- `--endings` flag: Filter out these non-adverbs: <https://www.wordexample.com/list/ending-ly-not-adverbs>

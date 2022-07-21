@@ -1,10 +1,10 @@
 # plint: patent claim linter
 
-Current version: 0.6.0
+Current version: 0.7.0
 
 plint analyzes a text file containing patent claims for 112(b), 112(d), 112(f), and other issues.
 
-By default, plint will emulate a nitpicky examiner. When making the default warnings files (warnings.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. warnings.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possible face. If this is too nitpicky for your tastes, you're welcome to make your own warnings file or modify the existing file. plint is highly customizable.
+By default, plint will emulate a nitpicky examiner. When making the default warnings files (warnings.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. warnings.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possible face. If this is too nitpicky for your tastes, you're welcome to make your own warnings file or modify the existing file. plint is highly customizable.
 
 I also include some lines meant to point out unnecessarily narrow claim limitations that may be of interest outside of patent prosecution.
 
@@ -52,15 +52,11 @@ Alternatively, you can add the directory plint.py is in to your PATH and then ru
 
     plint.py claims.txt
 
-### Verbose and debug modes
-
-A verbose mode which prints additional information can be enabled with `-V` or `--verbose`. At the moment, this will only display how plint is interpreting the claim when doing the antecedent basis analysis. A debug mode which will print even more information can be enabled with `-d` or `--debug`.
-
 ### How I use plint
 
 When examining patents, I typically save the patent claims to a file named {application number}-claims.txt. For example, for application number 16811358, I will save 16811358-claims.txt. I then annotate the claims for the antecedent basis checker as described below. This will require some iteration to get right, so I will run plint as follows, modify the claim annotation in response to the warnings and parsing errors displayed, and repeat until plint parses the entire claim set:
 
-    plint -a -d .\16811358-claims.txt
+    plint --ant-basis --debug --uspto --endings .\16811358-claims.txt
 
 As discussed above, `-d` is debug mode, which will enabled verbose mode as well. Debug and verbose modes display more information, and this extra information may be useful when iteratively annotating the claims.
 
@@ -191,6 +187,29 @@ If any warnings are printed, plint will display a string which can be pasted int
 The optional `-o` or `--outfile` flag will write the warnings and DAV claims viewer search string to `{file}.out`, where `file` is the input file. For example, the following will write to `claims.txt.out`:
 
     plint.py claims.txt --outfile
+
+## Other features of plint
+
+### Endings mode
+
+The `-e` or `--endings` flag will enable some checks based on word endings:
+
+- Checks for adverbs by identifying words that end in -ly. These are frequently ambiguous.
+- Checks for present participle words by identifying words that end in -ing. These often are functional terms that need to be checked for indefiniteness.
+
+These checks are disabled by default as they return a large number of false positives.
+
+### USPTO examiner mode
+
+Some messages which are only relevant to USPTO patent examiners are displayed if the `-u` or `--uspto` flags.
+
+### Nitpick mode
+
+For my own convenience, `-n` or `--nitpick` is equivalent to `--ant-basis --endings --restriction --uspto`.
+
+### Verbose and debug modes
+
+A verbose mode which prints additional information can be enabled with `-V` or `--verbose`. At the moment, this will only display how plint is interpreting the claim when doing the antecedent basis analysis. A debug mode which will print even more information can be enabled with `-d` or `--debug`.
 
 ## Exit statuses
 

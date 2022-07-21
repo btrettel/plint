@@ -26,7 +26,7 @@ regex,message
 \bas (described|illustrated)\b,"Possible reference to figure or table. See MPEP 2173.05(s). # EPO GL F-IV, 4.17"
 \bas in\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \b(at least one|one or more)\b,"If the application does not have support for all claimed embodiments, then possibly reject under 112(a), scope of enablement. See MPEP 2164.08. # <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/>"
-\b(at least one|one or more) of (.+?) and (.+?)\b,"Should be interpreted as 'at least one of A and at least one of B'. See SuperGuide Corp. v. DirecTV Enterprises, Inc. (358 F.3d 870 (Fed. Cir. 2004)). # <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/i0pnysf/>"
+\b(at least one|one or more) of (.+?) and (.+?)\b,"Should be interpreted as 'at least one of A and at least one of B'. See SuperGuide Corp. v. DirecTV Enterprises, Inc. (358 F.3d 870 (Fed. Cir. 2004)). # <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/i0pnysf/>, 16822349"
 \b(at least one|one or more) of (.+?) or (.+?)\b,"Should be interpreted as 'at least one of A, or at least one of B'. See SuperGuide Corp. v. DirecTV Enterprises, Inc. (358 F.3d 870 (Fed. Cir. 2004)). # <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/i0pnysf/>"
 \bback\b,Possible overly narrow term. Possible subjective term. See MPEP 2173.05(b)(IV). # MOPP 14.131
 \bbasically\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -47,11 +47,8 @@ regex,message
 \bcapable of\b,Possible functional language with 112(f) invocation. See MPEP 2181.
 \bcentral\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(change|changed|changing)\b,Possible 112(d) rejection. Could be removing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
-\bcharacterised by\b,Non-standard open transitional phrase. See MPEP 2111.03.I.
-\bcharacterised in that\b,Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV.
+#\b(characterised|characterized) (by|in that)\b,"Non-standard open transitional phrase. See MPEP 2111.03.I. # 'Characterized by' is said to be open. I'm assuming that 'characterized in that' is considered equivalent."
 \bcharacteristically\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
-\bcharacterized by\b,Non-standard open transitional phrase. See MPEP 2111.03.I.
-\bcharacterized in that\b,Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV.
 \bchiefly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bcirca\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bclearly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -68,8 +65,7 @@ regex,message
 \b(considerably|considerable)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(consisting essentially of|consist essentially of|consists essentially of)\b,"Need to determine what the 'basic and novel characteristic(s)' are in order to interpret. See MPEP 2111.03.III. # <https://wspla.org/wp-content/uploads/2020/07/2020-06-24-Recent-ish-Developments-in-Indefiniteness.pdf>"
 \b(consisting of|consist of|consists of)\b,Closed transitional phrase. See MPEP 2111.03.II.
-\bcontaining\b,"Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV. # <https://patentfile.org/patent-writing-tip-comprises-vs-consisting-of/>, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
-\b(containing|contains)\b,Non-standard open transitional phrase. See MPEP 2111.03.I.
+\b(containing|contains)\b,"Non-standard open transitional phrase. See MPEP 2111.03.I. # <https://patentfile.org/patent-writing-tip-comprises-vs-consisting-of/>, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
 \bconvenient\b,Possible subjective term. See MPEP 2173.05(b)(IV). # <https://www.pbwt.com/ny-patent-decisions-blog/who-knows-what-most-convenient-is-judge-failla-rules-claims-are-indefinite>
 \bconventionally\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bconvention\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
@@ -87,6 +83,7 @@ regex,message
 \bdevice\b,Possible functional language with 112(f) invocation. See MPEP 2181.
 \bdimmer\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \bdistant\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\bdistracting\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \b(downward|downwardly)\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity.
 \bdurable\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \beasily\b,Possible subjective term. See MPEP 2173.05(b)(IV). # 15917259
@@ -117,8 +114,7 @@ regex,message
 \bfat\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bfew\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bfigure\b,"Possible reference to figure. See MPEP 2173.05(s). # EPO GL F-IV, 4.17"
-\bflexible\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15960187, 14355159 (non-flexible)"
-\bflexibly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\b(flexible|flexibility|flexibly)\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15960187, 14355159 (non-flexible), 14355159"
 \bflow rate\b,"Possible indefinite parameter if type not specified (mass or volumetric). # EPO GL F-IV, 4.11 on parameters in general"
 \bfor (example|instance)\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # EPO GL F-IV, 4.9"
 \b(former|latter)\b,Possible ambiguous reference.
@@ -141,6 +137,7 @@ regex,message
 \bheavy\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bhigh\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15826532 claim 2, 15130523, EPO GL F-IV, 4.6.1"
 \bhigher\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity. Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b). # 16521534
+\b(high|height)\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity.
 \bhighly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 14685003
 \b(hole|holes)\b,Possibly indefinite if what the hole/holes is/are in or between is not stated.
 \b(horizontal|horizontally)\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity.
@@ -149,9 +146,10 @@ regex,message
 \bideally\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bi\.e\.\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # Not really exemplary, but still confusing. 16898241"
 \bif necessary\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
+\b(important|critical)\b,Possible subjective term. See MPEP 2173.05(b)(IV). # <https://www.b2ipreport.com/swip-report/claim-term-important-leads-to-indefiniteness/>
 \b(improved|improvement|improvements)\b,Possible Jepson format claim. See MPEP 2173.III. # 16197089
-\bin\b,"Possible overly narrow term. See MPEP 2111.02 if in preamble. # EPO GL F-IV, 4.6.1: 'the use of the word 'in' sometimes makes it unclear whether protection is sought for the improvement only or for all the features defined in the claim', wipo_wipo_2022 3.5"
-\b(including|includes|include)\b,"Non-standard open transitional phrase. See MPEP 2111.03.I. # <http://digital-law-online.info/lpdi1.0/treatise55.html>: open like comprising, PIY 1997 p. 9/18R: open like comprising, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
+#\bin\b,"Possible overly narrow term. See MPEP 2111.02 if in preamble. # EPO GL F-IV, 4.6.1: 'the use of the word 'in' sometimes makes it unclear whether protection is sought for the improvement only or for all the features defined in the claim', wipo_wipo_2022 3.5. Disabled as there were too many false positives."
+#\b(including|includes|include)\b,"Non-standard open transitional phrase. See MPEP 2111.03.I. # <http://digital-law-online.info/lpdi1.0/treatise55.html>: open like comprising, PIY 1997 p. 9/18R: open like comprising, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
 \bInconel\b,"Possible trademark or trade name in claim. See MPEP 2173.05(u) and FP 07-35-01."
 \b(inconsiderable|inconsiderably)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bincrease\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
@@ -162,16 +160,15 @@ regex,message
 \bineffectual\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \binexactly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \binfinitesimal\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\Bing\b,Possible functional language due to present participle wording. # <https://www.ssiplaw.com/112f-has-a-hair-trigger-avoiding-means-plus-function-misfires/>
 \bin lieu of\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \bin place of\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \b(insignificant|insignificantly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(instantaneously|instantly|instant|immediate|immediately)\b,Probably never literally true. Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \binstead of\b,"Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # 16910171, <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>"
 \bin the region of\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\bit\b,"Possible ambiguous reference. # 16486624, 16434517, 16541109"
+\bit\b,"Possible ambiguous reference. # 16486624, 16434517, 16541109, 16434517"
 \bit's\b,Possible ambiguous reference.
-\bits\b,Possible ambiguous reference. # 17106103
+\bits\b,"Possible ambiguous reference. # 17106103, 17106103"
 \blacking\b,Possible 112(d) rejection. Could be removing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \blarge\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \blargely\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -183,7 +180,7 @@ regex,message
 \blike\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \blikely\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 14220471
 \blofty\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # <Guangdong Alison Hi-Tech Co. v. International Trade Commission>
-\blong\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\blong\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 17151470
 \blonger\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \bloosely\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 14484119
 \blow\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 14396197
@@ -256,7 +253,7 @@ regex,message
 \boverwhelming\b,Possible subjective term. See MPEP 2173.05(b)(IV). # 16047948
 \bpainless\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \b(particle|drop|droplet) (diameter|radius|size)\b,"Possible indefinite parameter if type not specified. # EPO GL F-IV, 4.11 on parameters in general, <https://www.carpmaels.com/unclear-essential-parameters/>"
-\bparticularly\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # EPO GL F-IV, 4.9"
+\bparticularly\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # EPO GL F-IV, 4.9, 16434517"
 \bperfect\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \bperhaps\b,"Possible invalid alternative limitation. See MPEP 2173.05(h)."
 \b(persistent|persistently)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -265,7 +262,7 @@ regex,message
 \bpractically\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \b(predetermined|pre-determined)\b,"Possibly indefinite if how the element is predetermined is not discussed in the specifications. See PTAB decision in app. no. 15/359,628. # Also: MOPP 14.129, US6767556A"
 \b(predominantly|predominant)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\bpreferably\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # 16608171, EPO GL F-IV, 4.9"
+\b(preferably|preferentially)\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # 16608171, 16071100, EPO GL F-IV, 4.9"
 \bpreferred\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # 16434517, EPO GL F-IV, 4.9"
 \b(preset|pre-set)\b,"Possibly indefinite if how the element is preset is not discussed in the specs. See PTAB decision in app. no. 15/359,628 on 'predetermined'." # Also: MOPP 14.129
 \bpressure\b,"Possible indefinite parameter if type not specified (static, dynamic, or total, each of which could be absolute, gauge, or differential). # EPO GL F-IV, 4.11 on parameters in general"
@@ -276,12 +273,9 @@ regex,message
 \b(programmed|programmable) (to|for)\b,Possible functional language with 112(f) invocation. See MPEP 2181. Possibly indefinite if how it is programmed is not discussed in the specifications.
 \bproper\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \bproperly\b,Possible subjective term. See MPEP 2173.05(b)(IV).
-\bproximal\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16521534
-\bproximate\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\bproximity\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16486624
-\bquick\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16491320
-\bquickly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16491320
-\brapid\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15022680
+\b(proximal|proximate|proximity)\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16521534, 16486624"
+\b(quick|quickly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16491320
+\b(rapid|rapidly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15022680
 \brate of (reaction|reacting|combustion|combusting)\b,"Possible indefinite parameter if type not specified (rate of production of products, heat-release rate, etc.). # EPO GL F-IV, 4.11 on parameters in general, 16401465"
 \brather than\b,Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \b(reaction|reacting|combustion|combusting) rate\b,"Possible indefinite parameter if type not specified (rate of production of products, heat-release rate, etc.). # EPO GL F-IV, 4.11 on parameters in general, 16401465"
@@ -302,10 +296,10 @@ regex,message
 \b(resilient|resilience)\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # Found definite in Niazi Licensing Corp. v. St. Jude Medical S.C., Inc., Case No. 21-1864 (Fed. Cir. Apr. 11, 2022)."
 \b(resist|resists|resistant)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bright\b,Possible overly narrow term.
-\brigid\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15737128
+\brigid\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15737128, 14355159"
 \brigidly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 15737128
 \brobust\b,Possible subjective term. See MPEP 2173.05(b)(IV).
-\broughly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\b(rough|roughly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \broutine\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \broutinely\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bsaid\b,"Prefer 'the' instead. Some consider 'said' archaic and likely to be misunderstood during litigation. # <https://patentlyo.com/patent/2020/02/patent-whereby-wherein.html#comment-469045>, <https://patentlyo.com/patent/2020/02/patent-whereby-wherein.html>"
@@ -313,7 +307,7 @@ regex,message
 \b(several|some|many|few|multiple|numerous|much)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # <https://medium.com/analysts-corner/holy-ambiguity-crapman-ec15c77dc880>
 \bshallow\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 14745311
 \bshallowly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\bshaped\b,"Possible subjective term. See MPEP 2173.05(b)(IV). # 16612037, 16434517"
+\b(shape|shaped)\b,"Possible subjective term. See MPEP 2173.05(b)(IV). # 16612037, 16434517, 17162049, 16434517"
 \bshort\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16602155, 16527680"
 \bshorter\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 #\bside\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -330,6 +324,9 @@ regex,message
 \bslower\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \bslowly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16491320
 \bsmall\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\b(smelly|stinky)\b,Possible subjective term. See MPEP 2173.05(b)(IV).
+\b(smooth|smoothly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16071100
+\b(soft|softly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bsometimes\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bsomewhat\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bso that\b,Possible functional language with 112(f) invocation. See MPEP 2181.
@@ -378,7 +375,7 @@ regex,message
 \btraditional\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \btraditionally\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \btradition\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
-\btype\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). Possible indefinite use of trademark or trade name. See MPEP 2173.05(u).
+\btype\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). Possible indefinite use of trademark or trade name. See MPEP 2173.05(u). # 14355159
 \btypical\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \btypically\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \b(unequivocally|unequivocal)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -403,8 +400,8 @@ regex,message
 \bvivid\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \bweak\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(when|as|if) desired\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
-\b(wherein|whereby|such that|therein|thereby)\b,"Possible functional clause. Functional language typically is not given weight when it only express intended results and does not limit the structure. See MPEP 2111.04.I. # <https://patentlyo.com/patent/2005/04/patent_claim_co.html>, <https://www.wipo.int/edocs/mdocs/aspac/en/wipo_ip_phl_16/wipo_ip_phl_16_t5.pdf>, <https://patentdefenses.klarquist.com/no-patentable-weight/>"
-\bwhich\b,Possible ambiguous reference. # <https://www.dictionary.com/e/that-vs-which/>
+#\b(wherein|whereby|such that|therein|thereby)\b,"Possible functional clause. Functional language typically is not given weight when it only express intended results and does not limit the structure. See MPEP 2111.04.I. # <https://patentlyo.com/patent/2005/04/patent_claim_co.html>, <https://www.wipo.int/edocs/mdocs/aspac/en/wipo_ip_phl_16/wipo_ip_phl_16_t5.pdf>, <https://patentdefenses.klarquist.com/no-patentable-weight/>. Disabled due to there being too many false positives."
+#\bwhich\b,"Possible ambiguous reference. # <https://www.dictionary.com/e/that-vs-which/> Disabled due to many false positives. "at which" seems okay; see 16801749."
 \bwide\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # EPO GL F-IV, 4.6.1"
 \b(WiFi|Wi-Fi)\b,"Possible trademark or trade name in claim. See MPEP 2173.05(u) and FP 07-35-01. Likely acceptable as it refers to a standard. # MOPP 14.137"
 \bwith\b,Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV.

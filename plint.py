@@ -25,18 +25,21 @@ import sys
 import os
 import re
 import copy
+from itertools import chain, combinations
 
 parser = argparse.ArgumentParser(description="patent claim linter: analyzes patent claims for 112(b), 112(d), 112(f), and other issues")
 parser.add_argument("file", help="claim file to read")
 parser.add_argument("-a", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
 parser.add_argument("-c", "--to-claim", help="stop analysis at this claim number", type=int, default=None)
-parser.add_argument("-d", "--debug", action="store_true", help="print debugging information; automatically enables verbose mode", default=False)
-parser.add_argument("-e", "--examiner", action="store_true", help="examiner mode: display messages relevant to USPTO patent examiners", default=False)
+parser.add_argument("-d", "--debug", action="store_true", help="print debugging information; automatically enables verbose flag", default=False)
+parser.add_argument("-e", "--endings", action="store_true", help="give warnings for likely adverbs (words ending in -ly) and present participle phrases (words ending in -ing)", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
-parser.add_argument("-l", "--adverbs", action="store_true", help="give warnings for likely adverbs (words ending in -ly)", default=False)
+parser.add_argument("-n", "--nitpick", action="store_true", help="equivalent to --ant-basis --restriction --endings --uspto", default=False)
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
+parser.add_argument("-r", "--restriction", action="store_true", help="analyze claims for restriction; automatically enables --ant-basis flag", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
-parser.add_argument("-v", "--version", action="version", version="plint version 0.6.0")
+parser.add_argument("-u", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
+parser.add_argument("-v", "--version", action="version", version="plint version 0.7.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
@@ -50,21 +53,27 @@ def eprint(*args, **kwargs):
         with open(outfile, 'a') as f:
             print(*args, file=f, **kwargs)
 
-def assert_warn(bool_input, message):
+def warn(message, dav_keyword=None):
     global number_of_warnings
-    if not bool_input:
-        if rule_filters is None:
+    global dav_keywords
+    if rule_filters is None:
+        eprint(message)
+        number_of_warnings += 1
+    else:
+        display_warning = True
+        for rule_filter in rule_filters:
+            if re.search(rule_filter, message):
+                display_warning = False
+        if display_warning:
             eprint(message)
             number_of_warnings += 1
-        else:
-            display_warning = True
-            for rule_filter in rule_filters:
-                if re.search(rule_filter, message):
-                    #if not(rule_filter in message):
-                    display_warning = False
-            if display_warning:
-                eprint(message)
-                number_of_warnings += 1
+            
+            if not(dav_keyword is None) and not(dav_keyword in dav_keywords):
+                dav_keywords.add(dav_keyword)
+
+def assert_warn(bool_input, message, dav_keyword=None):
+    if not bool_input:
+        warn(message, dav_keyword=dav_keyword)
 
 def re_matches(regex, text):
     if re.search(regex, text) is None:
@@ -113,7 +122,7 @@ def annotate_claim_text(claim_text):
     # Note that plural claim element starting terms act differently than singular claim element starting terms like "a" or "an". For plurals, the claim element starting term itself becomes part of the claim element.
     # Other plural terms already handled as they start with a or an: a plurality, a number of
     
-    # Note: I just realized that (for example) 'two or more' would conflict with 'two'. I guess putting 'two or more' first will annotate this properly, but I haven't verified this yet.
+    # Note: I recognize that (for example) 'two or more' would conflict with 'two'. I guess putting 'two or more' first will annotate this properly, but I haven't verified this yet.
     plural_starting_terms = {'at least one', 'one or more', 'more than one', 'two or more', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'}
     
     for plural_starting_term in plural_starting_terms:
@@ -138,7 +147,7 @@ def annotate_claim_text(claim_text):
                     elif res_done.group().startswith("[") or res_done.group().startswith("{"):
                         len_to_add = 1
                     else:
-                        eprint("Unexpected plural starting term article:", res_done.group())
+                        warn("Unexpected plural starting term article: {}".format(res_done.group()), dav_keyword=res_done.group())
                         sys.exit(1)
                     done_starts.add(res_done.start()+len_to_add)
             
@@ -248,6 +257,12 @@ def annotate_claim_text(claim_text):
     
     return claim_text
 
+# <https://stackoverflow.com/a/40986475>
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)  # allows duplicate elements
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
 if args.test:
     match_bool, match_str = re_matches('\\btest\\b', 'This is a test.')
     assert match_bool
@@ -279,8 +294,17 @@ use_outfile = False
 
 file_ext = '.csv'
 
+if args.nitpick:
+    args.ant_basis   = True
+    args.endings     = True
+    args.uspto       = True
+    args.restriction = True
+
 if args.debug:
     args.verbose = True
+
+if args.restriction:
+    args.ant_basis = True
 
 if args.warnings is None:
     args.warnings = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'warnings'+file_ext)
@@ -320,7 +344,7 @@ with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
         if args.debug:
             print("Reading from warnings file:", line_num, warning['regex'])
     
-    print(len(warnings), "warnings loaded.")
+    print(len(warnings), "warnings loaded.\n")
 
 # Set the use_outfile after checking that the file exists, otherwise, if the claims file doesn't exist, the error message will be printed to the output file.
 use_outfile = args.outfile
@@ -332,14 +356,17 @@ prev_claim_number      = 0
 number_of_claims       = 0
 number_of_indep_claims = 0
 number_of_dep_claims   = 0
-number_of_warnings     = 0
 claim_numbers = set()
 new_elements_in_claims = {}
 claims_text = []
 first_claim = True
-dav_keywords = set()
 shortest_indep_claim_len = 1e6
 shortest_indep_claim_number = 0
+indep_claims = set()
+
+# global variables
+number_of_warnings = 0
+dav_keywords       = set()
 
 if args.debug:
     print("Constructing list with text of claims including number...")
@@ -412,6 +439,8 @@ for claim_text_with_number in claims_text:
         dependent = False
         number_of_indep_claims += 1
         
+        indep_claims.add(claim_number)
+        
         assert_warn(cleaned_claim_text.startswith('a ') or cleaned_claim_text.startswith('an '), "Independent claim {} does not start with 'A' or 'An'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
         
         # Keep track of which claim is shortest. This only checks independent claims since the shortest claim must be an independent claim.
@@ -429,17 +458,13 @@ for claim_text_with_number in claims_text:
         assert_warn(cleaned_claim_text.startswith('the '), "Dependent claim {} does not start with 'The'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
         
         if 'claims' in cleaned_claim_text.lower():
-            # TODO: This won't be filtered out by --filter.
-            eprint("Claim {} is possibly multiple dependent. Manually check validity. See MPEP 608.01(i).".format(claim_number))
-            number_of_warnings += 1
+            warn("Claim {} is possibly multiple dependent. Manually check validity. See MPEP 608.01(i).".format(claim_number))
         else:
             try:
                 parent_claim_str = remove_punctuation(claim_words[claim_words.index('claim') + 1])
                 parent_claim = int(parent_claim_str)
             except:
-                # TODO: This won't be filtered out by --filter.
-                eprint('Dependent claim {} possibly has invalid parent claim number: {}'.format(claim_number, parent_claim_str))
-                number_of_warnings += 1
+                warn('Dependent claim {} possibly has invalid parent claim number: {}'.format(claim_number, parent_claim_str))
                 parent_claim = None
             
             assert_warn(not(parent_claim == claim_number), "Dependent claim {} depends on itself. Potential 112(d) rejection.".format(claim_number))
@@ -455,16 +480,33 @@ for claim_text_with_number in claims_text:
     if args.verbose:
         print("Claim {} as being checked for warnings:".format(claim_number), cleaned_claim_text)
     
-    # Check for adverbs.
-    # <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>
-    if args.adverbs:
+    # Do some checks that will have many false positives.
+    if args.endings:
+        # Check for adverbs.
+        # <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>
         possible_adverbs_iter = re.finditer(r"\b\w*ly\b", cleaned_claim_text)
         
         for possible_adverb_iter in possible_adverbs_iter:
             possible_adverb = possible_adverb_iter.group()
             
-            # TODO: This won't be filtered out by --filter or be added to the search string.
-            eprint('Claim {} recites "{}". Possible adverb. Adverbs are frequently ambiguous.'.format(claim_number, possible_adverb))
+            # To reduce false positives, allow certain -ing words that aren't adverbs.
+            if possible_adverb in {'assembly', 'supply', 'apply', 'only', 'family', 'likely', 'fly', 'imply', 'comply', 'bodily', 'multiply', 'poly', 'reply', 'rely'}:
+                continue
+            
+            warn('Claim {} recites "{}". Possible adverb. Adverbs are frequently ambiguous.'.format(claim_number, possible_adverb), dav_keyword=possible_adverb)
+        
+        # Check for present participle phrases, which could indicate likely functional language.
+        # <https://www.ssiplaw.com/112f-has-a-hair-trigger-avoiding-means-plus-function-misfires/>
+        possible_functional_terms_iter = re.finditer(r"\b\w*ing\b", cleaned_claim_text)
+        
+        for possible_functional_term_iter in possible_functional_terms_iter:
+            possible_functional_term = possible_functional_term_iter.group()
+            
+            # To reduce false positives, allow certain -ing words that aren't functional.
+            if possible_functional_term in {'comprising', 'including', 'casing'}:
+                continue
+            
+            warn('Claim {} recites "{}". Possible functional language due to present participle wording.'.format(claim_number, possible_functional_term), dav_keyword=possible_functional_term)
     
     for warning in warnings:
         if args.debug:
@@ -476,18 +518,9 @@ for claim_text_with_number in claims_text:
                 if ('112(d)' in warning['message']) or ('DEPONLY' in warning['message']) :
                     continue
             
-            match_bool, match_str = re_matches(warning['regex'].lower(), cleaned_claim_text)
+            match_bool, match_str = re_matches(warning['regex'], cleaned_claim_text)
             message = 'Claim {} recites "{}". {}'.format(claim_number, match_str, warning['message'].split('#')[0].strip())
-            assert_warn(not(match_bool), message)
-            
-            if match_bool:
-                display_warning = True
-                for rule_filter in rule_filters:
-                    if re.search(rule_filter, message):
-                        display_warning = False
-                
-                if display_warning and not(match_str in dav_keywords):
-                    dav_keywords.add(match_str)
+            assert_warn(not(match_bool), message, dav_keyword=match_str)
     
     if args.ant_basis:
         if args.debug:
@@ -522,17 +555,9 @@ for claim_text_with_number in claims_text:
             
             # Check if claim element is defined twice, for example, claim 1 introduces "a fastener" and claim 2 also introduces "a fastener", but it is unclear if claim 2 should have said "the fastener". Examples: App. nos. 16162122 and 16633492.
             message = 'Claim {} introduces "{}" more than once. Unclear if the "{}" is the same in both instances.'.format(claim_number, new_element, new_element)
-            assert_warn(not(new_element in new_elements_set), message)
+            assert_warn(not(new_element in new_elements_set), message, dav_keyword=new_element)
             
-            if new_element in new_elements_set:
-                display_warning = True
-                for rule_filter in rule_filters:
-                    if re.search(rule_filter, message):
-                        display_warning = False
-                
-                if display_warning:
-                    dav_keywords.add(new_element)
-            else:
+            if not(new_element in new_elements_set):
                 new_elements_set.add(new_element)
                 new_elements_dict[new_element] = new_element_iter.start()
         
@@ -550,16 +575,7 @@ for claim_text_with_number in claims_text:
                         break
             
             message = 'Claim {} recites "{}", which possibly lacks antecedent basis. See MPEP 2173.05(e).'.format(claim_number, old_element)
-            assert_warn(ab_bool, message)
-            
-            if not(ab_bool):
-                display_warning = True
-                for rule_filter in rule_filters:
-                    if re.search(rule_filter, message):
-                        display_warning = False
-                
-                if display_warning:
-                    dav_keywords.add(old_element)
+            assert_warn(ab_bool, message, dav_keyword=old_element)
         
         new_elements_in_claims[claim_number] = new_elements_dict
     
@@ -595,15 +611,10 @@ if args.spec and args.ant_basis:
     
     for element in spec_appearances_of_element:
         if spec_appearances_of_element[element] == 0:
-            # TODO: This won't be filtered out by --filter or be added to the search string.
-            eprint("Claim element that does not appear in the spec: {}. Possible drawing objection if element not in drawing. See MPEP 608.02(d). Possible weak disclosure for element, leading to 112(a) issues.".format(element))
-            number_of_warnings += 1
+            warn("Claim element that does not appear in the spec: {}. Possible drawing objection if element not in drawing. See MPEP 608.02(d). Possible weak disclosure for element, leading to 112(a) issues.".format(element), dav_keyword=element)
         elif spec_appearances_of_element[element] <= 2:
-            # TODO: This won't be filtered out by --filter or be added to the search string.
-            eprint("Claim element that appears in the spec 2 or fewer times: {}. Possible weak disclosure for element, leading to 112(a) issues.".format(element))
-            number_of_warnings += 1
+            warn("Claim element that appears in the spec 2 or fewer times: {}. Possible weak disclosure for element, leading to 112(a) issues.".format(element), dav_keyword=element)
 
-# Check for 37 CFR 1.75(g) compliance.
 assert_warn(shortest_indep_claim_number == 1, "Shortest length claim (by characters) is claim {}. However, claim 1 is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(claim_number))
 
 dav_search_string = ''
@@ -614,15 +625,50 @@ for dav_keyword in dav_keywords:
         dav_search_string += dav_keyword+' '
 dav_search_string = dav_search_string.strip()
 
-if dav_search_string != '':
-    eprint('DAV claims viewer search string:', dav_search_string)
+if dav_search_string != "":
+    eprint("\nDAV claims viewer search string:", dav_search_string)
 
-print('# of claims: {}'.format(number_of_claims))
-print('Indep. claims: {}'.format(number_of_indep_claims))
-print('Depen. claims: {}'.format(number_of_dep_claims))
-print('Warnings: {}'.format(number_of_warnings))
+if args.restriction:
+    eprint("\nRestriction analysis:\n")
+    for i, claim_combo in enumerate(powerset(indep_claims), 1):
+        if len(claim_combo) == 2:
+            claim_list = list(claim_combo)
+            #print("Claim combination being analyzed for restrictions: {}".format(claim_list))
+            
+            claim_A = claim_list[0]
+            claim_B = claim_list[1]
+            
+            claim_A_elements = set(new_elements_in_claims[claim_A].keys())
+            claim_B_elements = set(new_elements_in_claims[claim_B].keys())
+            
+            common_elements = set()
+            claim_A_unique_elements = copy.deepcopy(claim_A_elements)
+            claim_B_unique_elements = copy.deepcopy(claim_B_elements)
+            
+            for claim_A_element in claim_A_elements:
+                if claim_A_element in claim_B_unique_elements:
+                    claim_B_unique_elements.remove(claim_A_element)
+                    common_elements.add(claim_A_element)
+            
+            for claim_B_element in claim_B_elements:
+                if claim_B_element in claim_A_unique_elements:
+                    claim_A_unique_elements.remove(claim_B_element)
+            
+            eprint("Elements common to claims {} and {}: {}".format(claim_A, claim_B, common_elements))
+            eprint("Elements unique to claim {}: {}".format(claim_A, claim_A_unique_elements))
+            eprint("Elements unique to claim {}: {}".format(claim_B, claim_B_unique_elements))
+            eprint()
 
-if args.examiner:
+print()
+print("Summary statistics:")
+print("# of claims: {}".format(number_of_claims))
+print("Indep. claims: {}".format(number_of_indep_claims), indep_claims)
+print("Depen. claims: {}".format(number_of_dep_claims))
+print("Warnings: {}".format(number_of_warnings))
+
+assert(number_of_indep_claims == len(indep_claims))
+
+if args.uspto:
     if (number_of_indep_claims >= 4) and (number_of_dep_claims >= 25):
         eprint("Application has 4 or more independent claims and 25 or more total claims, and consequently is eligible for 1 hour of attribute time. See Examiner PAP, Oct. 2021.")
     elif number_of_indep_claims >= 4:
