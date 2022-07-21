@@ -163,3 +163,6 @@
 - Check for similarly named claim elements to help spot typos. Example: 16461817 2022-04-19
 - `--endings` flag: Possibly functional: `\b\w*able\b` words
 - `--endings` flag: Filter out these non-adverbs: <https://www.wordexample.com/list/ending-ly-not-adverbs>
+- Add feature to enable all commented out warnings
+- <https://www.ipwatchdog.com/2017/10/07/patent-drafting-101-say-mean-patent-application/id=88962/>
+    - heating [...] (to|at) a temperature
