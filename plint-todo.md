@@ -33,8 +33,6 @@
     - On the indefiniteness of minimum and maximum, also see: berry_from_2003
 - For `--spec`, also check that each element has a reference number. If an element does not, that could indicate a drawing objection is needed for that element.
 - Reorganize code to have unit tests for everything including the antecedent basis checking.
-- Look at overlap of claim elements between independent claims to see if a restriction can be made.
-    - Look at overlap of all the elements in claims dependent on each independent claim.
 - Check for invalid multiple dependencies.
 - Check for features of other softwares.
     - <https://specif.io/bluepencil/>
@@ -63,7 +61,7 @@
 - Check papers for more ideas.
     - "Patent Claim Structure Recognition"
     - "The "UNLIMITLESS": On How to Remedy the Inadequacies of a Language-Based System for Patent Claims"
-- "Use" claim detection: method or process without word step?
+- "Use" claim detection: Method or process without word step? Method or process claim which is short?
 - Check classification for patent documents on patent analysis for more ideas.
 - Check for synonyms of the relative terms you already have for more.
 - With `--spec`, one could use proximity to 112(f) terms to determine which elements are functionally defined. Then one could count the number of times that element is mentioned in the specs to get an estimate for how detailed the description is. If it's not presented in detail, then that could lead to a 112(a) or 112(b) problem.
@@ -165,4 +163,13 @@
 - `--endings` flag: Filter out these non-adverbs: <https://www.wordexample.com/list/ending-ly-not-adverbs>
 - Add feature to enable all commented out warnings
 - <https://www.ipwatchdog.com/2017/10/07/patent-drafting-101-say-mean-patent-application/id=88962/>
-    - heating [...] (to|at) a temperature
+    - `heating [...] (to|at) a temperature`
+- Lexicographic definition identification for spec.
+    - meaning, means, definition, `\bdefines?\b`, defining, `\bterms?\b`
+    - Check for 
+    - Check the boilerplate you saved for some examples.
+    - US20200208875A1 para. 0055: > Here, the heat-insulating side plates 61 are used with the meaning of side plates to which the heat-insulating pipes 50 are disposed to be adjacent, rather than the meaning of side plates that reduce the amount of heat transferred to the outside, thereby achieving thermal insulation.
+        - This one was annoying!
+    - Print entire line with definition in the output?
+- Separate DAV search string for the spec?
+- As a joke, add CPC classes below the version number in the README.md file.

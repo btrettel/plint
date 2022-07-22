@@ -1,6 +1,6 @@
 # plint: patent claim linter
 
-Current version: 0.7.0
+Current version: 0.8.0
 
 plint analyzes a text file containing patent claims for 112(b), 112(d), 112(f), and other issues.
 
@@ -121,6 +121,14 @@ To check the demo claims on Linux:
 
     ./plint.py -a demo-claims.txt
 
+The antecedent basis checker will make sure that all "old" elements were introduced earlier in the claim, or in one of the claims the current claim depends on.
+
+If a specific claim element is introduced more than once, a warning will be printed. For example, the following claim will produce a warning:
+
+    1. A device comprising:
+    a widget;
+    a widget.
+
 ### Special syntax for antecedent basis analysis
 
 - When the start of a new element is not detected, add `{` before the element.
@@ -168,15 +176,13 @@ The antecedent basis checker is fragile and will likely require some iteration u
 
 At present, plint won't work with nested elements. For example: `a center of the widget|` would ideally be interpreted as `a {center of [the widget]}`, but that's not how plint will work at the moment. That'll need to be annotated like this: `a center of #the widget|`, interpreted as `a {center of the widget}`. Then plint will think it's all just one element.
 
-If a specific claim element is introduced more than once, a warning will be printed. For example, the following claim will produce a warning:
+## Restriction checking
 
-    1. A device comprising:
-    a widget;
-    a widget.
+Analysis possibly useful to identify restrictions will be performed if the `-r` or `--restriction` flag is enabled. This requires that the claims be annotated for antecedent basis and will automatically enable antecedent basis checking. All combinations of independent claims will be analyzed to identify elements common to the combination and elements unique to each claim being compared. Based on the elements common and unique to each claim, plint will identify possible restrictions based on the claims being unrelated/independent, related as combination-subcombination, or related as a distinct product and process pair. plint is not capable of recognizing other forms of restriction at the moment.
 
-## Specifications checking
+## Specification checking
 
-If the optional `-s` or `--spec` flag is provided with a text file containing the specifications of the patent application, plint will perform additional checks against the specifications. At the moment, this feature will do nothing unless the antecedent basis checking feature is also used. If both the specification checking and antecedent basis checking features are used, plint will check to make sure that all elements mentioned in the claims are present in the specifications.
+If the optional `-s` or `--spec` flag is provided with a text file containing the specification of the patent application, plint will perform additional checks against the specifications. At the moment, this feature will do nothing unless the antecedent basis checking feature is also used. If both the specification checking and antecedent basis checking features are used, plint will check to make sure that all elements mentioned in the claims are present in the specification.
 
 ## DAV claims viewer search string
 

@@ -39,7 +39,7 @@ parser.add_argument("-o", "--outfile", action="store_true", help="output warning
 parser.add_argument("-r", "--restriction", action="store_true", help="analyze claims for restriction; automatically enables --ant-basis flag", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-u", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.7.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.8.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
@@ -363,6 +363,7 @@ first_claim = True
 shortest_indep_claim_len = 1e6
 shortest_indep_claim_number = 0
 indep_claims = set()
+indep_claim_types = {}
 
 # global variables
 number_of_warnings = 0
@@ -434,7 +435,7 @@ for claim_text_with_number in claims_text:
     
     parent_claim = None
     
-    if not 'claim' in cleaned_claim_text.lower():
+    if not 'claim' in cleaned_claim_text:
         # independent claim
         dependent = False
         number_of_indep_claims += 1
@@ -450,6 +451,13 @@ for claim_text_with_number in claims_text:
             
             shortest_indep_claim_len = claim_len
             shortest_indep_claim_number = claim_number
+        
+        # TODO: Support other claim types. MPEP 2106.03.
+        # Determine type of claim
+        if re.search("\\bmethod\\b", cleaned_claim_text) or re.search("\\bprocess\\b", cleaned_claim_text):
+            indep_claim_types[claim_number] = 'method'
+        else:
+            indep_claim_types[claim_number] = 'apparatus'
     else:
         # dependent claim
         dependent = True
@@ -457,7 +465,7 @@ for claim_text_with_number in claims_text:
         
         assert_warn(cleaned_claim_text.startswith('the '), "Dependent claim {} does not start with 'The'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
         
-        if 'claims' in cleaned_claim_text.lower():
+        if 'claims' in cleaned_claim_text:
             warn("Claim {} is possibly multiple dependent. Manually check validity. See MPEP 608.01(i).".format(claim_number))
         else:
             try:
@@ -630,6 +638,7 @@ if dav_search_string != "":
 
 if args.restriction:
     eprint("\nRestriction analysis:\n")
+    possible_restriction = False
     for i, claim_combo in enumerate(powerset(indep_claims), 1):
         if len(claim_combo) == 2:
             claim_list = list(claim_combo)
@@ -654,27 +663,45 @@ if args.restriction:
                 if claim_B_element in claim_A_unique_elements:
                     claim_A_unique_elements.remove(claim_B_element)
             
+            eprint("Category of claim {}: {}".format(claim_A, indep_claim_types[claim_A]))
+            eprint("Category of claim {}: {}".format(claim_B, indep_claim_types[claim_B]))
             eprint("Elements common to claims {} and {}: {}".format(claim_A, claim_B, common_elements))
             eprint("Elements unique to claim {}: {}".format(claim_A, claim_A_unique_elements))
             eprint("Elements unique to claim {}: {}".format(claim_B, claim_B_unique_elements))
+            
+            if len(common_elements) == 0:
+                warn("Possible restriction. Claims {} and {} may be unrelated/independent. See MPEP 806.06.".format(claim_A, claim_B))
+                possible_restriction = True
+            
+            if (len(claim_A_unique_elements) > 0) and (len(claim_B_unique_elements) > 0) and (len(common_elements) > 0) and (indep_claim_types[claim_A] == indep_claim_types[claim_B]):
+                warn("Possible restriction. {} claims {} and {} may be related as combination-subcombination. See MPEP 806.05(c).".format(indep_claim_types[claim_A].capitalize(), claim_A, claim_B))
+                possible_restriction = True
+            
+            if (((indep_claim_types[claim_A] == 'method') and (indep_claim_types[claim_B] == 'apparatus')) or ((indep_claim_types[claim_A] == 'apparatus') and (indep_claim_types[claim_B] == 'method'))) and (len(common_elements) > 0):
+                warn("Possible restriction. {} claim {} and {} claim {} may be related as a distinct product and process pair. See MPEP 806.05(e)-806.05(i).".format(indep_claim_types[claim_A].capitalize(), indep_claim_types[claim_B], claim_A, claim_B))
+                possible_restriction = True
+            
             eprint()
+    
+    if not(possible_restriction):
+        eprint("No restriction appears possible.\n")
+
+if args.uspto:
+    if (number_of_indep_claims >= 4) and (number_of_dep_claims >= 25):
+        warn("Application has 4 or more independent claims and 25 or more total claims, and consequently is eligible for 1 hour of attribute time. See Examiner PAP, Oct. 2021.")
+    elif number_of_indep_claims >= 4:
+        warn("Application has 4 or more independent claims and consequently is eligible for 1 hour of attribute time. See Examiner PAP, Oct. 2021.")
+    elif number_of_dep_claims >= 25:
+        warn("Application has 25 or more total claims and consequently is eligible for 1 hour of attribute time. See Examiner PAP, Oct. 2021.")
 
 print()
 print("Summary statistics:")
 print("# of claims: {}".format(number_of_claims))
-print("Indep. claims: {}".format(number_of_indep_claims), indep_claims)
+print("Indep. claims: {}".format(number_of_indep_claims), indep_claim_types)
 print("Depen. claims: {}".format(number_of_dep_claims))
 print("Warnings: {}".format(number_of_warnings))
 
 assert(number_of_indep_claims == len(indep_claims))
-
-if args.uspto:
-    if (number_of_indep_claims >= 4) and (number_of_dep_claims >= 25):
-        eprint("Application has 4 or more independent claims and 25 or more total claims, and consequently is eligible for 1 hour of attribute time. See Examiner PAP, Oct. 2021.")
-    elif number_of_indep_claims >= 4:
-        eprint("Application has 4 or more independent claims and consequently is eligible for 1 hour of attribute time. See Examiner PAP, Oct. 2021.")
-    elif number_of_dep_claims >= 25:
-        eprint("Application has 25 or more total claims and consequently is eligible for 1 hour of attribute time. See Examiner PAP, Oct. 2021.")
 
 assert number_of_claims == (number_of_indep_claims + number_of_dep_claims)
 
