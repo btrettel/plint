@@ -179,7 +179,7 @@
 - Rename warnings.csv to claims.csv, and create title.csv and spec.csv for warnings in the title and spec respectively
 - title.csv:
     - <https://www.uspto.gov/web/offices/pac/mpep/s606.html>
-- `--unity` for unity of invention analysis. Requires marking the novel elements in the claims with `!`.
+- `--unity` for unity of invention analysis. Requires marking the novel elements in the claims with `@`.
 - trademarks
     - `\bband.aid\b` - adhesive bandage
     - `\b(bubblewrap|bubble wrap)\b` - inflated cushioning
