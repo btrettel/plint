@@ -1,5 +1,6 @@
 # plint to-do list
 
+- Change "annotating" to "marking" in the README.
 - <https://www.blinn.edu/writing-centers/pdfs/Vague-Words-Tables.pdf>
     - Start at "Good/Great".
 - <https://www.logic.at/lomorevi/LoMoReVI/The%20Vague%20Expression%20of%20Quantity.pdf>
@@ -163,13 +164,26 @@
 - `--endings` flag: Filter out these non-adverbs: <https://www.wordexample.com/list/ending-ly-not-adverbs>
 - Add feature to enable all commented out warnings
 - <https://www.ipwatchdog.com/2017/10/07/patent-drafting-101-say-mean-patent-application/id=88962/>
-    - `heating [...] (to|at) a temperature`
+    - `(heating|cooking) [...] (to|at) (a|the) temperature`
+    - `(heated|cooked) (to|at) (a|the) temperature`
 - Lexicographic definition identification for spec.
     - meaning, means, definition, `\bdefines?\b`, defining, `\bterms?\b`
-    - Check for 
+    - Match entire line with substring: `^.*substring.*$`
+    - Check for quotes.
     - Check the boilerplate you saved for some examples.
     - US20200208875A1 para. 0055: > Here, the heat-insulating side plates 61 are used with the meaning of side plates to which the heat-insulating pipes 50 are disposed to be adjacent, rather than the meaning of side plates that reduce the amount of heat transferred to the outside, thereby achieving thermal insulation.
         - This one was annoying!
     - Print entire line with definition in the output?
 - Separate DAV search string for the spec?
 - As a joke, add CPC classes below the version number in the README.md file.
+- Rename warnings.csv to claims.csv, and create title.csv and spec.csv for warnings in the title and spec respectively
+- title.csv:
+    - <https://www.uspto.gov/web/offices/pac/mpep/s606.html>
+- `--unity` for unity of invention analysis. Requires marking the novel elements in the claims with `!`.
+- trademarks
+    - `\bband.aid\b` - adhesive bandage
+    - `\b(bubblewrap|bubble wrap)\b` - inflated cushioning
+    - `\bchapstick\b` - lip baum
+    - <https://www.rd.com/list/surprising-trademarked-words/>
+    - <https://digitalsynopsis.com/advertising/generic-trademark-product-brand-names/>
+    - <https://www.mentalfloss.com/article/28238/25-words-you-might-not-know-are-trademarked>

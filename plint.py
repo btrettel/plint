@@ -39,7 +39,7 @@ parser.add_argument("-o", "--outfile", action="store_true", help="output warning
 parser.add_argument("-r", "--restriction", action="store_true", help="analyze claims for restriction; automatically enables --ant-basis flag", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-u", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.8.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.9.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
@@ -637,54 +637,72 @@ if dav_search_string != "":
     eprint("\nDAV claims viewer search string:", dav_search_string)
 
 if args.restriction:
-    eprint("\nRestriction analysis:\n")
+    eprint("Elements-only restriction analysis:\n")
     possible_restriction = False
     for i, claim_combo in enumerate(powerset(indep_claims), 1):
         if len(claim_combo) == 2:
             claim_list = list(claim_combo)
             #print("Claim combination being analyzed for restrictions: {}".format(claim_list))
             
-            claim_A = claim_list[0]
-            claim_B = claim_list[1]
+            claim_X = claim_list[0]
+            claim_Y = claim_list[1]
             
-            claim_A_elements = set(new_elements_in_claims[claim_A].keys())
-            claim_B_elements = set(new_elements_in_claims[claim_B].keys())
+            claim_X_elements = set(new_elements_in_claims[claim_X].keys())
+            claim_Y_elements = set(new_elements_in_claims[claim_Y].keys())
             
             common_elements = set()
-            claim_A_unique_elements = copy.deepcopy(claim_A_elements)
-            claim_B_unique_elements = copy.deepcopy(claim_B_elements)
+            claim_X_unique_elements = copy.deepcopy(claim_X_elements)
+            claim_Y_unique_elements = copy.deepcopy(claim_Y_elements)
             
-            for claim_A_element in claim_A_elements:
-                if claim_A_element in claim_B_unique_elements:
-                    claim_B_unique_elements.remove(claim_A_element)
-                    common_elements.add(claim_A_element)
+            for claim_X_element in claim_X_elements:
+                if claim_X_element in claim_Y_unique_elements:
+                    claim_Y_unique_elements.remove(claim_X_element)
+                    common_elements.add(claim_X_element)
             
-            for claim_B_element in claim_B_elements:
-                if claim_B_element in claim_A_unique_elements:
-                    claim_A_unique_elements.remove(claim_B_element)
+            for claim_Y_element in claim_Y_elements:
+                if claim_Y_element in claim_X_unique_elements:
+                    claim_X_unique_elements.remove(claim_Y_element)
             
-            eprint("Category of claim {}: {}".format(claim_A, indep_claim_types[claim_A]))
-            eprint("Category of claim {}: {}".format(claim_B, indep_claim_types[claim_B]))
-            eprint("Elements common to claims {} and {}: {}".format(claim_A, claim_B, common_elements))
-            eprint("Elements unique to claim {}: {}".format(claim_A, claim_A_unique_elements))
-            eprint("Elements unique to claim {}: {}".format(claim_B, claim_B_unique_elements))
+            eprint("Category of claim {}: {}".format(claim_X, indep_claim_types[claim_X]))
+            eprint("Category of claim {}: {}".format(claim_Y, indep_claim_types[claim_Y]))
+            eprint("Elements common to claims {} and {}: {}".format(claim_X, claim_Y, common_elements))
+            eprint("Elements unique to claim {}: {}".format(claim_X, claim_X_unique_elements))
+            eprint("Elements unique to claim {}: {}".format(claim_Y, claim_Y_unique_elements))
             
             if len(common_elements) == 0:
-                warn("Possible restriction. Claims {} and {} may be unrelated/independent. See MPEP 806.06.".format(claim_A, claim_B))
+                warn("Possible restriction. Claims {} and {} may be unrelated/independent. See MPEP 806.06. Check for dependent linking claims.".format(claim_X, claim_Y))
                 possible_restriction = True
             
-            if (len(claim_A_unique_elements) > 0) and (len(claim_B_unique_elements) > 0) and (len(common_elements) > 0) and (indep_claim_types[claim_A] == indep_claim_types[claim_B]):
-                warn("Possible restriction. {} claims {} and {} may be related as combination-subcombination. See MPEP 806.05(c).".format(indep_claim_types[claim_A].capitalize(), claim_A, claim_B))
+            # Situations considered here:
+            # 
+            # ABbr = claim X
+            # Bsp = claim Y
+            # A = claim_X_unique_elements
+            # Bbr = common_elements
+            # Bsp - Bbr = claim_Y_unique_elements
+            # 
+            # or
+            # 
+            # ABbr = claim Y
+            # Bsp = claim X
+            # A = claim_Y_unique_elements
+            # Bbr = common_elements
+            # Bsp - Bbr = claim_X_unique_elements
+            # 
+            # All that needs to be shown is that there are common elements (Bbr), and there are extra elements corresponding to A and Bsp - Br in claims X and Y. Which claims correspond to A and Bsp does not matter.
+            if (len(claim_X_unique_elements) > 0) and (len(claim_Y_unique_elements) > 0) and (len(common_elements) > 0) and (indep_claim_types[claim_X] == indep_claim_types[claim_Y]):
+                warn("Possible restriction. {} claims {} and {} may be related as combination-subcombination. See MPEP 806.05(c). Check for dependent linking claims.".format(indep_claim_types[claim_X].capitalize(), claim_X, claim_Y))
                 possible_restriction = True
             
-            if (((indep_claim_types[claim_A] == 'method') and (indep_claim_types[claim_B] == 'apparatus')) or ((indep_claim_types[claim_A] == 'apparatus') and (indep_claim_types[claim_B] == 'method'))) and (len(common_elements) > 0):
-                warn("Possible restriction. {} claim {} and {} claim {} may be related as a distinct product and process pair. See MPEP 806.05(e)-806.05(i).".format(indep_claim_types[claim_A].capitalize(), indep_claim_types[claim_B], claim_A, claim_B))
+            # Though the `(len(claim_X_unique_elements) > 0) or (len(claim_Y_unique_elements) > 0)` part is not necessarily required, without it, this is likely to return many false positives. Process claims which merely repeat the product claim are not likely to be restrictable, so the extra condition in the first sentence is practically necessary
+            if (((indep_claim_types[claim_X] == 'method') and (indep_claim_types[claim_Y] == 'apparatus')) or ((indep_claim_types[claim_X] == 'apparatus') and (indep_claim_types[claim_Y] == 'method'))) and (len(common_elements) > 0) and ((len(claim_X_unique_elements) > 0) or (len(claim_Y_unique_elements) > 0)):
+                warn("Possible restriction. {} claim {} and {} claim {} may be related as a distinct product and process pair. See MPEP 806.05(e)-806.05(i). Check for dependent linking claims.".format(indep_claim_types[claim_X].capitalize(), indep_claim_types[claim_Y], claim_X, claim_Y))
                 possible_restriction = True
             
             eprint()
     
     if not(possible_restriction):
-        eprint("No restriction appears possible.\n")
+        eprint("No restriction appears possible on the basis of claim elements alone. Relationships between the elements or functions of the elements might allow a restriction.\n")
 
 if args.uspto:
     if (number_of_indep_claims >= 4) and (number_of_dep_claims >= 25):
