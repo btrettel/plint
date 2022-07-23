@@ -39,7 +39,7 @@ parser.add_argument("-o", "--outfile", action="store_true", help="output warning
 parser.add_argument("-r", "--restriction", action="store_true", help="analyze claims for restriction; automatically enables --ant-basis flag", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-u", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.9.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.9.1")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
