@@ -34,6 +34,14 @@
     - On the indefiniteness of minimum and maximum, also see: berry_from_2003
 - For `--spec`, also check that each element has a reference number. If an element does not, that could indicate a drawing objection is needed for that element.
 - Reorganize code to have unit tests for everything including the antecedent basis checking.
+    - particular warning.csv entries
+    - antecedent basis
+        - "the" before "a"
+        - multiple "a" for same element
+        - dependencies get new elements
+        - all elements found in a long claim
+        - all elements found in a dependent claim
+        - `{`, `[`, `}`, `]`, `|`, `!`, `@`, and `#` work
 - Check for invalid multiple dependencies.
 - Check for features of other softwares.
     - <https://specif.io/bluepencil/>
