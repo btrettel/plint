@@ -31,6 +31,7 @@ parser = argparse.ArgumentParser(description="patent claim linter: analyzes pate
 parser.add_argument("file", help="claim file to read")
 parser.add_argument("-a", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
 parser.add_argument("-c", "--to-claim", help="stop analysis at this claim number", type=int, default=None)
+parser.add_argument("-C", "--claims-warnings", help="claims warnings file to read", default=None)
 parser.add_argument("-d", "--debug", action="store_true", help="print debugging information; automatically enables verbose flag", default=False)
 parser.add_argument("-e", "--endings", action="store_true", help="give warnings for likely adverbs (words ending in -ly) and present participle phrases (words ending in -ing)", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
@@ -38,10 +39,9 @@ parser.add_argument("-n", "--nitpick", action="store_true", help="equivalent to 
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("-r", "--restriction", action="store_true", help="analyze claims for restriction; automatically enables --ant-basis flag", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
-parser.add_argument("-u", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.9.2")
+parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
+parser.add_argument("-v", "--version", action="version", version="plint version 0.10.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
-parser.add_argument("-w", "--warnings", help="warnings file to read", default=None)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
 
@@ -306,32 +306,32 @@ if args.debug:
 if args.restriction:
     args.ant_basis = True
 
-if args.warnings is None:
-    args.warnings = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'warnings'+file_ext)
+if args.claims_warnings is None:
+    args.claims_warnings = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'claims'+file_ext)
 
-if not args.warnings.endswith(file_ext):
-    eprint('Warnings file must be a {} file:'.format(file_ext), args.warnings)
+if not args.claims_warnings.endswith(file_ext):
+    eprint('Warnings file must be a {} file:'.format(file_ext), args.claims_warnings)
     sys.exit(1)
 
 if not os.path.isfile(args.file):
     eprint('Claims file does not exist:', args.file)
     sys.exit(1)
 
-if not os.path.isfile(args.warnings):
-    eprint('Warnings file does not exist:', args.warnings)
+if not os.path.isfile(args.claims_warnings):
+    eprint('Warnings file does not exist:', args.claims_warnings)
     sys.exit(1)
 
 # Opening CSV file.
 # Needs to be "MS-DOS" format, not UTF-8. For some reason the really old version of Python the USPTO has doesn't like Unicode CSV files.
 
 # Check that it only has two columns first.
-with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
+with open(args.claims_warnings, 'r', encoding="ascii") as warnings_csv_file:
     csv_reader = csv.reader(warnings_csv_file, delimiter=",")
     
     for row in csv_reader:
         assert len(row) == 2, "The warnings file should have two columns. This line does not: "+row[0]
 
-with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
+with open(args.claims_warnings, 'r', encoding="ascii") as warnings_csv_file:
     warnings_csv = csv.DictReader(warnings_csv_file, delimiter=",")
     warnings = []
     prev_regex = ''
@@ -344,7 +344,7 @@ with open(args.warnings, 'r', encoding="ascii") as warnings_csv_file:
         if args.debug:
             print("Reading from warnings file:", line_num, warning['regex'])
     
-    print(len(warnings), "warnings loaded.\n")
+    print(len(warnings), "claim warnings loaded.\n")
 
 # Set the use_outfile after checking that the file exists, otherwise, if the claims file doesn't exist, the error message will be printed to the output file.
 use_outfile = args.outfile
@@ -483,7 +483,7 @@ for claim_text_with_number in claims_text:
         assert not(parent_claim is None), "Parent claim undefined for dependent claim {}?".format(claim_number)
     
     if args.debug:
-        print("Going through warnings...")
+        print("Going through claim warnings...")
     
     if args.verbose:
         print("Claim {} as being checked for warnings:".format(claim_number), cleaned_claim_text)

@@ -21,6 +21,7 @@
     - MOSTLY DONE: gleich_ambiguity_2010
     - berry_from_2003
         - p. 20
+    - femmer_rapid_2017
     - <http://www.gray-area.org/Research/Ambig/>
     - <https://libguides.newcastle.edu.au/foundation-studies/feedback/ambiguous>
     - <https://cs.nyu.edu/~davise/ai/ambiguity.html>
@@ -86,6 +87,9 @@
 - Print some checks for equations like dimensional homogeneity, no singularities.
     - `\b(equation|formula)\b`
     - `=`
+    - <https://en.wikipedia.org/wiki/Ambiguity#Mathematical_notation>
+        - The issue with trig. functions is common.
+    - <https://www.reddit.com/r/patentexaminer/comments/vrjxz8/how_to_quickly_spot_112b_indefiniteness_issues/ieye8q5/>
 - 101 rejections: Claiming a human:
     - MOPP 14.131: ""when in use", "when held by an operator"
         - <https://www.gov.uk/guidance/manual-of-patent-practice-mopp/section-14-the-application>
@@ -175,13 +179,11 @@
     - `(heating|cooking) [...] (to|at) (a|the) temperature`
     - `(heated|cooked) (to|at) (a|the) temperature`
 - Lexicographic definition identification for spec.
-    - meaning, means, definition, `\bdefines?\b`, defining, `\bterms?\b`
-    - Match entire line with substring: `^.*substring.*$`
-    - Check for quotes.
-    - Check the boilerplate you saved for some examples.
+    - meaning, means (likely many false positives), `\b(definitions?|defines?|defined|defining)\b`, `\bterms?\b`, terminology, `\bwords?\b`, `\bphrases?\b`
+    - Check for quotes: `"`, `“`, `”`
     - US20200208875A1 para. 0055: > Here, the heat-insulating side plates 61 are used with the meaning of side plates to which the heat-insulating pipes 50 are disposed to be adjacent, rather than the meaning of side plates that reduce the amount of heat transferred to the outside, thereby achieving thermal insulation.
         - This one was annoying!
-    - Print entire line with definition in the output?
+    - Print entire line with definition in the output? Many lines will have multiple matches, so probably best to first identify all matching lines, and then print those lines. That would avoid duplicates.
 - Separate DAV search string for the spec?
 - As a joke, add CPC classes below the version number in the README.md file.
 - Rename warnings.csv to claims.csv, and create title.csv and spec.csv for warnings in the title and spec respectively
@@ -195,3 +197,55 @@
     - <https://www.rd.com/list/surprising-trademarked-words/>
     - <https://digitalsynopsis.com/advertising/generic-trademark-product-brand-names/>
     - <https://www.mentalfloss.com/article/28238/25-words-you-might-not-know-are-trademarked>
+- <https://www.finnegan.com/en/insights/articles/practical-considerations-and-strategies-in-drafting-u-s-patent.html>
+    " or ",'A or B' is to be interpreted as 'either A or B'.
+    
+    > Another example shows the importance of carefully choosing alternative language when drafting claims. In Kustom Signals, Inc. v. Applied Concepts, Inc.,5 Kustom Signals added the limitation “selecting either a greatest magnitude or highest frequency search” to the claim during prosecution and later sued Applied Concepts for patent infringement. But Applied Concept’s device searched both magnitude and frequency. The Federal Circuit reasoned that “or” is not “and/or” and the claim only covered a choice between either one of two alternatives, not both. The Court then affirmed a ruling of noninfringement by Applied Concept’s device. The outcome was indeed unfortunate for Kustom Signal, but it could have avoided the problem by carefully drafting the claim to read, for example, “selecting at least one of a greatest magnitude search and a highest frequency search.”
+
+## Specification
+
+Make patent drafting diction database. Put appropriate case law in the comment. Label as "patent profanity" as that term seems to be in common use. If unclear about why someone included a particular term, ask on the Patents Stack Exchange.
+
+- Google search for "patent profanity" (no quotes).
+- Include relative phrases.
+- "Trans fat" problem with "patent profanity": a term is replaced by something that is untested and could be worse. (Analogous to trans fats being used to replace saturated fats, when trans fats are worse.)
+    - <https://web.archive.org/web/20090210131413/http://www.patentlyo.com/patent/2009/02/no-no-words-what-words-do-you-avoid-in-patent-applications.html#comment-6a00d8341c588553ef010537160bf1970b>
+    - <https://www.ssiplaw.com/112f-has-a-hair-trigger-avoiding-means-plus-function-misfires/>
+        - > For computer-implemented inventions, patent practitioners may wish to consider using the term “circuit” or “circuitry,” when appropriate.  Circuit or circuitry has consistently been found to be term that connotes structure.
+        - ...but the root of the problem is vagueness, not the particular word used: > While “circuit” or “circuitry” may help avoid interpretation under § 112(f), it is advisable to provide a detailed description with sufficient structure and, as applicable, sufficient description of algorithms, to avoid a finding of indefiniteness in violation of § 112(b).
+- "etc." could be 112b issue and also signals that you should list more possibly embodiments, for example, this is not good as it does not list a condensate drain as a possibility:
+- <https://patents.stackexchange.com/questions/19186/why-not-refer-to-the-invention-as-the-invention>
+- <https://patents.stackexchange.com/a/3295>
+- <https://corridorlaw.com/words-to-avoid-when-filing-patent-applications/>
+- <https://krajec.com/prohibited-words-in-a-patent-must/>
+- <https://attorneyatlawmagazine.com/patent-profanity> (Added, but it would be a good idea to recategorize the terms in your diction file along the lines described in this article.)
+- <https://sites.nd.edu/patentlaw/2013/02/04/patent-profanity-its-not-what-you-think/>
+- <https://web.archive.org/web/20090210131413/http://www.patentlyo.com/patent/2009/02/no-no-words-what-words-do-you-avoid-in-patent-applications.html>
+- <https://web.archive.org/web/20090211234220/http://www.patentlyo.com/patent/2009/02/no-no-words-what-words-do-you-avoid-in-patent-applications/comments/page/2/>
+- <https://web.archive.org/web/20090405094459/http://www.patentlyo.com/patent/2009/02/no-no-words-what-words-do-you-avoid-in-patent-applications/comments/page/3/>
+- <https://web.archive.org/web/20090406011742/http://www.patentlyo.com/patent/2009/02/no-no-words-what-words-do-you-avoid-in-patent-applications/comments/page/4/>
+- <https://patentablydefined.com/2007/05/21/prosecution-profanity-words-to-avoid-in-prosecution-part-1/>
+- <https://www.bpmlegal.com/content/howtopat7>
+- <https://ocpatentlawyer.com/lesson/word-invention/>
+- <https://www.finnegan.com/en/insights/articles/practical-considerations-and-strategies-in-drafting-u-s-patent.html>
+- <https://en.wikipedia.org/wiki/List_of_Latin_legal_terms>
+- <https://www.fargopatentlaw.com/blog/2020/12/31/what-is-patent-profanity>
+    - > Some of these terms include the words, “all, always, certain, each, important, invention, necessary, need, should, and so forth.”
+- stark_key_2016
+- <https://patentlyo.com/patent/2020/03/consisting-and-optionally.html>
+- <https://patents.stackexchange.com/questions/17485/how-do-i-explain-the-advantages-and-avoid-using-invention-or-object-in-the-d>
+- predetermined
+    - <https://www.mriplaw.com/blog/rq5dxcegaabvgmqfblhce7dsbl6ktn>
+    - <https://steiniplaw.wordpress.com/2006/12/01/federal-circuit-defines-term-predetermined/>
+    - <https://patentlyo.com/patent/2006/12/even_under_doe_.html>
+    - <https://patentlyo.com/patent/2015/04/strengthen-assurance-practices.html#comment-290640>
+- <http://www.intelproplaw.com/ip_forum/index.php?topic=13014.0>
+    - Includes a comment about why "the invention" can be safe in some instances.
+- <http://www.intelproplaw.com/ip_forum/index.php/topic,31656.0.html>
+- <https://antecedent-ip.com/product/aip-patentchecker/>
+- <https://patentlyo.com/patent/2022/07/boilerplate-admissions-eligibility.html> 
+    - conventional, well-known, well known, known in the art (perhaps "known" by itself)
+    - If the information is well known, then not saying so in a patent application is a way to increase the chances of being granted an invalid patent. If the information is well known then someone could easily challenge the validity of a patent. I don't like strategies that are basically ways to be granted invalid patents.
+- <https://en.wikipedia.org/wiki/Polysemy>
+    - <https://stackoverflow.com/questions/22016273/list-of-polysemy-words>
+- Detect criticality in the specification.
