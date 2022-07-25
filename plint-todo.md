@@ -1,5 +1,7 @@
 # plint to-do list
 
+- Have the option for a JSON input file that takes all the command line arguments. Adding a command line argument that is duplicated by the JSON file will override the JSON file and print a warning.
+    - The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
 - Change "annotating" to "marking" in the README.
 - <https://www.blinn.edu/writing-centers/pdfs/Vague-Words-Tables.pdf>
     - Start at "Good/Great".
@@ -113,6 +115,7 @@
 - Some examiners don't like "if"?
     - <http://www.intelproplaw.com/ip_forum/index.php/topic,30711.msg142871.html#msg142871>
     - MPEP 2111.04.II Contingent Limitations
+    - <http://www.intelproplaw.com/ip_forum/index.php/topic,31185.0.html>
 - <https://patentdefenses.klarquist.com/particular-and-distinct-claims-aka-indefiniteness-sec-1122b-other-than-sec-1126f/>
 - <https://www.reddit.com/r/patentexaminer/comments/vrjxz8/how_to_quickly_spot_112b_indefiniteness_issues/>
 - basis, based on
@@ -137,7 +140,7 @@
         - MPEP 2164.02
         - <https://patentlyo.com/patent/2021/07/recent-prophetic-example.html>
 - terms of art, particularly units
-    - \b(standard|normal)\b: check if there is a standard
+    - `\b(standard|normal)\b`: check if there is a standard
     - "volume"
         - for flow rate (e.g., US app. no. 17099005)
         - for mass: <https://news.ycombinator.com/item?id=23439247>
@@ -178,15 +181,8 @@
 - <https://www.ipwatchdog.com/2017/10/07/patent-drafting-101-say-mean-patent-application/id=88962/>
     - `(heating|cooking) [...] (to|at) (a|the) temperature`
     - `(heated|cooked) (to|at) (a|the) temperature`
-- Lexicographic definition identification for spec.
-    - meaning, means (likely many false positives), `\b(definitions?|defines?|defined|defining)\b`, `\bterms?\b`, terminology, `\bwords?\b`, `\bphrases?\b`
-    - Check for quotes: `"`, `“`, `”`
-    - US20200208875A1 para. 0055: > Here, the heat-insulating side plates 61 are used with the meaning of side plates to which the heat-insulating pipes 50 are disposed to be adjacent, rather than the meaning of side plates that reduce the amount of heat transferred to the outside, thereby achieving thermal insulation.
-        - This one was annoying!
-    - Print entire line with definition in the output? Many lines will have multiple matches, so probably best to first identify all matching lines, and then print those lines. That would avoid duplicates.
-- Separate DAV search string for the spec?
 - As a joke, add CPC classes below the version number in the README.md file.
-- Rename warnings.csv to claims.csv, and create title.csv and spec.csv for warnings in the title and spec respectively
+- Create title.csv and spec.csv for warnings in the title and spec respectively
 - title.csv:
     - <https://www.uspto.gov/web/offices/pac/mpep/s606.html>
 - `--unity` for unity of invention analysis. Requires marking the novel elements in the claims with `@`.
@@ -198,9 +194,13 @@
     - <https://digitalsynopsis.com/advertising/generic-trademark-product-brand-names/>
     - <https://www.mentalfloss.com/article/28238/25-words-you-might-not-know-are-trademarked>
 - <https://www.finnegan.com/en/insights/articles/practical-considerations-and-strategies-in-drafting-u-s-patent.html>
-    " or ",'A or B' is to be interpreted as 'either A or B'.
-    
-    > Another example shows the importance of carefully choosing alternative language when drafting claims. In Kustom Signals, Inc. v. Applied Concepts, Inc.,5 Kustom Signals added the limitation “selecting either a greatest magnitude or highest frequency search” to the claim during prosecution and later sued Applied Concepts for patent infringement. But Applied Concept’s device searched both magnitude and frequency. The Federal Circuit reasoned that “or” is not “and/or” and the claim only covered a choice between either one of two alternatives, not both. The Court then affirmed a ruling of noninfringement by Applied Concept’s device. The outcome was indeed unfortunate for Kustom Signal, but it could have avoided the problem by carefully drafting the claim to read, for example, “selecting at least one of a greatest magnitude search and a highest frequency search.”
+    - " or ",'A or B' is to be interpreted as 'either A or B'.
+    - > Another example shows the importance of carefully choosing alternative language when drafting claims. In Kustom Signals, Inc. v. Applied Concepts, Inc.,5 Kustom Signals added the limitation “selecting either a greatest magnitude or highest frequency search” to the claim during prosecution and later sued Applied Concepts for patent infringement. But Applied Concept’s device searched both magnitude and frequency. The Federal Circuit reasoned that “or” is not “and/or” and the claim only covered a choice between either one of two alternatives, not both. The Court then affirmed a ruling of noninfringement by Applied Concept’s device. The outcome was indeed unfortunate for Kustom Signal, but it could have avoided the problem by carefully drafting the claim to read, for example, “selecting at least one of a greatest magnitude search and a highest frequency search.”
+    - <http://www.intelproplaw.com/ip_forum/index.php/topic,31337.0.html>
+- <https://en.wikipedia.org/wiki/Polysemy>
+    - <https://stackoverflow.com/questions/22016273/list-of-polysemy-words>
+- For broadest claim detection, also consider which claim has the least number of claim elements in the antecedent basis check.
+    - <http://www.intelproplaw.com/ip_forum/index.php/topic,31363.0.html>
 
 ## Specification
 
@@ -246,6 +246,12 @@ Make patent drafting diction database. Put appropriate case law in the comment. 
 - <https://patentlyo.com/patent/2022/07/boilerplate-admissions-eligibility.html> 
     - conventional, well-known, well known, known in the art (perhaps "known" by itself)
     - If the information is well known, then not saying so in a patent application is a way to increase the chances of being granted an invalid patent. If the information is well known then someone could easily challenge the validity of a patent. I don't like strategies that are basically ways to be granted invalid patents.
-- <https://en.wikipedia.org/wiki/Polysemy>
-    - <https://stackoverflow.com/questions/22016273/list-of-polysemy-words>
 - Detect criticality in the specification.
+- Have two CSV files for the specification. One looks for things like limiting phrases which are not relevant to patent examination. The other looks for things like criticality that are relevant to examination.
+- Lexicographic definition identification for spec.
+    - meaning, means (likely many false positives), `\b(definitions?|defines?|defined|defining)\b`, `\bterms?\b`, terminology, `\bwords?\b`, `\bphrases?\b`
+    - Check for quotes: `"`, `“`, `”`
+    - US20200208875A1 para. 0055: > Here, the heat-insulating side plates 61 are used with the meaning of side plates to which the heat-insulating pipes 50 are disposed to be adjacent, rather than the meaning of side plates that reduce the amount of heat transferred to the outside, thereby achieving thermal insulation.
+        - This one was annoying!
+    - Print entire line with definition in the output? Many lines will have multiple matches, so probably best to first identify all matching lines, and then print those lines. That would avoid duplicates.
+- Separate DAV search string for the spec?
