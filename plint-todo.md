@@ -1,8 +1,7 @@
 # plint to-do list
 
-- Have the option for a JSON input file that takes all the command line arguments. Adding a command line argument that is duplicated by the JSON file will override the JSON file and print a warning.
-    - The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
-- Change "annotating" to "marking" in the README.
+- Formality_Checklist_not_508.pdf
+- The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
 - <https://www.blinn.edu/writing-centers/pdfs/Vague-Words-Tables.pdf>
     - Start at "Good/Great".
 - <https://www.logic.at/lomorevi/LoMoReVI/The%20Vague%20Expression%20of%20Quantity.pdf>
@@ -55,6 +54,7 @@
     - <http://www.lanaconsult.com/products.htm#AutoPat>
     - <https://groups.google.com/g/misc.legal.moderated/c/04WqcZJSwN8/m/fsQiC_AgYiMJ>
     - <https://www.patentclaimmaster.com/>
+        - [Sources for warnings](https://web.archive.org/web/20090829074900/http://www.patentclaimmaster.com/CMFeatures.html): "MPEP and Landis on Mechanics of Patent Drafting"
         - <https://www.patentclaimmaster.com/blog/tag/patent-proofreading-tools/>
         - <https://www.patentclaimmaster.com/blog/tag/patent-drafting-tools/>
         - <https://www.patentclaimmaster.com/blog/tutorial-checking-claims-for-antecedent-basis-issues/>
@@ -177,7 +177,6 @@
 - Check for similarly named claim elements to help spot typos. Example: 16461817 2022-04-19
 - `--endings` flag: Possibly functional: `\b\w*able\b` words
 - `--endings` flag: Filter out these non-adverbs: <https://www.wordexample.com/list/ending-ly-not-adverbs>
-- Add feature to enable all commented out warnings
 - <https://www.ipwatchdog.com/2017/10/07/patent-drafting-101-say-mean-patent-application/id=88962/>
     - `(heating|cooking) [...] (to|at) (a|the) temperature`
     - `(heated|cooked) (to|at) (a|the) temperature`
@@ -199,8 +198,6 @@
     - <http://www.intelproplaw.com/ip_forum/index.php/topic,31337.0.html>
 - <https://en.wikipedia.org/wiki/Polysemy>
     - <https://stackoverflow.com/questions/22016273/list-of-polysemy-words>
-- For broadest claim detection, also consider which claim has the least number of claim elements in the antecedent basis check.
-    - <http://www.intelproplaw.com/ip_forum/index.php/topic,31363.0.html>
 
 ## Specification
 

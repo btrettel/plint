@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.11.0
+Current version: 0.12.0
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -21,7 +21,7 @@ plint can analyze a text file containing patent claims for the following:
 - [restrictions](#restriction-checking)
 - [claim formalities](#hard-coded-checks)
 
-By default, plint will emulate a nitpicky examiner. When making the default warnings files (warnings.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. warnings.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possible face. If this is too nitpicky for your tastes, you're welcome to make your own warnings file or modify the existing file. plint is highly customizable.
+By default, plint will emulate a nitpicky examiner. When making the default claims warning file (claims.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. claims.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possible face. If this is too nitpicky for your tastes, you're welcome to make your own warnings file or modify the existing file. plint is highly customizable.
 
 plint is designed to run on the ancient version of Python the USPTO has on their computers, so plint won't use the latest features of Python. And the USPTO Python version is limited to the standard library, so NLTK can not be used.
 
@@ -69,17 +69,17 @@ Alternatively, you can add the directory plint.py is in to your PATH and then ru
 
 ### How I use plint
 
-When examining patents, I typically save the patent claims to a file named {application number}-claims.txt. For example, for application number 16811358, I will save 16811358-claims.txt. I then annotate the claims for the antecedent basis checker as described below. This will require some iteration to get right, so I will run plint as follows, modify the claim annotation in response to the warnings and parsing errors displayed, and repeat until plint parses the entire claim set:
+When examining patents, I typically save the patent claims to a file named {application number}-claims.txt. For example, for application number 16811358, I will save 16811358-claims.txt. I then mark the claims for the antecedent basis checker as described below. This will require some iteration to get right, so I will run plint as follows, modify the claim marking in response to the warnings and parsing errors displayed, and repeat until plint parses the entire claim set:
 
     plint --ant-basis --debug --uspto --endings .\16811358-claims.txt
 
-As discussed above, `-d` is debug mode, which will enabled verbose mode as well. Debug and verbose modes display more information, and this extra information may be useful when iteratively annotating the claims.
+As discussed above, `-d` is debug mode, which will enabled verbose mode as well. Debug and verbose modes display more information, and this extra information may be useful when iteratively marking the claims.
 
-Once I am confident that I annotated the claim for antecedent basis properly, I will remove the `-d` flag and add `-o` to save the output to a file:
+Once I am confident that I marked the claim for antecedent basis properly, I will remove the `-d` flag and add `-o` to save the output to a file:
 
     plint -a -o .\16811358-claims.txt
 
-Then I will check each line in 16811358-claims.txt. Most of the warnings will not lead to rejections or objections, but all should be checked. After reading the warnings, I made decide to annotate the claim differently if plint is still not interpreting the claim properly.
+Then I will check each line in 16811358-claims.txt. Most of the warnings will not lead to rejections or objections, but all should be checked. After reading the warnings, I may decide to mark the claim differently if plint is still not interpreting the claim properly.
 
 ## Hard-coded checks
 
@@ -100,7 +100,7 @@ The following hard-coded checks are made:
 
 A warnings file is used to identify possibly problematic claim language.
 
-The standard warnings file ([warnings.csv](warnings.csv)) can be modified to add or remove warnings as desired by the user. The format of this file is as follows: The first column is "regex", which contains regular expressions to match against the claims. The second column is "message", which lists the message displayed when the regex is matched. The file must start with a line listing the columns as "regex" and "message".
+The standard warnings file ([claims.csv](claims.csv)) can be modified to add or remove warnings as desired by the user. The format of this file is as follows: The first column is "regex", which contains regular expressions to match against the claims. The second column is "message", which lists the message displayed when the regex is matched. The file must start with a line listing the columns as "regex" and "message".
 
 As an example, consider the following line:
 
@@ -114,7 +114,7 @@ Specific warnings can be disabled in a warnings file without the line being dele
 
 Warnings with warning text containing the terms "112(d)" or "DEPONLY" will only apply to dependent claims. This is true even if "DEPONLY" is only printed in a comment.
 
-## Filtering out warnings
+### Filtering out warnings
 
 Warnings can be disabled from the command line by filtering out any part of the warning message printed using the `--filter` flag followed by one or more regular expressions. For example, to filter out all warnings containing the text "112(f)":
 
@@ -127,6 +127,16 @@ Then no warnings where the text contains "112(f)" will be printed. (The quotes a
 (As can be seen, no quotes or parentheses are necessary for single words without any special characters like "antecedent". However, multiple words will require quotes, for example: "antecedent basis" should be quoted.)
 
 The filtering applies to all warnings, not just warnings from a warnings file.
+
+### Forced mode
+
+Commented out warnings can be forcibly reenabled from the command line with the `-F` or `--force` flag. The user can see whether any warnings are commented out from the command line output. For example, the following shows that 5 warnings are commented out:
+
+    410 claim warnings loaded, 5 suppressed.
+
+When plint is run with the `--force` flag, none of the warnings will be suppressed:
+
+    415 claim warnings loaded, 0 suppressed.
 
 ## Antecedent basis checking
 
@@ -154,8 +164,8 @@ If a specific claim element is introduced more than once, a warning will be prin
 - When an article should not create an element, add `#` to the beginning of that word. For terms that introduce multiple elements that contain multiple words (like "at least one"), it is necessary to place the `#` not at the first term (for example: `at #least one`) for the moment.
 - When a claim element was introduced properly as a singular element but later referred to as plural, the character `!` can be used to erase the plural. For example, `[expected traffic delays!;` will be interpreted as `[expected traffic delay];`.
 - Sometimes getting plint to properly parse claim elements requires adding text. Text put between backticks (`` ` ``) will be added to the claim for the antecedent basis check but not used otherwise. Here are some examples:
-    - The limitation "upper and lower nozzles" should introduce an "upper nozzle" and a "lower nozzle". So, "upper and lower nozzles" could be annotated as `` {upper `nozzle| `and {lower nozzles!| ``.
-    - Sometimes claim elements are introduced properly as a plural element but later referred in plural. For example, a claim may introduce "adjacent TMEs" but later refer to "each adjacent TME". The latter can be annotated as `` each {adjacent TME`s`| `` to add the plural for the antecedent basis checker.
+    - The limitation "upper and lower nozzles" should introduce an "upper nozzle" and a "lower nozzle". So, "upper and lower nozzles" could be marked as `` {upper `nozzle| `and {lower nozzles!| ``.
+    - Sometimes claim elements are introduced properly as a plural element but later referred in plural. For example, a claim may introduce "adjacent TMEs" but later refer to "each adjacent TME". The latter can be marked as `` each {adjacent TME`s`| `` to add the plural for the antecedent basis checker.
 
 See [demo-claims.txt](demo-claims.txt) below for the basic notation (`|`) in use.
 
@@ -168,7 +178,7 @@ See [demo-claims.txt](demo-claims.txt) below for the basic notation (`|`) in use
     the at least one button| is yellow, and
     the at least one widget| is blue.
 
-As commas, semi-colons, colons, and the end of a claim terminate claim elements, it is not necessary to annotate claims like the following, though doing so is harmless:
+As commas, semi-colons, colons, and the end of a claim terminate claim elements, it is not necessary to mark claims like the following, though doing so is harmless:
 
     1. A contraption| comprising:
     an enclosure|,
@@ -183,13 +193,13 @@ As commas, semi-colons, colons, and the end of a claim terminate claim elements,
 
 Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print how plint is interpreting the claim when doing the antecedent basis analysis. For example, plint's interpretation of the demo claim is:
 
-    Claim 1 annotated: a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue.
+    Claim 1 marked: a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue.
 
 ### Shortcomings of the antecedent basis checker
 
-The antecedent basis checker is fragile and will likely require some iteration until a claim is annotated in a way that plint likes.
+The antecedent basis checker is fragile and will likely require some iteration until a claim is marked in a way that plint likes.
 
-At present, plint won't work with nested elements. For example: `a center of the widget|` would ideally be interpreted as `a {center of [the widget]}`, but that's not how plint will work at the moment. That'll need to be annotated like this: `a center of #the widget|`, interpreted as `a {center of the widget}`. Then plint will think it's all just one element.
+At present, plint won't work with nested elements. For example: `a center of the widget|` would ideally be interpreted as `a {center of [the widget]}`, but that's not how plint will work at the moment. That'll need to be marked like this: `a center of #the widget|`, interpreted as `a {center of the widget}`. Then plint will think it's all just one element.
 
 ## Specification checking
 
@@ -197,7 +207,7 @@ If the optional `-s` or `--spec` flag is provided with a text file containing th
 
 ## Restriction checking
 
-Analysis possibly useful to identify restrictions will be performed if the `-r` or `--restriction` flag is enabled. This requires that the claims be annotated for antecedent basis and will automatically enable antecedent basis checking. All combinations of independent claims will be analyzed to identify elements common to the combination and elements unique to each claim being compared. Based on the elements common and unique to each claim, plint will identify possible restrictions based on the claims being unrelated/independent, related as combination-subcombination, or related as a distinct product and process pair. plint is not capable of recognizing other forms of restriction at the moment.
+Analysis possibly useful to identify restrictions will be performed if the `-r` or `--restriction` flag is enabled. This requires that the claims be marked for antecedent basis and will automatically enable antecedent basis checking. All combinations of independent claims will be analyzed to identify elements common to the combination and elements unique to each claim being compared. Based on the elements common and unique to each claim, plint will identify possible restrictions based on the claims being unrelated/independent, related as combination-subcombination, or related as a distinct product and process pair. plint is not capable of recognizing other forms of restriction at the moment.
 
 As plint's restriction checking only looks at claim elements, and not relationships between the elements, it is not a complete analysis.
 
@@ -233,6 +243,17 @@ For my own convenience, `-n` or `--nitpick` is equivalent to `--ant-basis --endi
 ### Verbose and debug modes
 
 A verbose mode which prints additional information can be enabled with `-V` or `--verbose`. At the moment, this will only display how plint is interpreting the claim when doing the antecedent basis analysis. A debug mode which will print even more information can be enabled with `-d` or `--debug`.
+
+### JSON input file
+
+For convenience, rather than keeping track of a large number of command line arguments, a JSON input file can be used where the names correspond to the command line arguments. For example, `plint --ant-basis demo-claims.txt` is equivalent to running `plint demo.json` where demo.json is as follows:
+
+    {
+        "file": "demo-claims.txt",
+        "ant_basis": true
+    }
+
+If command line arguments conflict with the JSON file, the command line argument will be used, not what is written in the JSON file. The command line arguments override the JSON file.
 
 ## Exit statuses
 

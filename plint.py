@@ -26,6 +26,7 @@ import os
 import re
 import copy
 from itertools import chain, combinations
+import json
 
 parser = argparse.ArgumentParser(description="patent claim linter: analyzes patent claims for 112(b), 112(d), 112(f), and other issues")
 parser.add_argument("file", help="claim file to read")
@@ -35,12 +36,13 @@ parser.add_argument("-C", "--claims-warnings", help="claims warnings file to rea
 parser.add_argument("-d", "--debug", action="store_true", help="print debugging information; automatically enables verbose flag", default=False)
 parser.add_argument("-e", "--endings", action="store_true", help="give warnings for likely adverbs (words ending in -ly) and present participle phrases (words ending in -ing)", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
+parser.add_argument("-F", "--force", action="store_true", help="enable all commented out warnings", default=False)
 parser.add_argument("-n", "--nitpick", action="store_true", help="equivalent to --ant-basis --restriction --endings --uspto", default=False)
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("-r", "--restriction", action="store_true", help="analyze claims for restriction; automatically enables --ant-basis flag", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.11.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.12.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -86,11 +88,11 @@ def remove_punctuation(text):
     return text.replace(',', '').replace(';', '').replace('.', '')
 
 def remove_ab_notation(text):
-    # Remove annotation characters
+    # Remove marking characters
     text = text.replace('{', '').replace('}', '').replace('[', '').replace(']', '').replace('#', '').replace('|', '').replace('!', '')
     
     # Remove text added for antecedent basis checking only.
-    assert (text.count("`") % 2) == 0, "Unclosed '`' detected in claim annotation, aborting."
+    assert (text.count("`") % 2) == 0, "Unclosed '`' detected in claim marking, aborting."
     loc = 0
     print_text = True
     cleaned_text = ""
@@ -108,29 +110,29 @@ def remove_ab_notation(text):
     
     return cleaned_text
 
-def annotate_claim_text(claim_text):
+def mark_claim_text(claim_text):
     claim_text = claim_text.lower()
     
     if args.debug:
         print("Input claim text:", claim_text)
-        print("Annotating plural claim element starting terms...")
+        print("Marking plural claim element starting terms...")
     
     # Remove character that adds text to claims for the antecedent basis checker to make antecedent basis work.
     claim_text = claim_text.replace("`", "")
     
-    # Annotate plural claim element starting terms. This is hacky, but should work.
+    # Mark plural claim element starting terms. This is hacky, but should work.
     # Note that plural claim element starting terms act differently than singular claim element starting terms like "a" or "an". For plurals, the claim element starting term itself becomes part of the claim element.
     # Other plural terms already handled as they start with a or an: a plurality, a number of
     
-    # Note: I recognize that (for example) 'two or more' would conflict with 'two'. I guess putting 'two or more' first will annotate this properly, but I haven't verified this yet.
+    # Note: I recognize that (for example) 'two or more' would conflict with 'two'. I guess putting 'two or more' first will mark this properly, but I haven't verified this yet.
     plural_starting_terms = {'at least one', 'one or more', 'more than one', 'two or more', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'}
     
     for plural_starting_term in plural_starting_terms:
         #print(plural_starting_term)
         
-        plural_starting_term_not_annotated = True
-        while plural_starting_term_not_annotated:
-            # This is done iteratively because when the text is annotated, some of the starting positions change. The first iteration changes the first one that needs to be changed, the second changes the second one, etc.
+        plural_starting_term_not_marked = True
+        while plural_starting_term_not_marked:
+            # This is done iteratively because when the text is marked, some of the starting positions change. The first iteration changes the first one that needs to be changed, the second changes the second one, etc.
             
             # Identify all instances of a plural starting term using regex to properly get the word boundaries.
             res_alls = re.finditer("\\b{}\\b".format(plural_starting_term), claim_text)
@@ -151,7 +153,7 @@ def annotate_claim_text(claim_text):
                         sys.exit(1)
                     done_starts.add(res_done.start()+len_to_add)
             
-            # If the or said is not before the plural starting term, annotate the plural starting term.
+            # If the or said is not before the plural starting term, mark the plural starting term.
             broke = False
             if not(res_alls is None):
                 for res_all in res_alls:
@@ -164,31 +166,31 @@ def annotate_claim_text(claim_text):
                 if broke:
                     continue
             
-            plural_starting_term_not_annotated = False
+            plural_starting_term_not_marked = False
     
     if args.debug:
-        print("Annotating singular claim element starting terms...")
+        print("Marking singular claim element starting terms...")
     
-    # Annotate "a"
+    # Mark "a"
     claim_text = re.sub("\\ba \\b", "a {", claim_text)
     
-    # Annotate "an"
+    # Mark "an"
     claim_text = re.sub("\\ban \\b", "an {", claim_text)
     
-    # Annotate "the"
+    # Mark "the"
     claim_text = re.sub("\\bthe \\b", "the [", claim_text)
     
-    # Annotate "said"
+    # Mark "said"
     claim_text = re.sub("\\bsaid \\b", "said [", claim_text)
     
-    # Remove annotations for commented out terms.
+    # Remove markings for commented out terms.
     claim_text = re.sub("\#a \{", "a ", claim_text)
     claim_text = re.sub("\#an \{", "an ", claim_text)
     claim_text = re.sub("\#the \[", "the ", claim_text)
     claim_text = re.sub("\#said \[", "said ", claim_text)
     
     if args.debug:
-        print("Claim text after automatically annotating starting terms:", claim_text)
+        print("Claim text after automatically marking starting terms:", claim_text)
         print("Turning punctuation marks and vertical pipes into claim element endings...")
     
     # Turn punctuation marks into claim element endings.
@@ -249,11 +251,11 @@ def annotate_claim_text(claim_text):
         square_bracket = False
     
     if args.verbose:
-        print("Annotation completed:", claim_text)
+        print("Marking completed:", claim_text)
     
-    assert claim_text.count("{") == claim_text.count("}"), "Error in annotation of new claim elements. Number of left curly brackets does not match number of right curly brackets."
-    assert claim_text.count("[") == claim_text.count("]"), "Error in annotation of old claim elements. Number of left square brackets does not match number of right square brackets."
-    assert not("|" in claim_text), "Error in annotation of end of a claim element. Look for '|' by itself in the annotated claim."
+    assert claim_text.count("{") == claim_text.count("}"), "Error in marking of new claim elements. Number of left curly brackets does not match number of right curly brackets."
+    assert claim_text.count("[") == claim_text.count("]"), "Error in marking of old claim elements. Number of left square brackets does not match number of right square brackets."
+    assert not("|" in claim_text), "Error in marking of end of a claim element. Look for '|' by itself in the marked claim."
     
     return claim_text
 
@@ -273,10 +275,10 @@ if args.test:
     
     claim_text = "A contraption} comprising: an enclosure, a display, at least one button, and at least one widget} mounted on the enclosure, wherein the enclosure] is green, the at least one button] is yellow, and the at least one widget] is blue."
     
-    # Test annotated claim.
-    annotated_claim_text = annotate_claim_text(claim_text)
+    # Test marked claim.
+    marked_claim_text = mark_claim_text(claim_text)
     
-    assert annotated_claim_text == "a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue."
+    assert marked_claim_text == "a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue."
     
     claim_text = "This is a test. `Commented out`"
     
@@ -287,6 +289,33 @@ if args.test:
     print('All tests passed.')
     
     exit()
+
+if args.file.endswith('.json'):
+    # Instead of using command line flags, get configuration from JSON file.
+    
+    json_file = copy.deepcopy(args.file)
+    
+    data = json.load(open(json_file))
+    
+    if ('debug' in data) and not(args.debug):
+        args.debug = data['debug']
+    
+    if args.debug:
+        print("Reading configuration from JSON input file...")
+    
+    args.file = None
+    
+    for key in data:
+        if (getattr(args, key) == False) or (getattr(args, key) is None):
+            if args.debug:
+                print("Setting {}: {}".format(key, data[key]))
+            
+            setattr(args, key, data[key])
+    
+    assert not(args.file is None), "Claim file not set in JSON file."
+
+if args.debug:
+    print("Reading {}...".format(args.file))
 
 rule_filters = args.filter
 
@@ -336,15 +365,23 @@ with open(args.claims_warnings, 'r', encoding="ascii") as warnings_csv_file:
     warnings = []
     prev_regex = ''
     line_num = 1
+    warnings_commented_out = 0
     for warning in warnings_csv:
-        assert warning['regex'] != prev_regex, "Duplicate regex in warnings file: {}".format(warning['regex'])
-        prev_regex = warning['regex']
-        warnings.append(warning)
-        line_num += 1
-        if args.debug:
-            print("Reading from warnings file:", line_num, warning['regex'])
+        if args.force:
+            if warning['regex'].startswith('#'):
+                warning['regex'] = warning['regex'][1:]
+        
+        if not warning['regex'].startswith('#'):
+            assert warning['regex'] != prev_regex, "Duplicate regex in warnings file: {}".format(warning['regex'])
+            prev_regex = warning['regex']
+            warnings.append(warning)
+            line_num += 1
+            if args.debug:
+                print("Reading from warnings file:", line_num, warning['regex'])
+        else:
+            warnings_commented_out += 1
     
-    print(len(warnings), "claim warnings loaded.\n")
+    print("{} claim warnings loaded, {} suppressed.\n".format(len(warnings), warnings_commented_out))
 
 # Set the use_outfile after checking that the file exists, otherwise, if the claims file doesn't exist, the error message will be printed to the output file.
 use_outfile = args.outfile
@@ -361,7 +398,7 @@ new_elements_in_claims = {}
 claims_text = []
 first_claim = True
 shortest_indep_claim_len = 1e6
-shortest_indep_claim_number = 0
+shortest_indep_claim_number_by_len = 0
 indep_claims = set()
 indep_claim_types = {}
 
@@ -447,10 +484,10 @@ for claim_text_with_number in claims_text:
         # Keep track of which claim is shortest. This only checks independent claims since the shortest claim must be an independent claim.
         if claim_len < shortest_indep_claim_len:
             if args.debug:
-                print("Independent claim {} ({}) is shorter than claim {} ({}).".format(claim_number, claim_len, shortest_indep_claim_number, shortest_indep_claim_len))
+                print("Independent claim {} ({}) is shorter than claim {} ({}).".format(claim_number, claim_len, shortest_indep_claim_number_by_len, shortest_indep_claim_len))
             
             shortest_indep_claim_len = claim_len
-            shortest_indep_claim_number = claim_number
+            shortest_indep_claim_number_by_len = claim_number
         
         # TODO: Support other claim types. MPEP 2106.03.
         # Determine type of claim
@@ -520,27 +557,26 @@ for claim_text_with_number in claims_text:
         if args.debug:
             print("Trying regex:", warning['regex'])
         
-        if not warning['regex'].startswith('#'):
-            # For independent claims, skip warnings that only apply to dependent claims.
-            if not(dependent):
-                if ('112(d)' in warning['message']) or ('DEPONLY' in warning['message']) :
-                    continue
-            
-            match_bool, match_str = re_matches(warning['regex'], cleaned_claim_text)
-            message = 'Claim {} recites "{}". {}'.format(claim_number, match_str, warning['message'].split('#')[0].strip())
-            assert_warn(not(match_bool), message, dav_keyword=match_str)
+        # For independent claims, skip warnings that only apply to dependent claims.
+        if not(dependent):
+            if ('112(d)' in warning['message']) or ('DEPONLY' in warning['message']) :
+                continue
+        
+        match_bool, match_str = re_matches(warning['regex'], cleaned_claim_text)
+        message = 'Claim {} recites "{}". {}'.format(claim_number, match_str, warning['message'].split('#')[0].strip())
+        assert_warn(not(match_bool), message, dav_keyword=match_str)
     
     if args.ant_basis:
         if args.debug:
             print("Checking for antecedent basis issues...")
         
         if args.verbose:
-            print("Annotating claim {}...".format(claim_number))
+            print("Marking claim {}...".format(claim_number))
         
-        annotated_claim_text = annotate_claim_text(claim_text)
+        marked_claim_text = mark_claim_text(claim_text)
         
-        new_elements = re.finditer(r"\{.*?\}", annotated_claim_text)
-        old_elements = re.finditer(r"\[.*?\]", annotated_claim_text)
+        new_elements = re.finditer(r"\{.*?\}", marked_claim_text)
+        old_elements = re.finditer(r"\[.*?\]", marked_claim_text)
         
         # Import new elements from parent claims.
         if dependent:
@@ -623,7 +659,19 @@ if args.spec and args.ant_basis:
         elif spec_appearances_of_element[element] <= 2:
             warn("Claim element that appears in the spec 2 or fewer times: {}. Possible weak disclosure for element, leading to 112(a) issues.".format(element), dav_keyword=element)
 
-assert_warn(shortest_indep_claim_number == 1, "Shortest length claim (by characters) is claim {}. However, claim 1 is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(claim_number))
+assert_warn(shortest_indep_claim_number_by_len == 1, "The least restrictive claim (by number of characters) is claim {}. However, claim 1 is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(claim_number))
+
+if args.ant_basis:
+    shortest_indep_claim_elements = 1e6
+    shortest_indep_claim_number_by_elements = 0
+    for claim_number in claim_numbers:
+        number_of_elements = len(new_elements_in_claims[claim_number])
+        
+        if number_of_elements < shortest_indep_claim_elements:
+            shortest_indep_claim_number_by_elements = claim_number
+            shortest_indep_claim_elements = number_of_elements
+    
+    assert_warn(shortest_indep_claim_number_by_elements == 1, "The least restrictive claim (by number of claim elements) is claim {}. However, claim 1 is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(claim_number))
 
 dav_search_string = ''
 for dav_keyword in dav_keywords:
