@@ -31,6 +31,7 @@ import json
 parser = argparse.ArgumentParser(description="patent claim linter: analyzes patent claims for 112(b), 112(d), 112(f), and other issues")
 parser.add_argument("file", help="claim file to read")
 parser.add_argument("-a", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
+#parser.add_argument("-A", "--abstract", help="document abstract for analysis")
 parser.add_argument("-c", "--to-claim", help="stop analysis at this claim number", type=int, default=None)
 parser.add_argument("-C", "--claims-warnings", help="claims warnings file to read", default=None)
 parser.add_argument("-d", "--debug", action="store_true", help="print debugging information; automatically enables verbose flag", default=False)
@@ -41,8 +42,9 @@ parser.add_argument("-n", "--nitpick", action="store_true", help="equivalent to 
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("-r", "--restriction", action="store_true", help="analyze claims for restriction; automatically enables --ant-basis flag", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
+parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.12.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.13.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -265,6 +267,42 @@ def powerset(iterable):
     s = list(iterable)  # allows duplicate elements
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
+def load_warnings_file(file_to_load):
+    # Opening CSV file.
+    # Needs to be "MS-DOS" format, not UTF-8. For some reason the really old version of Python the USPTO has doesn't like Unicode CSV files.
+
+    # Check that it only has two columns first.
+    with open(file_to_load, 'r', encoding="ascii") as warnings_csv_file:
+        csv_reader = csv.reader(warnings_csv_file, delimiter=",")
+        
+        for row in csv_reader:
+            assert len(row) == 2, "The warnings file should have two columns. This line does not: "+row[0]
+
+    with open(file_to_load, 'r', encoding="ascii") as warnings_csv_file:
+        warnings_csv = csv.DictReader(warnings_csv_file, delimiter=",")
+        warnings = []
+        prev_regex = ''
+        line_num = 1
+        warnings_commented_out = 0
+        for warning in warnings_csv:
+            if args.force:
+                if warning['regex'].startswith('#'):
+                    warning['regex'] = warning['regex'][1:]
+            
+            if not warning['regex'].startswith('#'):
+                assert warning['regex'] != prev_regex, "Duplicate regex in warnings file: {}".format(warning['regex'])
+                prev_regex = warning['regex']
+                warnings.append(warning)
+                line_num += 1
+                if args.debug:
+                    print("Reading from warnings file:", line_num, warning['regex'])
+            else:
+                warnings_commented_out += 1
+        
+        print("{} warnings loaded from {}, {} suppressed.\n".format(len(warnings), file_to_load, warnings_commented_out))
+    
+    return warnings
+
 if args.test:
     match_bool, match_str = re_matches('\\btest\\b', 'This is a test.')
     assert match_bool
@@ -305,7 +343,14 @@ if args.file.endswith('.json'):
     
     args.file = None
     
+    all_args = set()
+    for arg in dir(args):
+        if not arg.startswith("_"):
+            all_args.add(arg)
+    
     for key in data:
+        assert key in all_args, "JSON input file has name which is not a valid command line argument: {}".format(key)
+        
         if (getattr(args, key) == False) or (getattr(args, key) is None):
             if args.debug:
                 print("Setting {}: {}".format(key, data[key]))
@@ -350,38 +395,7 @@ if not os.path.isfile(args.claims_warnings):
     eprint('Warnings file does not exist:', args.claims_warnings)
     sys.exit(1)
 
-# Opening CSV file.
-# Needs to be "MS-DOS" format, not UTF-8. For some reason the really old version of Python the USPTO has doesn't like Unicode CSV files.
-
-# Check that it only has two columns first.
-with open(args.claims_warnings, 'r', encoding="ascii") as warnings_csv_file:
-    csv_reader = csv.reader(warnings_csv_file, delimiter=",")
-    
-    for row in csv_reader:
-        assert len(row) == 2, "The warnings file should have two columns. This line does not: "+row[0]
-
-with open(args.claims_warnings, 'r', encoding="ascii") as warnings_csv_file:
-    warnings_csv = csv.DictReader(warnings_csv_file, delimiter=",")
-    warnings = []
-    prev_regex = ''
-    line_num = 1
-    warnings_commented_out = 0
-    for warning in warnings_csv:
-        if args.force:
-            if warning['regex'].startswith('#'):
-                warning['regex'] = warning['regex'][1:]
-        
-        if not warning['regex'].startswith('#'):
-            assert warning['regex'] != prev_regex, "Duplicate regex in warnings file: {}".format(warning['regex'])
-            prev_regex = warning['regex']
-            warnings.append(warning)
-            line_num += 1
-            if args.debug:
-                print("Reading from warnings file:", line_num, warning['regex'])
-        else:
-            warnings_commented_out += 1
-    
-    print("{} claim warnings loaded, {} suppressed.\n".format(len(warnings), warnings_commented_out))
+warnings = load_warnings_file(args.claims_warnings)
 
 # Set the use_outfile after checking that the file exists, otherwise, if the claims file doesn't exist, the error message will be printed to the output file.
 use_outfile = args.outfile
@@ -405,6 +419,23 @@ indep_claim_types = {}
 # global variables
 number_of_warnings = 0
 dav_keywords       = set()
+
+if not args.title is None:
+    args.title = args.title.lower().strip()
+    
+    title_warnings_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'title'+file_ext)
+    
+    title_warnings = load_warnings_file(title_warnings_file)
+    
+    assert_warn(len(args.title) <= 500, "The title is {} characters long. The maximum title length under 37 CFR 1.72 is 500 characters. See MPEP 606.".format(len(args.title)))
+    
+    for title_warning in title_warnings:
+        if args.debug:
+            print("Trying regex:", warning['regex'])
+        
+        match_bool, match_str = re_matches(title_warning['regex'], args.title)
+        message = 'Title recites "{}". {}'.format(match_str, title_warning['message'].split('#')[0].strip())
+        assert_warn(not(match_bool), message)
 
 if args.debug:
     print("Constructing list with text of claims including number...")
@@ -685,7 +716,11 @@ if dav_search_string != "":
     eprint("\nDAV claims viewer search string:", dav_search_string)
 
 if args.restriction:
-    eprint("Elements-only restriction analysis:\n")
+    eprint('"Catalog of parts" restriction analysis:\n')
+    # I'm calling it the "catalog of parts" restriction analysis as it only looks at identified claim elements and not their functions or how the parts are connected or related. This terminology is used by the following:
+    # <https://www.djstein.com/IP/Files/Landis%20on%20Mechanics%20of%20Patent%20Claim%20Drafting.pdf>
+    # <https://repository.law.uic.edu/ripl/vol13/iss1/2/>
+    # <https://scholarlycommons.law.emory.edu/elj/vol65/iss4/2>
     possible_restriction = False
     for i, claim_combo in enumerate(powerset(indep_claims), 1):
         if len(claim_combo) == 2:

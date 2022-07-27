@@ -1,7 +1,12 @@
 # plint to-do list
 
+- Add documentation for `-t`/`--title`.
 - Formality_Checklist_not_508.pdf
+- Analyze abstract for compliance with rules.
 - The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
+- Create spec.csv for warnings in the spec.
+- Landis on Mechanics of Patent Claim Drafting.pdf
+    - Start at p. 13.
 - <https://www.blinn.edu/writing-centers/pdfs/Vague-Words-Tables.pdf>
     - Start at "Good/Great".
 - <https://www.logic.at/lomorevi/LoMoReVI/The%20Vague%20Expression%20of%20Quantity.pdf>
@@ -13,7 +18,7 @@
     - `.`
     - alternatives like (case A|case B)
     - not matching these cases like `\bup to (?!including|excluding|and including|and excluding)\b`
-    - matching anything between: `.*`, `(.+?)`, `\w*` others that are more narrow?
+    - matching anything between: `.*`, `(.+?)`, `\w*`, others that are more narrow?
 - Check existing rules to see if they can be made more narrow with the `?!` notation to exclude certain valid forms. I recall wanting to do something like this before but not figuring out the right regex.
     - Things with the message "Possible indefinite parameter if type not specified" could meet this. For example, "volumetric flow rate" should not match but "flow rate" by itself should match.
     - Also, check things with messages like "Possibly indefinite if what the aperture/apertures is/are in or between is not stated." "aperture in" should not match.
@@ -132,7 +137,6 @@
     - <https://www.dictionary.com/e/s/contronyms/>
     - <https://en.wiktionary.org/wiki/Appendix:English_contranyms>
     - <https://en.wikipedia.org/wiki/Auto-antonym>
-- Analyze title and abstract for compliance with rules.
 - Add commonly misunderstood words to plint. Lots of phrases you can find under "ambig" in the bmtreport diction file.
 - Enablement
     - Detect prophetic examples.
@@ -181,9 +185,6 @@
     - `(heating|cooking) [...] (to|at) (a|the) temperature`
     - `(heated|cooked) (to|at) (a|the) temperature`
 - As a joke, add CPC classes below the version number in the README.md file.
-- Create title.csv and spec.csv for warnings in the title and spec respectively
-- title.csv:
-    - <https://www.uspto.gov/web/offices/pac/mpep/s606.html>
 - `--unity` for unity of invention analysis. Requires marking the novel elements in the claims with `@`.
 - trademarks
     - `\bband.aid\b` - adhesive bandage
@@ -246,9 +247,11 @@ Make patent drafting diction database. Put appropriate case law in the comment. 
 - Detect criticality in the specification.
 - Have two CSV files for the specification. One looks for things like limiting phrases which are not relevant to patent examination. The other looks for things like criticality that are relevant to examination.
 - Lexicographic definition identification for spec.
-    - meaning, means (likely many false positives), `\b(definitions?|defines?|defined|defining)\b`, `\bterms?\b`, terminology, `\bwords?\b`, `\bphrases?\b`
+    - meaning, `\bmeans (?!for|to)\b` (to reduce false positives, though likely this still has many false positives), `\b(definitions?|defines?|defined|defining)\b`, `\bterms?\b`, terminology, `\bwords?\b`, `\bphrases?\b`
     - Check for quotes: `"`, `“`, `”`
     - US20200208875A1 para. 0055: > Here, the heat-insulating side plates 61 are used with the meaning of side plates to which the heat-insulating pipes 50 are disposed to be adjacent, rather than the meaning of side plates that reduce the amount of heat transferred to the outside, thereby achieving thermal insulation.
         - This one was annoying!
     - Print entire line with definition in the output? Many lines will have multiple matches, so probably best to first identify all matching lines, and then print those lines. That would avoid duplicates.
+    - <https://www.djstein.com/IP/Files/Landis%20on%20Mechanics%20of%20Patent%20Claim%20Drafting.pdf>
+        - > As used in this description and in the appended claims, the word X means Y.
 - Separate DAV search string for the spec?
