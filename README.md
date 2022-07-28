@@ -21,7 +21,7 @@ plint can analyze a text file containing patent claims for the following:
 - [restrictions](#restriction-checking)
 - [claim formalities](#hard-coded-checks)
 
-By default, plint will emulate a nitpicky examiner. When making the default claims warning file (claims.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. claims.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possible face. If this is too nitpicky for your tastes, you're welcome to make your own warnings file or modify the existing file. plint is highly customizable.
+By default, plint will emulate a nitpicky examiner. When making the default claims warning file (claims.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. claims.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possibly face. If this is too nitpicky for your tastes, you're welcome to make your warnings file or modify the existing file. plint is highly customizable.
 
 plint is designed to run on the ancient version of Python the USPTO has on their computers, so plint won't use the latest features of Python. And the USPTO Python version is limited to the standard library, so NLTK can not be used.
 
@@ -73,7 +73,7 @@ When examining patents, I typically save the patent claims to a file named {appl
 
     plint --ant-basis --debug --uspto --endings .\16811358-claims.txt
 
-As discussed above, `-d` is debug mode, which will enabled verbose mode as well. Debug and verbose modes display more information, and this extra information may be useful when iteratively marking the claims.
+As discussed above, `-d` is debug mode, which will enable verbose mode as well. Debug and verbose modes display more information, and this extra information may be useful when iteratively marking the claims.
 
 Once I am confident that I marked the claim for antecedent basis properly, I will remove the `-d` flag and add `-o` to save the output to a file:
 
