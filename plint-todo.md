@@ -1,6 +1,6 @@
 # plint to-do list
 
-- Add documentation for `-t`/`--title`.
+- Add documentation for the lexicographic definition detector.
 - Formality_Checklist_not_508.pdf
 - Analyze abstract for compliance with rules.
 - The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
@@ -11,10 +11,13 @@
     - Start at "Good/Great".
 - <https://www.logic.at/lomorevi/LoMoReVI/The%20Vague%20Expression%20of%20Quantity.pdf>
 - <https://www.google.com/search?q=inherently+vague+adjectives>
+- <https://www.w3schools.com/jsref/jsref_regexp_whitespace.asp>
+    - use `\s` instead of space
 - Add an intro to regex in the docs:
     - `\b`
     - `\B`
     - `\w`
+    - `\s`
     - `.`
     - alternatives like (case A|case B)
     - not matching these cases like `\bup to (?!including|excluding|and including|and excluding)\b`
@@ -161,9 +164,10 @@
     - `\b(standard|normal) (temperature and pressure|pressure and temperature|temperature|pressure|temp\.|pres\.)\b`
         - `\b(STP|NTP)\b`
         - <https://en.wikipedia.org/wiki/Standard_temperature_and_pressure>
-        - not ambiguous: negative pressure (if known as static, dynamic, total, etc.)
+        - not ambiguous: negative pressure (if known whether static, stagnation, dynamic, total, etc.)
     - \b(?!absolute |relative |specific )humidity\b
         - <https://en.wikipedia.org/wiki/Humidity>
+    - <https://en.wikipedia.org/wiki/Degree_day>
 - `\b(operably|operatively)\b`
     - For example: operably coupled
         - \b(operably|operatively) (coupled|connected|coupling|connecting|joined|joining)\b
@@ -247,8 +251,8 @@ Make patent drafting diction database. Put appropriate case law in the comment. 
 - Detect criticality in the specification.
 - Have two CSV files for the specification. One looks for things like limiting phrases which are not relevant to patent examination. The other looks for things like criticality that are relevant to examination.
 - Lexicographic definition identification for spec.
-    - meaning, `\bmeans (?!for|to)\b` (to reduce false positives, though likely this still has many false positives), `\b(definitions?|defines?|defined|defining)\b`, `\bterms?\b`, terminology, `\bwords?\b`, `\bphrases?\b`
-    - Check for quotes: `"`, `“`, `”`
+    - `\bmeans (?!for|to)\b` (to reduce false positives, though likely this still has many false positives)
+    - Check for quotes? `"`, `“`, `”`
     - US20200208875A1 para. 0055: > Here, the heat-insulating side plates 61 are used with the meaning of side plates to which the heat-insulating pipes 50 are disposed to be adjacent, rather than the meaning of side plates that reduce the amount of heat transferred to the outside, thereby achieving thermal insulation.
         - This one was annoying!
     - Print entire line with definition in the output? Many lines will have multiple matches, so probably best to first identify all matching lines, and then print those lines. That would avoid duplicates.

@@ -1,5 +1,5 @@
 {
-    "file": "demo-claims.txt",
+    "claims": "demo-claims.txt",
     "ant_basis": true,
     "title": "A novel title"
 }

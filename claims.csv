@@ -57,6 +57,7 @@ regex,message
 \bclose to\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bcold\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bcommonly\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\bcompact\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \bcomparable\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bcomparatively\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(complete|completion|completing)\b,Possible subjective term. See MPEP 2173.05(b)(IV).
@@ -266,6 +267,7 @@ regex,message
 \b(persistent|persistently)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bpliable\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16162122, found definite in Niazi Licensing Corp. v. St. Jude Medical S.C., Inc., Case No. 21-1864 (Fed. Cir. Apr. 11, 2022)."
 \bporous\b,Possibly indefinite functional language. See MPEP 2173.05(g).
+\b(portable|mobile|transportable)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bpractically\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \b(predetermined|pre-determined)\b,"Possibly indefinite if how the element is predetermined is not discussed in the specifications. See PTAB decision in app. no. 15/359,628. # Also: MOPP 14.129, US6767556A"
 \b(predominantly|predominant)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).

@@ -29,7 +29,7 @@ from itertools import chain, combinations
 import json
 
 parser = argparse.ArgumentParser(description="patent claim linter: analyzes patent claims for 112(b), 112(d), 112(f), and other issues")
-parser.add_argument("file", help="claim file to read")
+parser.add_argument("claims", help="claims file to read")
 parser.add_argument("-a", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
 #parser.add_argument("-A", "--abstract", help="document abstract for analysis")
 parser.add_argument("-c", "--to-claim", help="stop analysis at this claim number", type=int, default=None)
@@ -44,7 +44,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.13.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.14.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -328,10 +328,10 @@ if args.test:
     
     exit()
 
-if args.file.endswith('.json'):
+if args.claims.endswith('.json'):
     # Instead of using command line flags, get configuration from JSON file.
     
-    json_file = copy.deepcopy(args.file)
+    json_file = copy.deepcopy(args.claims)
     
     data = json.load(open(json_file))
     
@@ -341,7 +341,7 @@ if args.file.endswith('.json'):
     if args.debug:
         print("Reading configuration from JSON input file...")
     
-    args.file = None
+    args.claims = None
     
     all_args = set()
     for arg in dir(args):
@@ -351,16 +351,17 @@ if args.file.endswith('.json'):
     for key in data:
         assert key in all_args, "JSON input file has name which is not a valid command line argument: {}".format(key)
         
-        if (getattr(args, key) == False) or (getattr(args, key) is None):
+        if (getattr(args, key) == False) or (getattr(args, key) is None) or (getattr(args, key) == []):
             if args.debug:
                 print("Setting {}: {}".format(key, data[key]))
             
             setattr(args, key, data[key])
     
-    assert not(args.file is None), "Claim file not set in JSON file."
+    assert not(args.claims is None), "Claims file not set in JSON file."
+    assert isinstance(args.filter, list), "In the JSON file, the name 'filter' must be an array."
 
 if args.debug:
-    print("Reading {}...".format(args.file))
+    print("Reading {}...".format(args.claims))
 
 rule_filters = args.filter
 
@@ -387,8 +388,8 @@ if not args.claims_warnings.endswith(file_ext):
     eprint('Warnings file must be a {} file:'.format(file_ext), args.claims_warnings)
     sys.exit(1)
 
-if not os.path.isfile(args.file):
-    eprint('Claims file does not exist:', args.file)
+if not os.path.isfile(args.claims):
+    eprint('Claims file does not exist:', args.claims)
     sys.exit(1)
 
 if not os.path.isfile(args.claims_warnings):
@@ -400,7 +401,7 @@ warnings = load_warnings_file(args.claims_warnings)
 # Set the use_outfile after checking that the file exists, otherwise, if the claims file doesn't exist, the error message will be printed to the output file.
 use_outfile = args.outfile
 if use_outfile:
-    outfile = args.file+'.out'
+    outfile = args.claims+'.out'
     open(outfile, 'w').close()
 
 prev_claim_number      = 0
@@ -437,10 +438,26 @@ if not args.title is None:
         message = 'Title recites "{}". {}'.format(match_str, title_warning['message'].split('#')[0].strip())
         assert_warn(not(match_bool), message)
 
+if not args.spec is None:
+    # Check for lexicographic definitions.
+    with open(args.spec, "r", encoding="utf-8") as spec_file:
+        line = spec_file.readline()
+        
+        while line:
+            line = line.replace('\n', '')
+            
+            result = re.search(r"\b(i\.e\.|, that is|meaning|means (?!for|to)|definitions?|defines?|defined|defining|terms?|terminology|phrases?)\b", line)
+            
+            if not result is None:
+                warn("Spec. line with possible lexicographic definition: {}".format(line))
+            
+            # Advance line
+            line = spec_file.readline()
+
 if args.debug:
     print("Constructing list with text of claims including number...")
 
-with open(args.file) as claim_file:
+with open(args.claims) as claim_file:
     line = claim_file.readline()
     
     while line:
@@ -716,76 +733,79 @@ if dav_search_string != "":
     eprint("\nDAV claims viewer search string:", dav_search_string)
 
 if args.restriction:
-    eprint('"Catalog of parts" restriction analysis:\n')
-    # I'm calling it the "catalog of parts" restriction analysis as it only looks at identified claim elements and not their functions or how the parts are connected or related. This terminology is used by the following:
-    # <https://www.djstein.com/IP/Files/Landis%20on%20Mechanics%20of%20Patent%20Claim%20Drafting.pdf>
-    # <https://repository.law.uic.edu/ripl/vol13/iss1/2/>
-    # <https://scholarlycommons.law.emory.edu/elj/vol65/iss4/2>
-    possible_restriction = False
-    for i, claim_combo in enumerate(powerset(indep_claims), 1):
-        if len(claim_combo) == 2:
-            claim_list = list(claim_combo)
-            #print("Claim combination being analyzed for restrictions: {}".format(claim_list))
-            
-            claim_X = claim_list[0]
-            claim_Y = claim_list[1]
-            
-            claim_X_elements = set(new_elements_in_claims[claim_X].keys())
-            claim_Y_elements = set(new_elements_in_claims[claim_Y].keys())
-            
-            common_elements = set()
-            claim_X_unique_elements = copy.deepcopy(claim_X_elements)
-            claim_Y_unique_elements = copy.deepcopy(claim_Y_elements)
-            
-            for claim_X_element in claim_X_elements:
-                if claim_X_element in claim_Y_unique_elements:
-                    claim_Y_unique_elements.remove(claim_X_element)
-                    common_elements.add(claim_X_element)
-            
-            for claim_Y_element in claim_Y_elements:
-                if claim_Y_element in claim_X_unique_elements:
-                    claim_X_unique_elements.remove(claim_Y_element)
-            
-            eprint("Category of claim {}: {}".format(claim_X, indep_claim_types[claim_X]))
-            eprint("Category of claim {}: {}".format(claim_Y, indep_claim_types[claim_Y]))
-            eprint("Elements common to claims {} and {}: {}".format(claim_X, claim_Y, common_elements))
-            eprint("Elements unique to claim {}: {}".format(claim_X, claim_X_unique_elements))
-            eprint("Elements unique to claim {}: {}".format(claim_Y, claim_Y_unique_elements))
-            
-            if len(common_elements) == 0:
-                warn("Possible restriction. Claims {} and {} may be unrelated/independent. See MPEP 806.06. Check for dependent linking claims.".format(claim_X, claim_Y))
-                possible_restriction = True
-            
-            # Situations considered here:
-            # 
-            # ABbr = claim X
-            # Bsp = claim Y
-            # A = claim_X_unique_elements
-            # Bbr = common_elements
-            # Bsp - Bbr = claim_Y_unique_elements
-            # 
-            # or
-            # 
-            # ABbr = claim Y
-            # Bsp = claim X
-            # A = claim_Y_unique_elements
-            # Bbr = common_elements
-            # Bsp - Bbr = claim_X_unique_elements
-            # 
-            # All that needs to be shown is that there are common elements (Bbr), and there are extra elements corresponding to A and Bsp - Br in claims X and Y. Which claims correspond to A and Bsp does not matter.
-            if (len(claim_X_unique_elements) > 0) and (len(claim_Y_unique_elements) > 0) and (len(common_elements) > 0) and (indep_claim_types[claim_X] == indep_claim_types[claim_Y]):
-                warn("Possible restriction. {} claims {} and {} may be related as combination-subcombination. See MPEP 806.05(c). Check for dependent linking claims.".format(indep_claim_types[claim_X].capitalize(), claim_X, claim_Y))
-                possible_restriction = True
-            
-            # Though the `(len(claim_X_unique_elements) > 0) or (len(claim_Y_unique_elements) > 0)` part is not necessarily required, without it, this is likely to return many false positives. Process claims which merely repeat the product claim are not likely to be restrictable, so the extra condition in the first sentence is practically necessary
-            if (((indep_claim_types[claim_X] == 'method') and (indep_claim_types[claim_Y] == 'apparatus')) or ((indep_claim_types[claim_X] == 'apparatus') and (indep_claim_types[claim_Y] == 'method'))) and (len(common_elements) > 0) and ((len(claim_X_unique_elements) > 0) or (len(claim_Y_unique_elements) > 0)):
-                warn("Possible restriction. {} claim {} and {} claim {} may be related as a distinct product and process pair. See MPEP 806.05(e)-806.05(i). Check for dependent linking claims.".format(indep_claim_types[claim_X].capitalize(), indep_claim_types[claim_Y], claim_X, claim_Y))
-                possible_restriction = True
-            
-            eprint()
-    
-    if not(possible_restriction):
-        eprint("No restriction appears possible on the basis of claim elements alone. Relationships between the elements or functions of the elements might allow a restriction.\n")
+    if len(indep_claims) > 1:
+        eprint('\n"Catalog of parts" restriction analysis:\n')
+        # I'm calling it the "catalog of parts" restriction analysis as it only looks at identified claim elements and not their functions or how the parts are connected or related. This terminology is used by the following:
+        # <https://www.djstein.com/IP/Files/Landis%20on%20Mechanics%20of%20Patent%20Claim%20Drafting.pdf>
+        # <https://repository.law.uic.edu/ripl/vol13/iss1/2/>
+        # <https://scholarlycommons.law.emory.edu/elj/vol65/iss4/2>
+        possible_restriction = False
+        for i, claim_combo in enumerate(powerset(indep_claims), 1):
+            if len(claim_combo) == 2:
+                claim_list = list(claim_combo)
+                #print("Claim combination being analyzed for restrictions: {}".format(claim_list))
+                
+                claim_X = claim_list[0]
+                claim_Y = claim_list[1]
+                
+                claim_X_elements = set(new_elements_in_claims[claim_X].keys())
+                claim_Y_elements = set(new_elements_in_claims[claim_Y].keys())
+                
+                common_elements = set()
+                claim_X_unique_elements = copy.deepcopy(claim_X_elements)
+                claim_Y_unique_elements = copy.deepcopy(claim_Y_elements)
+                
+                for claim_X_element in claim_X_elements:
+                    if claim_X_element in claim_Y_unique_elements:
+                        claim_Y_unique_elements.remove(claim_X_element)
+                        common_elements.add(claim_X_element)
+                
+                for claim_Y_element in claim_Y_elements:
+                    if claim_Y_element in claim_X_unique_elements:
+                        claim_X_unique_elements.remove(claim_Y_element)
+                
+                eprint("Category of claim {}: {}".format(claim_X, indep_claim_types[claim_X]))
+                eprint("Category of claim {}: {}".format(claim_Y, indep_claim_types[claim_Y]))
+                eprint("Elements common to claims {} and {}: {}".format(claim_X, claim_Y, common_elements))
+                eprint("Elements unique to claim {}: {}".format(claim_X, claim_X_unique_elements))
+                eprint("Elements unique to claim {}: {}".format(claim_Y, claim_Y_unique_elements))
+                
+                if len(common_elements) == 0:
+                    warn("Possible restriction. Claims {} and {} may be unrelated/independent. See MPEP 806.06. Check for dependent linking claims.".format(claim_X, claim_Y))
+                    possible_restriction = True
+                
+                # Situations considered here:
+                # 
+                # ABbr = claim X
+                # Bsp = claim Y
+                # A = claim_X_unique_elements
+                # Bbr = common_elements
+                # Bsp - Bbr = claim_Y_unique_elements
+                # 
+                # or
+                # 
+                # ABbr = claim Y
+                # Bsp = claim X
+                # A = claim_Y_unique_elements
+                # Bbr = common_elements
+                # Bsp - Bbr = claim_X_unique_elements
+                # 
+                # All that needs to be shown is that there are common elements (Bbr), and there are extra elements corresponding to A and Bsp - Br in claims X and Y. Which claims correspond to A and Bsp does not matter.
+                if (len(claim_X_unique_elements) > 0) and (len(claim_Y_unique_elements) > 0) and (len(common_elements) > 0) and (indep_claim_types[claim_X] == indep_claim_types[claim_Y]):
+                    warn("Possible restriction. {} claims {} and {} may be related as combination-subcombination. See MPEP 806.05(c). Check for dependent linking claims.".format(indep_claim_types[claim_X].capitalize(), claim_X, claim_Y))
+                    possible_restriction = True
+                
+                # Though the `(len(claim_X_unique_elements) > 0) or (len(claim_Y_unique_elements) > 0)` part is not necessarily required, without it, this is likely to return many false positives. Process claims which merely repeat the product claim are not likely to be restrictable, so the extra condition in the first sentence is practically necessary
+                if (((indep_claim_types[claim_X] == 'method') and (indep_claim_types[claim_Y] == 'apparatus')) or ((indep_claim_types[claim_X] == 'apparatus') and (indep_claim_types[claim_Y] == 'method'))) and (len(common_elements) > 0) and ((len(claim_X_unique_elements) > 0) or (len(claim_Y_unique_elements) > 0)):
+                    warn("Possible restriction. {} claim {} and {} claim {} may be related as a distinct product and process pair. See MPEP 806.05(e)-806.05(i). Check for dependent linking claims.".format(indep_claim_types[claim_X].capitalize(), indep_claim_types[claim_Y], claim_X, claim_Y))
+                    possible_restriction = True
+                
+                eprint()
+        
+        if not(possible_restriction):
+            warn("No restriction appears possible on the basis of claim elements alone. Relationships between the elements or functions of the elements might allow a restriction. A species election may be possible as well.\n")
+    else:
+        warn("\nOnly one independent claim. A species election may be possible.")
 
 if args.uspto:
     if (number_of_indep_claims >= 4) and (number_of_dep_claims >= 25):

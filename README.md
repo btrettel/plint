@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.13.0
+Current version: 0.14.0
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -249,13 +249,21 @@ A verbose mode which prints additional information can be enabled with `-V` or `
 For convenience, rather than keeping track of a large number of command line arguments, a JSON input file can be used where the names correspond to the (long) command line arguments. For example, `plint --ant-basis demo-claims.txt` is equivalent to running `plint demo.json` where demo.json is as follows:
 
     {
-        "file": "demo-claims.txt",
+        "claims": "demo-claims.txt",
         "ant_basis": true
     }
 
 The short command line arguments will not work in the JSON file. For example, replacing `ant_basis` with `"a": true`
 
 If command line arguments conflict with the JSON file, the command line argument will be used, not what is written in the JSON file. The command line arguments override the JSON file.
+
+### Title checking
+
+The `-t` or `--title` command line flag will enable checking the title, which is given as the command line argument:
+
+    plint --title "A novel title" demo-claims.txt
+
+Per MPEP 606, titles should not start with "An" or contain the word "novel", so this example would return two warnings.
 
 ## Exit statuses
 
@@ -269,3 +277,4 @@ If command line arguments conflict with the JSON file, the command line argument
 - jplatpat-to-brs.py: Convert a search result CSV file from J-PlatPat to a list of JP patent document IDs in BRS format, that is, that can be read by PE2E Search.
 - TODO: Implementation of [search theory from Philip M. Morse](https://apps.dtic.mil/sti/citations/AD0702920) to more efficiently search.
 - TODO: Write script to figure out which documents from J-PlatPat aren't on PE2E Search.
+- TODO: Script to identify which C*s are not on my portfolio and which have low hours. Take the portfolio JSON file and the CSV classification picture export as inputs.
