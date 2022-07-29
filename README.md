@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.14.1
+Current version: 0.14.2
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -203,7 +203,11 @@ At present, plint won't work with nested elements. For example: `a center of the
 
 ## Specification checking
 
-If the optional `-s` or `--spec` flag is provided with a text file containing the specification of the patent application, plint will perform additional checks against the specifications. At the moment, this feature will do nothing unless the antecedent basis checking feature is also used. If both the specification checking and antecedent basis checking features are used, plint will check to make sure that all elements mentioned in the claims are present in the specification.
+If the optional `-s` or `--spec` flag is provided with a text file containing the specification of the patent application, plint will perform additional checks against the specifications.
+
+The specification will be checked for paragraphs containing possible lexicographic definitions.
+
+If both the specification checking and antecedent basis checking features are used, plint will check to make sure that all elements mentioned in the claims are present in the specification.
 
 ## Restriction checking
 
