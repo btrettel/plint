@@ -1,10 +1,12 @@
 # plint to-do list
 
+- Make README.md consistent about plint vs. plint.py in the shell command.
 - Instead of making the claims lowercase, use case insensitive regex. <https://stackoverflow.com/a/500870>
 - Check species elections for language in the spec that could indicate a species election is possible.
     - embodiment?
     - high number of figures could indicate a species election is possible
     - Check if this text appears in the "BRIEF DESCRIPTION OF THE DRAWINGS" section or a similarly titled section?
+        - Identify section headings by text being in all caps? Look for a line containing "DRAWINGS"?
     - US20200030830A1/16577150: > FIG. 3A shows the same perspective view of the lower valve member without the upstream flow restriction fingers.
         - number followed by letter could indicate an alternative embodiment?
     - `$(fig\.|figure) \d\b.*\b(alternative|alternate|another)\b^`
