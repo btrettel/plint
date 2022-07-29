@@ -217,6 +217,15 @@
     - <http://www.intelproplaw.com/ip_forum/index.php/topic,31337.0.html>
 - <https://en.wikipedia.org/wiki/Polysemy>
     - <https://stackoverflow.com/questions/22016273/list-of-polysemy-words>
+- Check patents on patent drafting for more:
+    - US5754840A
+    - US5774833A
+    - US6049811A
+    - US6298327B1
+    - US6574645B2
+    - US20030196173A1
+    - US20040059567A1
+    - US20190340217A1
 
 ## Specification
 
