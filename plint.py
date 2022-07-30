@@ -44,7 +44,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.14.2")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.15")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -66,7 +66,7 @@ def warn(message, dav_keyword=None):
     else:
         display_warning = True
         for rule_filter in rule_filters:
-            if re.search(rule_filter, message):
+            if re.search(rule_filter, message, flags=re.IGNORECASE):
                 display_warning = False
         if display_warning:
             eprint(message)
@@ -80,10 +80,10 @@ def assert_warn(bool_input, message, dav_keyword=None):
         warn(message, dav_keyword=dav_keyword)
 
 def re_matches(regex, text):
-    if re.search(regex, text) is None:
+    if re.search(regex, text, flags=re.IGNORECASE) is None:
         return False, None
     else:
-        match_str = re.search(regex, text).group()
+        match_str = re.search(regex, text, flags=re.IGNORECASE).group()
         return True, match_str
 
 def remove_punctuation(text):
@@ -113,8 +113,6 @@ def remove_ab_notation(text):
     return cleaned_text
 
 def mark_claim_text(claim_text):
-    claim_text = claim_text.lower()
-    
     if args.debug:
         print("Input claim text:", claim_text)
         print("Marking plural claim element starting terms...")
@@ -137,10 +135,10 @@ def mark_claim_text(claim_text):
             # This is done iteratively because when the text is marked, some of the starting positions change. The first iteration changes the first one that needs to be changed, the second changes the second one, etc.
             
             # Identify all instances of a plural starting term using regex to properly get the word boundaries.
-            res_alls = re.finditer("\\b{}\\b".format(plural_starting_term), claim_text)
+            res_alls = re.finditer("\\b{}\\b".format(plural_starting_term), claim_text, flags=re.IGNORECASE)
             
             # Identify all instances of a plural starting term prefixed with the, said, [, or {.
-            res_dones = re.finditer("(\\bthe |\\bsaid |\[|\{)"+plural_starting_term+"\\b", claim_text)
+            res_dones = re.finditer("(\\bthe |\\bsaid |\[|\{)"+plural_starting_term+"\\b", claim_text, flags=re.IGNORECASE)
             done_starts = set()
             if not(res_dones is None):
                 for res_done in res_dones:
@@ -174,21 +172,29 @@ def mark_claim_text(claim_text):
         print("Marking singular claim element starting terms...")
     
     # Mark "a"
+    claim_text = re.sub("\\bA \\b", "A {", claim_text)
     claim_text = re.sub("\\ba \\b", "a {", claim_text)
     
     # Mark "an"
+    claim_text = re.sub("\\bAn \\b", "An {", claim_text)
     claim_text = re.sub("\\ban \\b", "an {", claim_text)
     
     # Mark "the"
+    claim_text = re.sub("\\bThe \\b", "The [", claim_text)
     claim_text = re.sub("\\bthe \\b", "the [", claim_text)
     
     # Mark "said"
+    claim_text = re.sub("\\bSaid \\b", "Said [", claim_text)
     claim_text = re.sub("\\bsaid \\b", "said [", claim_text)
     
     # Remove markings for commented out terms.
+    claim_text = re.sub("\#A \{", "A ", claim_text)
     claim_text = re.sub("\#a \{", "a ", claim_text)
+    claim_text = re.sub("\#An \{", "An ", claim_text)
     claim_text = re.sub("\#an \{", "an ", claim_text)
+    claim_text = re.sub("\#The \[", "The ", claim_text)
     claim_text = re.sub("\#the \[", "the ", claim_text)
+    claim_text = re.sub("\#Said \[", "Said ", claim_text)
     claim_text = re.sub("\#said \[", "said ", claim_text)
     
     if args.debug:
@@ -422,7 +428,7 @@ number_of_warnings = 0
 dav_keywords       = set()
 
 if not args.title is None:
-    args.title = args.title.lower().strip()
+    args.title = args.title.strip()
     
     title_warnings_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'title'+file_ext)
     
@@ -446,7 +452,7 @@ if not args.spec is None:
         while line:
             line = line.replace('\n', '')
             
-            result = re.search(r"\b(i\.e\.|, that is|meaning|means (?!for|to)|definitions?|defines?|defined|defining|terms?|terminology|phrases?)\b", line)
+            result = re.search(r"\b(i\.e\.|, that is|meaning|means (?!for|to)|definitions?|defines?|defined|defining|terms?|terminology|phrases?)\b", line, flags=re.IGNORECASE)
             
             if not result is None:
                 warn("Spec. line with possible lexicographic definition: {}".format(line))
@@ -493,7 +499,7 @@ for claim_text_with_number in claims_text:
     claim_number_str = claim_text_with_number.split('.', 1)[0]
     claim_text = claim_text_with_number.split('.', 1)[1].strip()
     claim_words = claim_text.split(' ')
-    cleaned_claim_text = remove_ab_notation(claim_text.lower())
+    cleaned_claim_text = remove_ab_notation(claim_text)
     
     assert claim_number_str.isdigit(), 'Invalid claim number: {}'.format(claim_number_str)
     
@@ -527,7 +533,7 @@ for claim_text_with_number in claims_text:
         
         indep_claims.add(claim_number)
         
-        assert_warn(cleaned_claim_text.startswith('a ') or cleaned_claim_text.startswith('an '), "Independent claim {} does not start with 'A' or 'An'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
+        assert_warn(cleaned_claim_text.startswith('A ') or cleaned_claim_text.startswith('An '), "Independent claim {} does not start with 'A' or 'An'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
         
         # Keep track of which claim is shortest. This only checks independent claims since the shortest claim must be an independent claim.
         if claim_len < shortest_indep_claim_len:
@@ -539,7 +545,7 @@ for claim_text_with_number in claims_text:
         
         # TODO: Support other claim types. MPEP 2106.03.
         # Determine type of claim
-        if re.search("\\bmethod\\b", cleaned_claim_text) or re.search("\\bprocess\\b", cleaned_claim_text):
+        if re.search("\\bmethod\\b", cleaned_claim_text) or re.search("\\bprocess\\b", cleaned_claim_text, flags=re.IGNORECASE):
             indep_claim_types[claim_number] = 'method'
         else:
             indep_claim_types[claim_number] = 'apparatus'
@@ -577,7 +583,7 @@ for claim_text_with_number in claims_text:
     if args.endings:
         # Check for adverbs.
         # <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>
-        possible_adverbs_iter = re.finditer(r"\b\w*ly\b", cleaned_claim_text)
+        possible_adverbs_iter = re.finditer(r"\b\w*ly\b", cleaned_claim_text, flags=re.IGNORECASE)
         
         for possible_adverb_iter in possible_adverbs_iter:
             possible_adverb = possible_adverb_iter.group()
@@ -590,7 +596,7 @@ for claim_text_with_number in claims_text:
         
         # Check for present participle phrases, which could indicate likely functional language.
         # <https://www.ssiplaw.com/112f-has-a-hair-trigger-avoiding-means-plus-function-misfires/>
-        possible_functional_terms_iter = re.finditer(r"\b\w*ing\b", cleaned_claim_text)
+        possible_functional_terms_iter = re.finditer(r"\b\w*ing\b", cleaned_claim_text, flags=re.IGNORECASE)
         
         for possible_functional_term_iter in possible_functional_terms_iter:
             possible_functional_term = possible_functional_term_iter.group()
@@ -623,8 +629,8 @@ for claim_text_with_number in claims_text:
         
         marked_claim_text = mark_claim_text(claim_text)
         
-        new_elements = re.finditer(r"\{.*?\}", marked_claim_text)
-        old_elements = re.finditer(r"\[.*?\]", marked_claim_text)
+        new_elements = re.finditer(r"\{.*?\}", marked_claim_text, flags=re.IGNORECASE)
+        old_elements = re.finditer(r"\[.*?\]", marked_claim_text, flags=re.IGNORECASE)
         
         # Import new elements from parent claims.
         if dependent:
@@ -733,6 +739,56 @@ if dav_search_string != "":
     eprint("\nDAV claims viewer search string:", dav_search_string)
 
 if args.restriction:
+    if not args.spec is None:
+        eprint('\nSpecies election analysis (see MPEP 806.04):\n')
+        
+        # Check for phrases in the spec that could indicate a species election is possible. For now this checks if certain text appears in the "BRIEF DESCRIPTION OF THE DRAWINGS" section or a similarly titled section.
+        
+        no_possible_species_elections_detected = True
+        
+        with open(args.spec, "r", encoding="utf-8") as spec_file:
+            line = spec_file.readline()
+            
+            in_drawings_section = False
+            
+            while line:
+                line = line.replace('\n', '').strip()
+                
+                if line.isupper():
+                    if args.debug:
+                        print("New section:", line)
+                    
+                    if re.search(r"\b(DRAWINGS|FIGURES)\b", line):
+                        in_drawings_section = True
+                        if args.debug:
+                            print("Drawings section detected.")
+                    else:
+                        in_drawings_section = False
+                
+                # - US20200030830A1: > FIG. 3A shows the same perspective view of the lower valve member without the upstream flow restriction fingers.
+                #   - number followed by letter could indicate an alternative embodiment?
+                # - `^(fig\.|figure) \d.*\b(alternative|alternate|another|further|optional)\b^`
+                #   - US20200298253A1, US20190321835A1, US20200301454A1, US20210170426A1, US20200238317A1, US20200129996A1, US20200068820A1 (fig. 8)
+                #   - also: yet another
+                # - `^(fig\.|figure) \d.*\b(second|third|fourth|fifth|sixth) embodiment\b`
+                #   - US20210031223A1, US20170120285A1
+                # - Species election based on paragraphs of specification:
+                #   - US20200238317A1
+                # - Unclear how to handle: US20200246764A1, US20210387211A1, US20200282410A1, US20200068820A1, US20220048367A1
+                
+                if in_drawings_section:
+                    if args.debug:
+                        print("In drawings section:", line)
+                    if re.search(r"^(fig\.|figure) \d.*\b(alternative|alternate|another|further|optional)\b^", line, flags=re.IGNORECASE) or re.search(r"^(fig\.|figure) \d.*\b(second|third|fourth|fifth|sixth) embodiment\b", line, flags=re.IGNORECASE):
+                        warn("Possible species election: {}".format(line))
+                        no_possible_species_elections_detected = False
+                
+                # Advance line
+                line = spec_file.readline()
+        
+        if no_possible_species_elections_detected:
+            eprint("No possible species elections detected. These can usually be found by looking at the figures.")
+    
     if len(indep_claims) > 1:
         eprint('\n"Catalog of parts" restriction analysis:\n')
         # I'm calling it the "catalog of parts" restriction analysis as it only looks at identified claim elements and not their functions or how the parts are connected or related. This terminology is used by the following:

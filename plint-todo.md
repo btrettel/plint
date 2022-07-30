@@ -1,19 +1,5 @@
 # plint to-do list
 
-- Make README.md consistent about plint vs. plint.py in the shell command.
-- Instead of making the claims lowercase, use case insensitive regex. <https://stackoverflow.com/a/500870>
-- Check species elections for language in the spec that could indicate a species election is possible.
-    - embodiment?
-    - high number of figures could indicate a species election is possible
-    - Check if this text appears in the "BRIEF DESCRIPTION OF THE DRAWINGS" section or a similarly titled section?
-        - Identify section headings by text being in all caps? Look for a line containing "DRAWINGS"?
-    - US20200030830A1/16577150: > FIG. 3A shows the same perspective view of the lower valve member without the upstream flow restriction fingers.
-        - number followed by letter could indicate an alternative embodiment?
-    - `$(fig\.|figure) \d\b.*\b(alternative|alternate|another)\b^`
-        - US20200298253A1/16826964
-        - also: yet another
-    - Unclear how to handle:
-        - US20200246764A1/16782646
 - Formality_Checklist_not_508.pdf
 - Analyze abstract for compliance with rules.
 - The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
@@ -217,15 +203,6 @@
     - <http://www.intelproplaw.com/ip_forum/index.php/topic,31337.0.html>
 - <https://en.wikipedia.org/wiki/Polysemy>
     - <https://stackoverflow.com/questions/22016273/list-of-polysemy-words>
-- Check patents on patent drafting for more:
-    - US5754840A
-    - US5774833A
-    - US6049811A
-    - US6298327B1
-    - US6574645B2
-    - US20030196173A1
-    - US20040059567A1
-    - US20190340217A1
 
 ## Specification
 

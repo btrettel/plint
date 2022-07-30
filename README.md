@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.14.2
+Current version: 0.15.0
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -53,11 +53,11 @@ If you want to run the script directly instead of through Python, you can add ;.
 
 Then I can run plint as follows:
 
-    plint.py .\claims.txt
+    plint .\claims.txt
 
 ### Linux
 
-On Linux, the plint.py script can be run from the directory it is in as follows:
+On Linux, the plint script can be run from the directory it is in as follows:
 
     ./plint.py claims.txt
 
@@ -118,11 +118,11 @@ Warnings with warning text containing the terms "112(d)" or "DEPONLY" will only 
 
 Warnings can be disabled from the command line by filtering out any part of the warning message printed using the `--filter` flag followed by one or more regular expressions. For example, to filter out all warnings containing the text "112(f)":
 
-    plint.py claims.txt --filter "112\(f\)"
+    plint claims.txt --filter "112\(f\)"
 
 Then no warnings where the text contains "112(f)" will be printed. (The quotes are necessary to prevent the shell from interpreting the parentheses. And the parentheses are escaped as parentheses have a special function in regular expressions.) Multiple filters can be applied as well:
 
-    plint.py claims.txt --filter "112\(f\)" antecedent
+    plint claims.txt --filter "112\(f\)" antecedent
 
 (As can be seen, no quotes or parentheses are necessary for single words without any special characters like "antecedent". However, multiple words will require quotes, for example: "antecedent basis" should be quoted.)
 
@@ -193,7 +193,7 @@ As commas, semi-colons, colons, and the end of a claim terminate claim elements,
 
 Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print how plint is interpreting the claim when doing the antecedent basis analysis. For example, plint's interpretation of the demo claim is:
 
-    Claim 1 marked: a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue.
+    Claim 1 marked: A {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue.
 
 ### Shortcomings of the antecedent basis checker
 
@@ -215,6 +215,8 @@ Analysis possibly useful to identify restrictions will be performed if the `-r` 
 
 As plint's restriction checking only looks at claim elements, and not relationships between the elements, it is not a complete analysis.
 
+If both the `-s`/`--spec` and `-r`/`--restriction` flags are enabled, a rudimentary analysis of the specification will be made to identify possible species elections.
+
 ## DAV claims viewer search string
 
 If any warnings are printed, plint will display a string which can be pasted into the DAV claims viewer to highlight the terms found to have issues in the claims.
@@ -223,7 +225,7 @@ If any warnings are printed, plint will display a string which can be pasted int
 
 The optional `-o` or `--outfile` flag will write the warnings and DAV claims viewer search string to `{file}.out`, where `file` is the input file. For example, the following will write to `claims.txt.out`:
 
-    plint.py claims.txt --outfile
+    plint claims.txt --outfile
 
 ## Other features of plint
 
