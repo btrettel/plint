@@ -1,5 +1,9 @@
 # plint to-do list
 
+- Check that term is in external dictionary.
+    - <https://www.uspto.gov/web/patents/classification/glossary/index.htm>
+    - <https://www.ashrae.org/technical-resources/authoring-tools/terminology>
+    - schecter_using_2013 fig. 2 is nice.
 - Formality_Checklist_not_508.pdf
 - Analyze abstract for compliance with rules.
 - The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
@@ -19,6 +23,7 @@
     - `\s`
     - `\d`
     - `.`
+    - > "B followed by 2 vowels followed by ld" → "B[aeiou]{2}ld"
     - alternatives like (case A|case B)
     - not matching these cases like `\bup to (?!including|excluding|and including|and excluding)\b`
     - matching anything between: `.*`, `(.+?)`, `\w*`, others that are more narrow?
