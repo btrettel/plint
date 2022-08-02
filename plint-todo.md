@@ -1,5 +1,6 @@
 # plint to-do list
 
+- Figure out how to make `\b(?!such |so )that\b` work. With this I intended to match all instances of "that" but not "such that" or "so that".
 - Check that term is in external dictionary.
     - <https://www.uspto.gov/web/patents/classification/glossary/index.htm>
     - <https://www.ashrae.org/technical-resources/authoring-tools/terminology>
@@ -17,12 +18,17 @@
 - <https://www.w3schools.com/jsref/jsref_regexp_whitespace.asp>
     - use `\s` instead of space
 - Add an intro to regex in the docs:
+    - <https://javascript.info/regexp-quantifiers>
     - `\b`
     - `\B`
     - `\w`
     - `\s`
     - `\d`
     - `.`
+    - `*`
+    - `+`
+    - `?`
+    - `{n}`
     - > "B followed by 2 vowels followed by ld" → "B[aeiou]{2}ld"
     - alternatives like (case A|case B)
     - not matching these cases like `\bup to (?!including|excluding|and including|and excluding)\b`
@@ -208,6 +214,7 @@
     - <http://www.intelproplaw.com/ip_forum/index.php/topic,31337.0.html>
 - <https://en.wikipedia.org/wiki/Polysemy>
     - <https://stackoverflow.com/questions/22016273/list-of-polysemy-words>
+- Replace `\b(between|from (.+?) to (.+?))\b` with a similar rule that requires numbers to be present.
 
 ## Specification
 

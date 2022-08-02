@@ -44,7 +44,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.15")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.16.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -322,7 +322,7 @@ if args.test:
     # Test marked claim.
     marked_claim_text = mark_claim_text(claim_text)
     
-    assert marked_claim_text == "a {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue."
+    assert marked_claim_text == "A {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue."
     
     claim_text = "This is a test. `Commented out`"
     
@@ -438,7 +438,7 @@ if not args.title is None:
     
     for title_warning in title_warnings:
         if args.debug:
-            print("Trying regex:", warning['regex'])
+            print("Trying regex:", title_warning['regex'])
         
         match_bool, match_str = re_matches(title_warning['regex'], args.title)
         message = 'Title recites "{}". {}'.format(match_str, title_warning['message'].split('#')[0].strip())
@@ -554,7 +554,7 @@ for claim_text_with_number in claims_text:
         dependent = True
         number_of_dep_claims += 1
         
-        assert_warn(cleaned_claim_text.startswith('the '), "Dependent claim {} does not start with 'The'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
+        assert_warn(cleaned_claim_text.startswith('The '), "Dependent claim {} does not start with 'The'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
         
         if 'claims' in cleaned_claim_text:
             warn("Claim {} is possibly multiple dependent. Manually check validity. See MPEP 608.01(i).".format(claim_number))
@@ -602,7 +602,7 @@ for claim_text_with_number in claims_text:
             possible_functional_term = possible_functional_term_iter.group()
             
             # To reduce false positives, allow certain -ing words that aren't functional.
-            if possible_functional_term in {'comprising', 'including', 'casing'}:
+            if possible_functional_term in {'comprising', 'including', 'casing', 'having', 'consisting', 'containing', 'opening', 'during', 'according', 'providing'}:
                 continue
             
             warn('Claim {} recites "{}". Possible functional language due to present participle wording.'.format(claim_number, possible_functional_term), dav_keyword=possible_functional_term)
@@ -861,7 +861,7 @@ if args.restriction:
         if not(possible_restriction):
             warn("No restriction appears possible on the basis of claim elements alone. Relationships between the elements or functions of the elements might allow a restriction. A species election may be possible as well.\n")
     else:
-        warn("\nOnly one independent claim. A species election may be possible.")
+        warn("\nRestriction analysis: Only one independent claim. A species election may be possible.")
 
 if args.uspto:
     if (number_of_indep_claims >= 4) and (number_of_dep_claims >= 25):
