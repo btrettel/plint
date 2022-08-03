@@ -44,7 +44,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.16.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.17.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -367,6 +367,7 @@ if args.claims.endswith('.json'):
     assert isinstance(args.filter, list), "In the JSON file, the name 'filter' must be an array."
 
 if args.debug:
+    print(args)
     print("Reading {}...".format(args.claims))
 
 rule_filters = args.filter
@@ -452,7 +453,7 @@ if not args.spec is None:
         while line:
             line = line.replace('\n', '')
             
-            result = re.search(r"\b(i\.e\.|, that is|meaning|means (?!for|to)|definitions?|defines?|defined|defining|terms?|terminology|phrases?)\b", line, flags=re.IGNORECASE)
+            result = re.search(r"\b(i\.e\.|, that is\b|meaning\b|means(?! for| to)\b|definitions?\b|defines?\b|defined\b|defining\b|terms?\b|termed\b|terminology\b|phrases?\b|in other words\b|known as\b|called\b|named\b|so.called\b|simply put\b|put differently\b|that is to say\b|namely\b|otherwise stated\b|in short\b|alternatively stated\b|put it differently\b|identified\b|referred to as\b|designated\b)", line, flags=re.IGNORECASE)
             
             if not result is None:
                 warn("Spec. line with possible lexicographic definition: {}".format(line))
@@ -711,7 +712,7 @@ if args.spec and args.ant_basis:
         if spec_appearances_of_element[element] == 0:
             warn("Claim element that does not appear in the spec: {}. Possible drawing objection if element not in drawing. See MPEP 608.02(d). Possible weak disclosure for element, leading to 112(a) issues.".format(element), dav_keyword=element)
         elif spec_appearances_of_element[element] <= 2:
-            warn("Claim element that appears in the spec 2 or fewer times: {}. Possible weak disclosure for element, leading to 112(a) issues.".format(element), dav_keyword=element)
+            warn("Claim element that appears in the spec 1 or 2 times: {}. Possible weak disclosure for element, leading to 112(a) issues.".format(element), dav_keyword=element)
 
 assert_warn(shortest_indep_claim_number_by_len == 1, "The least restrictive claim (by number of characters) is claim {}. However, claim 1 is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(claim_number))
 

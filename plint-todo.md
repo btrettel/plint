@@ -1,13 +1,27 @@
 # plint to-do list
 
+- Analyze abstract for compliance with rules.
+- The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
+- From PE2E DAV on abstracts:
+    - > No legal phraseology found by system-scan
+        - MPEP 608.01(b): > The form and legal phraseology often used in patent claims, such as "means" and "said," should be avoided.
+            - means, said, comprising
+    - > No implied phrase(s) found by system-scan
+- Redundant in abstract:
+    - MPEP 608.01(b): > It should avoid using phrases which can be implied, such as, "This disclosure concerns," "The disclosure defined by this invention," "This disclosure describes," etc.
+    - US7291497B2: > The invention relates to
+- Sort DAV search string by number of appearances.
+- For `--spec`, also check that each element has a reference number. If an element does not, that could indicate a drawing objection is needed for that element.
 - Figure out how to make `\b(?!such |so )that\b` work. With this I intended to match all instances of "that" but not "such that" or "so that".
+    - `\b(?<!such\s|so\s)that\b`: > sre_constants.error: look-behind requires fixed-width pattern
+    - <https://stackoverflow.com/a/50550499>
+    - <https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch05s06.html>
+    - <https://stackoverflow.com/q/20089922>
 - Check that term is in external dictionary.
     - <https://www.uspto.gov/web/patents/classification/glossary/index.htm>
     - <https://www.ashrae.org/technical-resources/authoring-tools/terminology>
     - schecter_using_2013 fig. 2 is nice.
 - Formality_Checklist_not_508.pdf
-- Analyze abstract for compliance with rules.
-- The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
 - Create spec.csv for warnings in the spec.
 - Landis on Mechanics of Patent Claim Drafting.pdf
     - Start at p. 13.
@@ -19,6 +33,7 @@
     - use `\s` instead of space
 - Add an intro to regex in the docs:
     - <https://javascript.info/regexp-quantifiers>
+    - <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet>
     - `\b`
     - `\B`
     - `\w`
@@ -53,7 +68,6 @@
 - <https://medium.com/analysts-corner/holy-ambiguity-crapman-ec15c77dc880>
     - Discusses why minimum and maximum can be indefinite.
     - On the indefiniteness of minimum and maximum, also see: berry_from_2003
-- For `--spec`, also check that each element has a reference number. If an element does not, that could indicate a drawing objection is needed for that element.
 - Reorganize code to have unit tests for everything including the antecedent basis checking.
     - particular warning.csv entries
     - antecedent basis
