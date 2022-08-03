@@ -1,5 +1,7 @@
 # plint to-do list
 
+- From 2021-05-05 art unit meeting: integral (can be multiple parts connected into one) vs. monolithic (single piece, molded as one piece)
+    - <http://allthingspros.blogspot.com/2014/08/ptab-integral-claim-construction.html>
 - Analyze abstract for compliance with rules.
 - The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
 - From PE2E DAV on abstracts:
