@@ -1,5 +1,6 @@
 # plint to-do list
 
+- `(\bpercent|%)\sincrease/decrease` and `increase/decrease\sof\s\d*(\spercent|%)`: This is ambiguous. Is it multiplicative or additive?
 - Result effective variable (REV):
     - e.g.: may be varied, are varied
     - (may OR can OR are) ADJ2 (vary OR varied)
@@ -301,4 +302,6 @@ Make patent drafting diction database. Put appropriate case law in the comment. 
     - Print entire line with definition in the output? Many lines will have multiple matches, so probably best to first identify all matching lines, and then print those lines. That would avoid duplicates.
     - <https://www.djstein.com/IP/Files/Landis%20on%20Mechanics%20of%20Patent%20Claim%20Drafting.pdf>
         - > As used in this description and in the appended claims, the word X means Y.
+    - <https://patentdefenses.klarquist.com/how-construed/>
+        - > Use Of “i.e.” In Spec. Or Prosecution May Be Deemed Definitional
 - Separate DAV search string for the spec?
