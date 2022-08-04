@@ -36,7 +36,7 @@ regex,message
 \bbeside\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bbetter\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \b(between|from \d+.* to \d+)\b,Possibly indefinite if giving a numerical range and it is unclear whether the end points are included in the range. # https://medium.com/analysts-corner/holy-ambiguity-crapman-ec15c77dc880
-\b/\b,"For A/B, it is possibly unclear whether the limitation means A and B are synonyms, both A and B are required (prefer 'and' in this case), either A or B are required (prefer 'or' in this case), A is the opposite of B (for example, 'approving/disapproving changes'), or 'A/B' is the name of the item. # gleich_ambiguity_2010, <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>"
+\b/\b,"For A/B, it is possibly unclear whether the limitation means A and B are synonyms, both A and B are required (prefer 'and' in this case), either A or B are required (prefer 'or' in this case), A is the opposite of B (for example, 'approving/disapproving changes'), or 'A/B' is the name of the item. # gleich_ambiguity_2010, <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>, <https://patentdefenses.klarquist.com/how-construed/>"
 \bbig\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bBluetooth\b,"Possible trademark or trade name in claim. See MPEP 2173.05(u) and FP 07-35-01. Likely acceptable as it refers to a standard. # MOPP 14.137"
 \bbottom\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity. # MOPP 14.131
@@ -140,7 +140,7 @@ regex,message
 \bgreatly\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bgrooves?\b,Possibly indefinite if what the groove/grooves is/are in or between is not stated.
 \bhard\b,Possible subjective term. See MPEP 2173.05(b)(IV).
-\b(having|has)\b,"Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV. # <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>, <http://digital-law-online.info/lpdi1.0/treatise55.html>: open like comprising, PIY 1997 p. 9/18R: 'having only' is closed like consisting of, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
+\b(having|has)\b,"Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV. # <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>, <http://digital-law-online.info/lpdi1.0/treatise55.html>, <https://www.bpmlegal.com/content/patgloss>: open like comprising, <https://patentdefenses.klarquist.com/how-construed/>: ambiguous, PIY 1997 p. 9/18R: 'having only' is closed like consisting of, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
 \bheat capacity\b,"Possible indefinite parameter if type not specified (constant pressure or constant volume). # EPO GL F-IV, 4.11 on parameters in general, 17/179,850"
 \bheavily\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bheavy\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -158,7 +158,7 @@ regex,message
 \b(important|critical)\b,Possible subjective term. See MPEP 2173.05(b)(IV). # <https://www.b2ipreport.com/swip-report/claim-term-important-leads-to-indefiniteness/>
 \b(improved|improvement|improvements)\b,Possible Jepson format claim. See MPEP 2173.III. # 16197089
 #\bin\b,"Possible overly narrow term. See MPEP 2111.02 if in preamble. # EPO GL F-IV, 4.6.1: 'the use of the word 'in' sometimes makes it unclear whether protection is sought for the improvement only or for all the features defined in the claim', wipo_wipo_2022 3.5. Disabled as there were too many false positives."
-#\b(including|includes|include)\b,"Non-standard open transitional phrase. See MPEP 2111.03.I. # <http://digital-law-online.info/lpdi1.0/treatise55.html>: open like comprising, PIY 1997 p. 9/18R: open like comprising, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
+#\b(including|includes|include)\b,"Non-standard open transitional phrase. See MPEP 2111.03.I. # <http://digital-law-online.info/lpdi1.0/treatise55.html>, PIY 1997 p. 9/18R, <https://www.bpmlegal.com/content/patgloss>: open like comprising, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
 \bInconel\b,"Possible trademark or trade name in claim. See MPEP 2173.05(u) and FP 07-35-01."
 \b(inconsiderable|inconsiderably)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bincreased(?! from)\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).

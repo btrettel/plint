@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.17.0
+Current version: 0.17.1
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -69,17 +69,55 @@ Alternatively, you can add the directory plint.py is in to your PATH and then ru
 
 ### How I use plint
 
-When examining patents, I typically save the patent claims to a file named {application number}-claims.txt. For example, for application number 16811358, I will save 16811358-claims.txt. I then mark the claims for the antecedent basis checker as described below. This will require some iteration to get right, so I will run plint as follows, modify the claim marking in response to the warnings and parsing errors displayed, and repeat until plint parses the entire claim set:
+When examining patents, I typically save the independent claims to a file named {application number}-claims.txt and the specification to {application number}-spec.txt. For example, for application number 16811358, I will save 16811358-claims.txt and 16811358-spec.txt. I will then create a [JSON file](#json-input-file) containing plint's configuration for this application. The JSON file in this example is 16811358.json:
 
-    plint --ant-basis --debug --uspto --endings .\16811358-claims.txt
+    {
+        "claims": "16811358-claims.txt",
+        "ant_basis": true,
+        "title": "Gas heater, method for operating the gas heater and a gas boiler",
+        "spec": "16811358-spec.txt",
+        "uspto": true,
+        "endings": true,
+        "restriction": true,
+        "debug": true
+    }
 
-As discussed above, `-d` is debug mode, which will enable verbose mode as well. Debug and verbose modes display more information, and this extra information may be useful when iteratively marking the claims.
+I then mark the claims for the antecedent basis checker [as described below](#antecedent-basis-checking). This will require some iteration to get right, so I will run plint as follows, modify the claim marking in response to the warnings and parsing errors displayed, and repeat until plint parses the independent claims properly:
 
-Once I am confident that I marked the claim for antecedent basis properly, I will remove the `-d` flag and add `-o` to save the output to a file:
+    plint .\16811358.json
 
-    plint -a -o .\16811358-claims.txt
+As discussed below, [debug mode](#verbose-and-debug-modes) is enabled, which will enable verbose mode as well. Debug and verbose modes display more information, and this extra information may be useful when iteratively marking the claims. Once the claims are marked up, I typically remove the debug line in the JSON file.
 
-Then I will check each line in 16811358-claims.txt. Most of the warnings will not lead to rejections or objections, but all should be checked. After reading the warnings, I may decide to mark the claim differently if plint is still not interpreting the claim properly.
+Once I am confident that I marked the claims for antecedent basis properly, I will remove the `debug` flag and add the `outfile` flag to save the output to a file, so the JSON file is now:
+
+    {
+        "claims": "16811358-claims.txt",
+        "ant_basis": true,
+        "title": "Gas heater, method for operating the gas heater and a gas boiler",
+        "spec": "16811358-spec.txt",
+        "uspto": true,
+        "endings": true,
+        "restriction": true,
+        "outfile": true
+    }
+
+I will run plint on only the independent claims at first to identify possible restrictions. This will save time as if I restrict out certain claims, I don't want to waste the time marking them. If no restrictions appear possible, I will add the remaining claims to the claims text file and mark them for antecedent basis checking.
+
+Then I will check each line in 16811358-claims.txt.out. Most of the warnings will not lead to rejections or objections, but all should be checked. After reading the warnings, I may decide to mark the claim differently if plint is still not interpreting the claim properly. I will add filters as appropriate if I'm finding the output contains many false positives for a particular term, for example:
+
+    {
+        "claims": "16811358-claims.txt",
+        "ant_basis": true,
+        "title": "Gas heater, method for operating the gas heater and a gas boiler",
+        "spec": "16811358-spec.txt",
+        "uspto": true,
+        "endings": true,
+        "restriction": true,
+        "outfile": true,
+        "filter": ["fluidly", "supplying"]
+    }
+
+If any of the settings aren't seen as relevant, for example, `endings` or `restriction`, I remove them from the JSON file.
 
 ## Hard-coded checks
 

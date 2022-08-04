@@ -1,7 +1,20 @@
 # plint to-do list
 
+- Result effective variable (REV):
+    - e.g.: may be varied, are varied
+    - (may OR can OR are) ADJ2 (vary OR varied)
+- similar to predetermined: (set OR pre$1set OR specified OR pre$1determined OR user$1specified)
+- looking for number ranges: between OR (from ADJ2 to) OR "in the range"
+- Looking for motivation: "in order to", possible, advantage, enhancing, enhancement, enhances, improve, improving, improves, advantageous, need, difficult, enabling, solve, problem, deficiencies, unfortunately, problematic, desirable, provide, provides, improved, adverse, beneficial, benefit, hence, therefore, reduce, without, allow, solution
+    - advantag, enhanc, improv, enabl, solv, problem, provide, benefi
+    - common advantages: simple, construction, design, allow
+- In Asian water heater patent documents:
+    - tapping = outlet/hot
+    - return  = inlet
+    - see KR101429896B1 ("a temperature sensor 5 for detecting hot water temperature"; "5: Temperature sensor for tapping temperature detection")
 - From 2021-05-05 art unit meeting: integral (can be multiple parts connected into one) vs. monolithic (single piece, molded as one piece)
     - <http://allthingspros.blogspot.com/2014/08/ptab-integral-claim-construction.html>
+    - integral OR integrally OR integrated OR monobloc OR monolithic
 - Analyze abstract for compliance with rules.
 - The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
 - From PE2E DAV on abstracts:
@@ -231,6 +244,8 @@
 - <https://en.wikipedia.org/wiki/Polysemy>
     - <https://stackoverflow.com/questions/22016273/list-of-polysemy-words>
 - Replace `\b(between|from (.+?) to (.+?))\b` with a similar rule that requires numbers to be present.
+- automatically, portion, others
+    - <https://patentdefenses.klarquist.com/how-construed/>
 
 ## Specification
 
