@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.17.1
+Current version: 0.17.2
 
 plint can analyze a text file containing patent claims for the following:
 

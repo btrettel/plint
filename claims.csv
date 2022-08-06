@@ -209,7 +209,7 @@ regex,message
 \b(micro\b|microscale\b|micro\w*\b),Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bmiddle\b,Possible overly narrow term. Sometimes this is interpreted relative to gravity. Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # MOPP 14.131
 \bmight\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # khoury_unlimitless_2016"
-\b(mini\b|miniature\b|mini\w*\b),Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\b(mini\b|miniature\b),"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # mini\w*\b removed due to minimum being a false positive."
 \b(minute|minutely)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(moderate|moderately)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bmodule\b,Possible functional language with 112(f) invocation. See MPEP 2181.

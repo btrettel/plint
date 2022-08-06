@@ -1,5 +1,8 @@
 # plint to-do list
 
+- above, below, higher, lower, larger, smaller ==> if numerical, suggest less than or greater than
+- examples where "with" is okay: in accordance with, with respect to, associated with
+- option to output cleaned claims (without markings)
 - `(\bpercent|%)\sincrease/decrease` and `increase/decrease\sof\s\d*(\spercent|%)`: This is ambiguous. Is it multiplicative or additive?
 - Result effective variable (REV):
     - e.g.: may be varied, are varied
@@ -118,7 +121,7 @@
         - <https://www.lexisnexisip.com/knowledge-center/avoiding-section-112b-rejections-with-patent-drafting-tools/>
         - <https://www.lexisnexisip.com/knowledge-center/patent-tools-for-avoiding-office-actions/>
     - PatentBots
-        - <https://www.patentbots.com/patentoptimizer-alternative>>
+        - <https://www.patentbots.com/patentoptimizer-alternative>
 - Check papers for more ideas.
     - "Patent Claim Structure Recognition"
     - "The "UNLIMITLESS": On How to Remedy the Inadequacies of a Language-Based System for Patent Claims"
@@ -198,7 +201,7 @@
     - scfm (with no actual standard) vs. mass flow rate
         - <http://btrettel.nerfers.com/archives/72>
         - <https://news.ycombinator.com/item?id=23439304>
-        - \b(scfm|standard cubic feet per minute|standard cfm|normal cubic metre|normal cubic meter)\b
+        - `\b(scfm|standard cubic feet per minute|standard cfm|normal cubic metre|normal cubic meter)\b`
     - confusion of quantities and rates:
         - <https://blog.oppedahl.com/?p=7224>
         - <https://blog.oppedahl.com/?p=7368>
@@ -206,7 +209,7 @@
         - `\b(STP|NTP)\b`
         - <https://en.wikipedia.org/wiki/Standard_temperature_and_pressure>
         - not ambiguous: negative pressure (if known whether static, stagnation, dynamic, total, etc.)
-    - \b(?!absolute |relative |specific )humidity\b
+    - `\b(?!absolute |relative |specific )humidity\b`
         - <https://en.wikipedia.org/wiki/Humidity>
     - <https://en.wikipedia.org/wiki/Degree_day>
 - `\b(operably|operatively)\b`
