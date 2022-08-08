@@ -1,5 +1,7 @@
 # plint to-do list
 
+- Make example outputs in the README file automatically generated.
+- Have option to print associated line numbers in claims.csv for each warning.
 - above, below, higher, lower, larger, smaller ==> if numerical, suggest less than or greater than
 - examples where "with" is okay: in accordance with, with respect to, associated with
 - option to output cleaned claims (without markings)
