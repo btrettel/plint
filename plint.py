@@ -44,7 +44,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.17.2")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.18.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -137,8 +137,8 @@ def mark_claim_text(claim_text):
             # Identify all instances of a plural starting term using regex to properly get the word boundaries.
             res_alls = re.finditer("\\b{}\\b".format(plural_starting_term), claim_text, flags=re.IGNORECASE)
             
-            # Identify all instances of a plural starting term prefixed with the, said, [, or {.
-            res_dones = re.finditer("(\\bthe |\\bsaid |\[|\{)"+plural_starting_term+"\\b", claim_text, flags=re.IGNORECASE)
+            # Identify all instances of a plural starting term prefixed with the, said, [, {, #. (# will be ignored.)
+            res_dones = re.finditer("(\\bthe |\\bsaid |\[|\{|\#)"+plural_starting_term+"\\b", claim_text, flags=re.IGNORECASE)
             done_starts = set()
             if not(res_dones is None):
                 for res_done in res_dones:
@@ -146,7 +146,7 @@ def mark_claim_text(claim_text):
                         len_to_add = 4
                     elif res_done.group().startswith("said "):
                         len_to_add = 5
-                    elif res_done.group().startswith("[") or res_done.group().startswith("{"):
+                    elif res_done.group().startswith("[") or res_done.group().startswith("{") or res_done.group().startswith("#"):
                         len_to_add = 1
                     else:
                         warn("Unexpected plural starting term article: {}".format(res_done.group()), dav_keyword=res_done.group())
@@ -210,16 +210,20 @@ def mark_claim_text(claim_text):
         char = claim_text[loc]
         
         if (char == ',') or (char == ';') or (char == ':'):
-            if curly_bracket:
-                claim_text = claim_text[0:loc]+"}"+claim_text[loc:]
-                curly_bracket = False
-                loc = loc + 1
-            
-            if square_bracket:
-                claim_text = claim_text[0:loc]+"]"+claim_text[loc:]
-                square_bracket = False
+            if claim_text[loc+1] != '~':
+                if curly_bracket:
+                    claim_text = claim_text[0:loc]+"}"+claim_text[loc:]
+                    curly_bracket = False
+                    loc += 1
                 
-                loc = loc + 1
+                if square_bracket:
+                    claim_text = claim_text[0:loc]+"]"+claim_text[loc:]
+                    square_bracket = False
+                    
+                    loc += 1
+            else:
+                # If next character is '~', don't treat this as the end of a claim element.
+                claim_text = claim_text[0:loc+1]+claim_text[loc+2:]
         if char == '|': # This will exclude the pipe symbol from the output.
             if curly_bracket:
                 claim_text = claim_text[0:loc]+"}"+claim_text[loc+1:]
@@ -423,6 +427,7 @@ shortest_indep_claim_len = 1e6
 shortest_indep_claim_number_by_len = 0
 indep_claims = set()
 indep_claim_types = {}
+parent_claims = {}
 
 # global variables
 number_of_warnings = 0
@@ -571,6 +576,8 @@ for claim_text_with_number in claims_text:
             assert_warn(not(parent_claim == claim_number), "Dependent claim {} depends on itself. Potential 112(d) rejection.".format(claim_number))
             assert_warn(parent_claim < claim_number, "Dependent claim {} depends on claim {}, which is not a preceding claim. See MPEP 608.01(n).IV".format(claim_number, parent_claim))
             assert_warn(parent_claim in claim_numbers, "Dependent claim {} depends on non-existent claim {}. Potential 112(d) rejection.".format(claim_number, parent_claim))
+            
+            parent_claims[claim_number] = parent_claim
     
     if dependent:
         assert not(parent_claim is None), "Parent claim undefined for dependent claim {}?".format(claim_number)
@@ -797,6 +804,30 @@ if args.restriction:
         # <https://www.djstein.com/IP/Files/Landis%20on%20Mechanics%20of%20Patent%20Claim%20Drafting.pdf>
         # <https://repository.law.uic.edu/ripl/vol13/iss1/2/>
         # <https://scholarlycommons.law.emory.edu/elj/vol65/iss4/2>
+        
+        if number_of_dep_claims > 0:
+            # Find all claim elements in claims dependent on each independent claim.
+            
+            claim_group_elements = {}
+            
+            for indep_claim in indep_claims:
+                claim_elements = set(new_elements_in_claims[indep_claim].keys())
+                
+                claim_group_elements[indep_claim] = copy.deepcopy(claim_elements)
+            
+            for dependent_claim in parent_claims:
+                parent_claim = parent_claims[dependent_claim]
+                while not parent_claim in indep_claims:
+                    parent_claim = parent_claims[parent_claim]
+                
+                indep_claim = parent_claim
+                
+                if args.debug:
+                    print("Dependent claim {} depends on independent claim {}".format(dependent_claim, indep_claim))
+                
+                for claim_element in set(new_elements_in_claims[dependent_claim].keys()):
+                    claim_group_elements[indep_claim].add(claim_element)
+        
         possible_restriction = False
         for i, claim_combo in enumerate(powerset(indep_claims), 1):
             if len(claim_combo) == 2:
@@ -824,9 +855,30 @@ if args.restriction:
                 
                 eprint("Category of claim {}: {}".format(claim_X, indep_claim_types[claim_X]))
                 eprint("Category of claim {}: {}".format(claim_Y, indep_claim_types[claim_Y]))
-                eprint("Elements common to claims {} and {}: {}".format(claim_X, claim_Y, common_elements))
-                eprint("Elements unique to claim {}: {}".format(claim_X, claim_X_unique_elements))
-                eprint("Elements unique to claim {}: {}".format(claim_Y, claim_Y_unique_elements))
+                eprint("Elements common to claims {} and {} ({} total): {}".format(claim_X, claim_Y, len(common_elements), common_elements))
+                eprint("Elements unique to claim {} ({} total): {}".format(claim_X, len(claim_X_unique_elements), claim_X_unique_elements))
+                eprint("Elements unique to claim {} ({} total): {}".format(claim_Y, len(claim_Y_unique_elements), claim_Y_unique_elements))
+                
+                if number_of_dep_claims > 0:
+                    claim_X_group_elements = copy.deepcopy(claim_group_elements[claim_X])
+                    claim_Y_group_elements = copy.deepcopy(claim_group_elements[claim_Y])
+                    
+                    group_common_elements = set()
+                    claim_X_group_unique_elements = copy.deepcopy(claim_X_group_elements)
+                    claim_Y_group_unique_elements = copy.deepcopy(claim_Y_group_elements)
+                    
+                    for claim_X_group_element in claim_X_group_elements:
+                        if claim_X_group_element in claim_Y_group_unique_elements:
+                            claim_Y_group_unique_elements.remove(claim_X_group_element)
+                            group_common_elements.add(claim_X_group_element)
+                    
+                    for claim_Y_group_element in claim_Y_group_elements:
+                        if claim_Y_group_element in claim_X_group_unique_elements:
+                            claim_X_group_unique_elements.remove(claim_Y_group_element)
+                    
+                    eprint("Elements common to claims {} and {} and their dependents ({} total): {}".format(claim_X, claim_Y, len(group_common_elements), group_common_elements))
+                    eprint("Elements unique to claim {} and its dependents ({} total): {}".format(claim_X, len(claim_X_group_unique_elements), claim_X_group_unique_elements))
+                    eprint("Elements unique to claim {} and its dependents ({} total): {}".format(claim_Y, len(claim_Y_group_unique_elements), claim_Y_group_unique_elements))
                 
                 if len(common_elements) == 0:
                     warn("Possible restriction. Claims {} and {} may be unrelated/independent. See MPEP 806.06. Check for dependent linking claims.".format(claim_X, claim_Y))

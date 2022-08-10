@@ -231,6 +231,7 @@ regex,message
 \bneighborhood of\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bneighbour\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bnext to\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
+\b(nominally|nominal)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 "\bnon-transient\b","Saying 'non-transitory' would be safer as 'non-transitory' is explicitly in the USPTO eligibility memo and 'non-transient' is not, but this is considered synonymous according to the PTAB in app. no. 10/993,472 (see pp. 4-5)."
 \bnormal\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bnormally\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.

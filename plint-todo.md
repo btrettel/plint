@@ -1,5 +1,8 @@
 # plint to-do list
 
+- Make plint automatically recognize claim elements that were previously introduced, so you only need to introduce each claim element once. That'll save a lot of time.
+- Do restriction analysis including dependent claims? List the additional elements in a different set, for example: "Elements common to claims 1 to 13" vs. "Elements common to claims 1 to 13 and their dependents", "Elements unique to claim 1" vs. "Elements unique to claim 1's dependents".
+    - Update README.md after adding this feature.
 - Make example outputs in the README file automatically generated.
 - Have option to print associated line numbers in claims.csv for each warning.
 - above, below, higher, lower, larger, smaller ==> if numerical, suggest less than or greater than
@@ -20,7 +23,12 @@
     - see KR101429896B1 ("a temperature sensor 5 for detecting hot water temperature"; "5: Temperature sensor for tapping temperature detection")
 - From 2021-05-05 art unit meeting: integral (can be multiple parts connected into one) vs. monolithic (single piece, molded as one piece)
     - <http://allthingspros.blogspot.com/2014/08/ptab-integral-claim-construction.html>
-    - integral OR integrally OR integrated OR monobloc OR monolithic
+    - integral OR integrally OR integrated OR monobloc OR monolithic OR seamless OR unitary
+    - <https://patents.google.com/patent/US8375897B2/en
+        > The term “seamless” is used herein to describe a tube that includes no circumferential welded joints joining segments of the tube together, and is not intended to exclude tubes that have longitudinal (whether welded or not) seams created by forming the flue tube into a cylinder from a flat or curved sheet of metal.
+    - unitary: <https://patentlyo.com/patent/2022/04/arguing-construction-choose.html>
+        - > Claims 8 & 9, do provide for unitary bodies that are machined/stamped “from a single, contiguous piece of conductive material.”
+    - <https://www.powerthesaurus.org/unitary/synonyms>
 - Analyze abstract for compliance with rules.
 - The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
 - From PE2E DAV on abstracts:

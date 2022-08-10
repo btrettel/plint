@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.17.2
+Current version: 0.18.0
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -204,6 +204,7 @@ If a specific claim element is introduced more than once, a warning will be prin
 - Sometimes getting plint to properly parse claim elements requires adding text. Text put between backticks (`` ` ``) will be added to the claim for the antecedent basis check but not used otherwise. Here are some examples:
     - The limitation "upper and lower nozzles" should introduce an "upper nozzle" and a "lower nozzle". So, "upper and lower nozzles" could be marked as `` {upper `nozzle| `and {lower nozzles!| ``.
     - Sometimes claim elements are introduced properly as a plural element but later referred in plural. For example, a claim may introduce "adjacent TMEs" but later refer to "each adjacent TME". The latter can be marked as `` each {adjacent TME`s`| `` to add the plural for the antecedent basis checker.
+- Sometimes claim elements contain a semi-colon, comma, or colon. For example, a claim may introduce "a fully deployed, closed position". The comma can be ignored by adding `~` after it: `a fully deployed,~ closed position|`.
 
 See [demo-claims.txt](demo-claims.txt) below for the basic notation (`|`) in use.
 
@@ -307,7 +308,7 @@ The `-t` or `--title` command line flag will enable checking the title, which is
 
     plint --title "A novel title" demo-claims.txt
 
-Per MPEP 606, titles should not start with "An" or contain the word "novel", so this example would return two warnings.
+Per MPEP 606, titles should not start with "A" or contain the word "novel", so this example would return two warnings.
 
 ## Exit statuses
 
