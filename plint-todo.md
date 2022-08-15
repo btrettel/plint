@@ -1,5 +1,10 @@
 # plint to-do list
 
+- Add expectancy to JSON input file. Make plint list number of hours to allocate to searching based on the number of words in each claim.
+- `(fluidly connected|fluid connection)`
+    - <http://www.intelproplaw.com/ip_forum/index.php?topic=31706.0>
+        - > As I use it, fluidly connected means that fluid is able to flow from one component to another, but the two components need not be physically connected to one another.  For instance, a vehicle radiator is fluidly connected to the engine cooling jacket, because coolant is able to flow from one to the other, but they are not physically connected.
+    - I tend to view it as "the two points are connected by a fluid", not that there is flow from one point to another.
 - Make plint automatically recognize claim elements that were previously introduced, so you only need to introduce each claim element once. That'll save a lot of time.
 - Do restriction analysis including dependent claims? List the additional elements in a different set, for example: "Elements common to claims 1 to 13" vs. "Elements common to claims 1 to 13 and their dependents", "Elements unique to claim 1" vs. "Elements unique to claim 1's dependents".
     - Update README.md after adding this feature.
