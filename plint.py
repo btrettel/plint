@@ -44,7 +44,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.19.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.20.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -458,7 +458,7 @@ if not args.spec is None:
         while line:
             line = line.replace('\n', '')
             
-            result = re.search(r"\b(i\.e\.|, that is\b|meaning\b|means(?! for| to)\b|definitions?\b|defines?\b|defined\b|defining\b|terms?\b|termed\b|terminology\b|phrases?\b|in other words\b|known as\b|called\b|named\b|so.called\b|simply put\b|put differently\b|that is to say\b|namely\b|otherwise stated\b|in short\b|alternatively stated\b|put it differently\b|identified\b|referred to as\b|designated|as used herein|as used here\b)", line, flags=re.IGNORECASE)
+            result = re.search(r"\b(i\.e\.|, that is\b|meaning\b|means(?! for| to)\b|definitions?\b|defines?\b|defined\b|defining\b|terms?\b|termed\b|terminology\b|phrases?\b|in other words\b|known as\b|called\b|named\b|so.called\b|simply put\b|put differently\b|that is to say\b|namely\b|otherwise stated\b|in short\b|alternatively stated\b|put it differently\b|identified\b|referred to as\b|designated\b|as used herein\b|as used here\b|as opposed to\b)", line, flags=re.IGNORECASE)
             
             if not result is None:
                 warn("Spec. line with possible lexicographic definition: {}".format(line))
