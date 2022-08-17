@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.21.0
+Current version: 0.22.0
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -20,6 +20,11 @@ plint can analyze a text file containing patent claims for the following:
 - [support for claim terms in the specification](#specification-checking)
 - [restrictions](#restriction-checking)
 - [claim formalities](#hard-coded-checks)
+
+The specification can be analyzed for the following:
+
+- lexicographic definitions
+- possible species elections
 
 By default, plint will emulate a nitpicky examiner. When making the default claims warning file (claims.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. claims.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possibly face. If this is too nitpicky for your tastes, you're welcome to make your own warnings file or modify the existing file. plint is highly customizable.
 
