@@ -1,5 +1,6 @@
 # plint to-do list
 
+- Doubled words like "the the". "and the" appeared in a recent application you worked on, too.
 - Add expectancy to JSON input file. Make plint list number of hours to allocate to searching based on the number of words in each claim.
 - `(fluidly connected|fluid connection)`
     - <http://www.intelproplaw.com/ip_forum/index.php?topic=31706.0>
