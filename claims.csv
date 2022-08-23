@@ -156,7 +156,7 @@ regex,message
 \bi\.e\.\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # Not really exemplary, but still confusing. 16898241"
 \bif necessary\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 \b(important|critical)\b,Possible subjective term. See MPEP 2173.05(b)(IV). # <https://www.b2ipreport.com/swip-report/claim-term-important-leads-to-indefiniteness/>
-\b(improved|improvement|improvements)\b,Possible Jepson format claim. See MPEP 2173.III. # 16197089
+\b(improved|improvement|improvements|improve|improves)\b,"Possible subjective term. See MPEP 2173.05(b)(IV). Possible Jepson format claim. See MPEP 2173.III. # 16197089, 16950528"
 #\bin\b,"Possible overly narrow term. See MPEP 2111.02 if in preamble. # EPO GL F-IV, 4.6.1: 'the use of the word 'in' sometimes makes it unclear whether protection is sought for the improvement only or for all the features defined in the claim', wipo_wipo_2022 3.5. Disabled as there were too many false positives."
 #\b(including|includes|include)\b,"Non-standard open transitional phrase. See MPEP 2111.03.I. # <http://digital-law-online.info/lpdi1.0/treatise55.html>, PIY 1997 p. 9/18R, <https://www.bpmlegal.com/content/patgloss>: open like comprising, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
 \bInconel\b,"Possible trademark or trade name in claim. See MPEP 2173.05(u) and FP 07-35-01."
@@ -174,6 +174,7 @@ regex,message
 \b(insignificant|insignificantly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(instantaneously|instantly|instant|immediate|immediately)\b,Probably never literally true. Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \binstead of\b,"Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # 16910171, <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>"
+\b(intended|intends|intention|intending)\b,"Possible functional clause. Functional language typically is not given weight when it only express intended results and does not limit the structure. See MPEP 2111.04.I.
 \bin the region of\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bit\b,"Possible ambiguous reference. # 16486624, 16434517, 16541109, 16434517"
 \bit's\b,Possible ambiguous reference.
@@ -353,7 +354,7 @@ regex,message
 \bstep for\b,Possible functional language with 112(f) invocation. See MPEP 2181.
 \bstiff\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bstraightforward\b,Possible subjective term. See MPEP 2173.05(b)(IV).
-\bstrong\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # EPO GL F-IV, 4.6.1"
+\b(strong|strongly)\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # EPO GL F-IV, 4.6.1"
 \bstructure\b,Possible functional language with 112(f) invocation. See MPEP 2181.
 \bsturdy\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # alderucci_using_2020
 \bsubstantial\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
@@ -414,7 +415,7 @@ regex,message
 \bvirtually\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bviscosity\b,"Possible indefinite parameter if type not specified (kinematic or dynamic). # EPO GL F-IV, 4.11 on parameters in general, <https://www.carpmaels.com/unclear-essential-parameters/>"
 \bvivid\b,Possible subjective term. See MPEP 2173.05(b)(IV).
-\bweak\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\b(weak|weakly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(when|as|if) desired\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 #\b(wherein|whereby|therein|thereby)\b,"Possible functional clause. Functional language typically is not given weight when it only express intended results and does not limit the structure. See MPEP 2111.04.I. # <https://patentlyo.com/patent/2005/04/patent_claim_co.html>, <https://www.wipo.int/edocs/mdocs/aspac/en/wipo_ip_phl_16/wipo_ip_phl_16_t5.pdf>, <https://patentdefenses.klarquist.com/no-patentable-weight/>. Disabled due to there being too many false positives as whereby other other similar terms are often used to introduce non-functional details as well."
 #\bwhich\b,"Possible ambiguous reference. # <https://www.dictionary.com/e/that-vs-which/> Disabled due to many false positives. "at which" seems okay; see 16801749."
