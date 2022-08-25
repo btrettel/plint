@@ -3,6 +3,10 @@ an enclosure,
 a display,
 at least one button, and
 at least one widget| mounted on the enclosure,
-wherein the enclosure| is green,
-the at least one button| is yellow, and
-the at least one widget| is blue.
+wherein the enclosure is green,
+the at least one button is yellow, and
+the at least one widget is blue.
+
+2. The contraption of claim 1, further comprising:
+a set of feet,
+wherein the set of feet are attached to #the bottom of the enclosure and are black.

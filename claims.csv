@@ -174,7 +174,7 @@ regex,message
 \b(insignificant|insignificantly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(instantaneously|instantly|instant|immediate|immediately)\b,Probably never literally true. Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \binstead of\b,"Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # 16910171, <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>"
-\b(intended|intends|intention|intending)\b,"Possible functional clause. Functional language typically is not given weight when it only express intended results and does not limit the structure. See MPEP 2111.04.I.
+\b(intended|intends|intention|intending)\b,"Possible functional clause. Functional language typically is not given weight when it only express intended results and does not limit the structure. See MPEP 2111.04.I."
 \bin the region of\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bit\b,"Possible ambiguous reference. # 16486624, 16434517, 16541109, 16434517"
 \bit's\b,Possible ambiguous reference.
@@ -273,7 +273,7 @@ regex,message
 \bporous\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \b(portable|mobile|transportable)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bpractically\b,Possible subjective term. See MPEP 2173.05(b)(IV).
-\b(predetermined|pre-determined)\b,"Possibly indefinite if how the element is predetermined is not discussed in the specifications. See PTAB decision in app. no. 15/359,628. # Also: MOPP 14.129, US6767556A"
+\b(predetermined|pre-determined|specified)\b,"Possibly indefinite if how the element is predetermined/specified is not discussed in the specifications. See PTAB decision in app. no. 15/359,628. # Also: MOPP 14.129, US6767556A"
 \b(predominantly|predominant)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(preferably|preferentially)\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # 16608171, 16071100, EPO GL F-IV, 4.9"
 \bpreferred\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # 16434517, EPO GL F-IV, 4.9"

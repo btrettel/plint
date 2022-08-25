@@ -38,13 +38,15 @@ parser.add_argument("-d", "--debug", action="store_true", help="print debugging 
 parser.add_argument("-e", "--endings", action="store_true", help="give warnings for likely adverbs (words ending in -ly) and present participle phrases (words ending in -ing)", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
 parser.add_argument("-F", "--force", action="store_true", help="enable all commented out warnings", default=False)
+parser.add_argument("-m", "--manual-marking", action="store_true", help="don't automatically mark previously introduced claim elements", default=False)
+#parser.add_argument("-N", "--no-auto-mark", help="don't use automatic marking on these claim elements", default=[])
 parser.add_argument("-n", "--nitpick", action="store_true", help="equivalent to --ant-basis --restriction --endings --uspto", default=False)
 parser.add_argument("-o", "--outfile", action="store_true", help="output warnings to {file}.out", default=False)
 parser.add_argument("-r", "--restriction", action="store_true", help="analyze claims for restriction; automatically enables --ant-basis flag", default=False)
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.23.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.24.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -112,7 +114,123 @@ def remove_ab_notation(text):
     
     return cleaned_text
 
-def mark_claim_text(claim_text):
+def bracket_error_str(claim_number, message, loc, claim_text):
+    return 'Claim {}: {}. At index {} with text "{}":\n{}'.format(claim_number, message, loc, claim_text[loc-5:loc+5], claim_text[0:loc]+'*****'+claim_text[loc:])
+
+def mark_new_element_punctuation(claim_text, claim_number):
+    loc = 0
+    curly_bracket = False
+    while loc < len(claim_text):
+        char = claim_text[loc]
+        
+        if (char == ',') or (char == ';') or (char == ':'):
+            if claim_text[loc+1] != '~':
+                if curly_bracket:
+                    claim_text = claim_text[0:loc]+"}"+claim_text[loc:]
+                    curly_bracket = False
+                    loc += 1
+            else:
+                # If next character is '~', don't treat this as the end of a claim element.
+                claim_text = claim_text[0:loc+1]+claim_text[loc+2:]
+        
+        if char == '|': # This will exclude the pipe symbol from the output.
+            if curly_bracket:
+                claim_text = claim_text[0:loc]+"}"+claim_text[loc+1:]
+                curly_bracket = False
+        
+        if char == '!': # This will exclude the exclamation point and the character before it from the output. Then it'll got back one to capture the end of the element properly
+            claim_text = claim_text[0:loc-1]+claim_text[loc+1:]
+            loc -= 2 # Go back two now, will change to just one later when loc += 1 is encountered.
+        elif char == "{":
+            assert not(curly_bracket), bracket_error_str(claim_number, "Curly bracket started inside of curly bracket. Nested claim elements not supported at the moment", loc, claim_text)
+            curly_bracket = True
+        elif char == "}":
+            assert curly_bracket, bracket_error_str(claim_number, "Curly bracket ended without corresponding starting curly bracket", loc, claim_text)
+            curly_bracket = False
+        
+        loc += 1
+    
+    if curly_bracket:
+        claim_text = claim_text[0:loc-1]+"}"+claim_text[loc-1:]
+        curly_bracket = False
+    
+    if args.verbose:
+        print("New element punctuation marking completed:", claim_text)
+    
+    return claim_text
+
+def mark_old_element_punctuation(claim_text, claim_number):
+    loc = 0
+    square_bracket = False
+    while loc < len(claim_text):
+        char = claim_text[loc]
+        
+        if (char == ',') or (char == ';') or (char == ':'):
+            if claim_text[loc+1] != '~':
+                if square_bracket:
+                    claim_text = claim_text[0:loc]+"]"+claim_text[loc:]
+                    square_bracket = False
+                    
+                    loc += 1
+            else:
+                # If next character is '~', don't treat this as the end of a claim element.
+                claim_text = claim_text[0:loc+1]+claim_text[loc+2:]
+        
+        if char == '|': # This will exclude the pipe symbol from the output.
+            if square_bracket:
+                claim_text = claim_text[0:loc]+"]"+claim_text[loc+1:]
+                square_bracket = False
+        
+        if char == '!': # This will exclude the exclamation point and the character before it from the output. Then it'll got back one to capture the end of the element properly
+            claim_text = claim_text[0:loc-1]+claim_text[loc+1:]
+            loc -= 2 # Go back two now, will change to just one later when loc += 1 is encountered.
+        elif char == "[":
+            assert not(square_bracket), bracket_error_str(claim_number, "Square bracket started inside of square bracket. Nested claim elements not supported at the moment", loc, claim_text)
+            square_bracket = True
+        elif char == "]":
+            assert square_bracket, bracket_error_str(claim_number, "Square bracket ended without corresponding starting square bracket", loc, claim_text)
+            square_bracket = False
+        
+        loc += 1
+    
+    if square_bracket:
+        claim_text = claim_text[0:loc-1]+"]"+claim_text[loc-1:]
+        square_bracket = False
+    
+    if args.verbose:
+        print("Old element punctuation marking completed:", claim_text)
+    
+    return claim_text
+
+def check_marking(claim_text, claim_number):
+    loc = 0
+    curly_bracket = False
+    square_bracket = False
+    while loc < len(claim_text):
+        char = claim_text[loc]
+        
+        if char == "{":
+            assert not(curly_bracket), bracket_error_str(claim_number, "Curly bracket started inside of curly bracket. Nested claim elements not supported at the moment", loc, claim_text)
+            assert not(square_bracket), bracket_error_str(claim_number, "Curly bracket started inside of square bracket. Nested claim elements not supported at the moment", loc, claim_text)
+            curly_bracket = True
+        elif char == "}":
+            assert curly_bracket, bracket_error_str(claim_number, "Curly bracket ended without corresponding starting curly bracket", loc, claim_text)
+            assert not(square_bracket), bracket_error_str(claim_number, "Curly bracket ended inside of square bracket. Nested claim elements not supported at the moment", loc, claim_text)
+            curly_bracket = False
+        elif char == "[":
+            assert not(square_bracket), bracket_error_str(claim_number, "Square bracket started inside of square bracket. Nested claim elements not supported at the moment", loc, claim_text)
+            assert not(curly_bracket), bracket_error_str(claim_number, "Square bracket started inside of curly bracket. Nested claim elements not supported at the moment", loc, claim_text)
+            square_bracket = True
+        elif char == "]":
+            assert square_bracket, bracket_error_str(claim_number, "Square bracket ended without corresponding starting square bracket", loc, claim_text)
+            assert not(curly_bracket), bracket_error_str(claim_number, "Square bracket ended inside of curly bracket. Nested claim elements not supported at the moment", loc, claim_text)
+            square_bracket = False
+        
+        loc += 1
+    
+    return claim_text
+
+def mark_claim_text(claim_text, claim_number, new_elements_set):
     if args.debug:
         print("Input claim text:", claim_text)
         print("Marking plural claim element starting terms...")
@@ -201,71 +319,42 @@ def mark_claim_text(claim_text):
         print("Claim text after automatically marking starting terms:", claim_text)
         print("Turning punctuation marks and vertical pipes into claim element endings...")
     
-    # Turn punctuation marks into claim element endings.
+    # Mark new claim elements based on punctuation and the marking notation.
+    claim_text = mark_new_element_punctuation(claim_text, claim_number)
     
-    loc = 0
-    curly_bracket = False
-    square_bracket = False
-    while loc < len(claim_text):
-        char = claim_text[loc]
+    # By this point all the new elements should be marked.
+    assert claim_text.count("{") == claim_text.count("}"), "Error in marking of new claim elements. Number of left curly brackets does not match number of right curly brackets."
+    
+    # Automatically mark old elements with corresponding new elements.
+    if not args.manual_marking:
+        new_elements = re.finditer(r"\{.*?\}", claim_text, flags=re.IGNORECASE)
         
-        if (char == ',') or (char == ';') or (char == ':'):
-            if claim_text[loc+1] != '~':
-                if curly_bracket:
-                    claim_text = claim_text[0:loc]+"}"+claim_text[loc:]
-                    curly_bracket = False
-                    loc += 1
-                
-                if square_bracket:
-                    claim_text = claim_text[0:loc]+"]"+claim_text[loc:]
-                    square_bracket = False
-                    
-                    loc += 1
-            else:
-                # If next character is '~', don't treat this as the end of a claim element.
-                claim_text = claim_text[0:loc+1]+claim_text[loc+2:]
-        if char == '|': # This will exclude the pipe symbol from the output.
-            if curly_bracket:
-                claim_text = claim_text[0:loc]+"}"+claim_text[loc+1:]
-                curly_bracket = False
+        for new_element_iter in new_elements:
+            new_element = new_element_iter.group()[1:-1]
             
-            if square_bracket:
-                claim_text = claim_text[0:loc]+"]"+claim_text[loc+1:]
-                square_bracket = False
-        if char == '!': # This will exclude the exclamation point and the character before it from the output. Then it'll got back one to capture the end of the element properly
-            claim_text = claim_text[0:loc-1]+claim_text[loc+1:]
-            loc -= 2 # Go back two now, will change to just one later when loc += 1 is encountered.
-        elif char == "{":
-            assert not(curly_bracket), 'Curly bracket started inside of curly bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
-            assert not(square_bracket), 'Curly bracket started inside of square bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
-            curly_bracket = True
-        elif char == "}":
-            assert curly_bracket, 'Curly bracket ended without corresponding starting curly bracket. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
-            assert not(square_bracket), 'Curly bracket ended inside of square bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
-            curly_bracket = False
-        elif char == "[":
-            assert not(square_bracket), 'Square bracket started inside of square bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
-            assert not(curly_bracket), 'Square bracket started inside of curly bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
-            square_bracket = True
-        elif char == "]":
-            assert square_bracket, 'Square bracket ended without corresponding starting square bracket. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
-            assert not(curly_bracket), 'Square bracket ended inside of curly bracket. Nested claim elements not supported at the moment. At index {} with text "{}".'.format(loc, claim_text[loc-5:loc+5])
-            square_bracket = False
+            if not(new_element in new_elements_set): # and not(new_element in args.no_auto_mark):
+                new_elements_set.add(new_element)
         
-        loc += 1
-    
-    if curly_bracket:
-        claim_text = claim_text[0:loc-1]+"}"+claim_text[loc-1:]
-        curly_bracket = False
-    
-    if square_bracket:
-        claim_text = claim_text[0:loc-1]+"]"+claim_text[loc-1:]
-        square_bracket = False
+        # Doing this in order of length should prevent conflicts, e.g., "coolant flow path" and "coolant" causing "coolant flow path" to be marked as "[[coolant] flow path]".
+        new_elements_list = sorted(list(new_elements_set), key=len)
+        for new_element in new_elements_list:
+            if args.verbose:
+                print("Automatically marking old elements for: {}".format(new_element))
+            claim_text = claim_text.replace('['+new_element, '['+new_element+']')
+            claim_text = claim_text.replace(']]', ']') # This is a hack, but it works. The line above will add an extra ']' for old claim elements already marked, so this will remove the extra.
+            claim_text = claim_text.replace(']|', ']')
+            
+            # # Check that no elements are truncated versions of other elements.
+            # for new_element_2 in new_elements_set:
+                # if not new_element == new_element_2:
+                    # assert not new_element_2.startswith(new_element), "Need to run plint with --no-auto-mark \"{}\" or --manual-marking because the text of claim element '{}' starts with the same text as claim element '{}'. This will cause the automatic marking of claim elements to break.".format(new_element, new_element_2, new_element)
     
     if args.verbose:
-        print("Marking completed:", claim_text)
+        print("Old elements with corresponding new elements marked:", claim_text)
     
-    assert claim_text.count("{") == claim_text.count("}"), "Error in marking of new claim elements. Number of left curly brackets does not match number of right curly brackets."
+    claim_text = mark_old_element_punctuation(claim_text, claim_number)
+    claim_text = check_marking(claim_text, claim_number)
+    
     assert claim_text.count("[") == claim_text.count("]"), "Error in marking of old claim elements. Number of left square brackets does not match number of right square brackets."
     assert not("|" in claim_text), "Error in marking of end of a claim element. Look for '|' by itself in the marked claim."
     
@@ -324,7 +413,7 @@ if args.test:
     claim_text = "A contraption} comprising: an enclosure, a display, at least one button, and at least one widget} mounted on the enclosure, wherein the enclosure] is green, the at least one button] is yellow, and the at least one widget] is blue."
     
     # Test marked claim.
-    marked_claim_text = mark_claim_text(claim_text)
+    marked_claim_text = mark_claim_text(claim_text, 1, set())
     
     assert marked_claim_text == "A {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue."
     
@@ -598,7 +687,7 @@ for claim_text_with_number in claims_text:
             possible_adverb = possible_adverb_iter.group()
             
             # To reduce false positives, allow certain -ing words that aren't adverbs.
-            if possible_adverb in {'assembly', 'supply', 'apply', 'only', 'family', 'likely', 'fly', 'imply', 'comply', 'bodily', 'multiply', 'poly', 'reply', 'rely'}:
+            if possible_adverb in {'assembly', 'supply', 'apply', 'only', 'family', 'likely', 'fly', 'imply', 'comply', 'bodily', 'multiply', 'poly', 'reply', 'rely', 'respectively'}:
                 continue
             
             warn('Claim {} recites "{}". Possible adverb. Adverbs are frequently ambiguous.'.format(claim_number, possible_adverb), dav_keyword=possible_adverb)
@@ -633,14 +722,6 @@ for claim_text_with_number in claims_text:
         if args.debug:
             print("Checking for antecedent basis issues...")
         
-        if args.verbose:
-            print("Marking claim {}...".format(claim_number))
-        
-        marked_claim_text = mark_claim_text(claim_text)
-        
-        new_elements = re.finditer(r"\{.*?\}", marked_claim_text, flags=re.IGNORECASE)
-        old_elements = re.finditer(r"\[.*?\]", marked_claim_text, flags=re.IGNORECASE)
-        
         # Import new elements from parent claims.
         if dependent:
             if args.debug:
@@ -656,6 +737,16 @@ for claim_text_with_number in claims_text:
         else:
             new_elements_set = set()
             new_elements_dict = {}
+        
+        if args.verbose:
+            print("Marking claim {}...".format(claim_number))
+        
+        new_elements_set_2 = copy.deepcopy(new_elements_set)
+        marked_claim_text = mark_claim_text(claim_text, claim_number, new_elements_set_2)
+        
+        # Get new and old elements in this claim.
+        new_elements = re.finditer(r"\{.*?\}", marked_claim_text, flags=re.IGNORECASE)
+        old_elements = re.finditer(r"\[.*?\]", marked_claim_text, flags=re.IGNORECASE)
         
         for new_element_iter in new_elements:
             new_element = new_element_iter.group()[1:-1]

@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.23.0
+Current version: 0.24.0
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -183,13 +183,15 @@ When plint is run with the `--force` flag, none of the warnings will be suppress
 
 ## Antecedent basis checking
 
-Checking for antecedent basis issues requires using the optional flag `-a` or `--ant-basis`. This is optional because the feature requires the claims file to use a special syntax as it is difficult to automatically recognize the start and end of claim elements. plint will recognize that the terms "a", "an", "at least one", and "one or more" will appear before new claim elements and that the words "the" or "said" will appear before claim elements previously introduced. plint will also know that a claim element ends when a semi-colon, comma, or colon appear, and at the end of a claim.
+Checking for antecedent basis issues requires using the optional flag `-a` or `--ant-basis`. This is optional because **antecedent basis checking requires the claims file to use a special syntax** because it is difficult to automatically recognize the start and end of claim elements. See below for notes on the syntax.
+
+plint will recognize that the terms "a", "an", "at least one", and "one or more" will appear before new claim elements and that the words "the" or "said" will appear before previously introduced claim elements. plint will also know that a claim element ends when a semi-colon, comma, or colon appear, and at the end of a claim. plint can recognize previously marked claim elements to reduce the time needed to mark a claim.
 
 To check the demo claims on Linux:
 
     ./plint.py -a demo-claims.txt
 
-The antecedent basis checker will make sure that all "old" elements were introduced earlier in the claim, or in one of the claims the current claim depends on.
+The antecedent basis checker will make sure that all "previously introduced" claim elements (preceded with "the", "said", or `[`) were introduced earlier in the claim, or in one of the claims the current claim depends on.
 
 If a specific claim element is introduced more than once, a warning will be printed. For example, the following claim will produce a warning:
 
@@ -210,6 +212,7 @@ If a specific claim element is introduced more than once, a warning will be prin
     - The limitation "upper and lower nozzles" should introduce an "upper nozzle" and a "lower nozzle". So, "upper and lower nozzles" could be marked as `` {upper `nozzle| `and {lower nozzles!| ``.
     - Sometimes claim elements are introduced properly as a plural element but later referred in plural. For example, a claim may introduce "adjacent TMEs" but later refer to "each adjacent TME". The latter can be marked as `` each {adjacent TME`s`| `` to add the plural for the antecedent basis checker.
 - Sometimes claim elements contain a semi-colon, comma, or colon. For example, a claim may introduce "a fully deployed, closed position". The comma can be ignored by adding `~` after it: `a fully deployed,~ closed position|`.
+- Claim elements previously introduced are automatically marked. For example, if a claim states "a widget", this will be interpreted as `a {widget}`. plint will then automatically interpret "the widget" as `the {widget}`. If desired, automatic marking can be disabled with the `--manual-marking` command line argument.
 
 See [demo-claims.txt](demo-claims.txt) below for the basic notation (`|`) in use.
 
@@ -218,9 +221,9 @@ See [demo-claims.txt](demo-claims.txt) below for the basic notation (`|`) in use
     a display,
     at least one button, and
     at least one widget| mounted on the enclosure,
-    wherein the enclosure| is green,
-    the at least one button| is yellow, and
-    the at least one widget| is blue.
+    wherein the enclosure is green,
+    the at least one button is yellow, and
+    the at least one widget is blue.
 
 As commas, semi-colons, colons, and the end of a claim terminate claim elements, it is not necessary to mark claims like the following, though doing so is harmless:
 
