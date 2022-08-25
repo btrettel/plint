@@ -1,5 +1,6 @@
 # plint to-do list
 
+- Print a single warning if possibly conflicting claim elements are found.
 - Output the marked claims to a file for checking.
 - Doubled words like "the the". "and the" appeared in a recent application you worked on, too.
 - Add expectancy to JSON input file. Make plint list number of hours to allocate to searching based on the number of words in each claim.

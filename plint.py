@@ -46,7 +46,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.24.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.24.1")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -154,7 +154,7 @@ def mark_new_element_punctuation(claim_text, claim_number):
         claim_text = claim_text[0:loc-1]+"}"+claim_text[loc-1:]
         curly_bracket = False
     
-    if args.verbose:
+    if args.debug:
         print("New element punctuation marking completed:", claim_text)
     
     return claim_text
@@ -197,7 +197,7 @@ def mark_old_element_punctuation(claim_text, claim_number):
         claim_text = claim_text[0:loc-1]+"]"+claim_text[loc-1:]
         square_bracket = False
     
-    if args.verbose:
+    if args.debug:
         print("Old element punctuation marking completed:", claim_text)
     
     return claim_text
@@ -335,22 +335,29 @@ def mark_claim_text(claim_text, claim_number, new_elements_set):
             if not(new_element in new_elements_set): # and not(new_element in args.no_auto_mark):
                 new_elements_set.add(new_element)
         
-        # Doing this in order of length should prevent conflicts, e.g., "coolant flow path" and "coolant" causing "coolant flow path" to be marked as "[[coolant] flow path]".
-        new_elements_list = sorted(list(new_elements_set), key=len)
+        # Doing this in decreasing order of length and modifying the claims to not match in the interim should prevent conflicts. Consider the elements "coolant" and "coolant flow path". If "coolant" was marked before "coolant flow path", that would lead to "[coolant] flow path" for "coolant flow path". Marking "coolant flow path" before "coolant" doesn't help by itself as that just leads to "[[coolant] flow path]. The marking needs to be done such that subsequent markings won't match. So "coolant flow path" becomes "[~coolant flow path]". The replace operation looks for "[coolant", which is not present, so "coolant" is not matched here. Then when the marking is complete, replacing "[~" with "[" fixes the claims.
+        new_elements_list = sorted(list(new_elements_set), key=len, reverse=True)
         for new_element in new_elements_list:
-            if args.verbose:
+            if args.debug:
                 print("Automatically marking old elements for: {}".format(new_element))
-            claim_text = claim_text.replace('['+new_element, '['+new_element+']')
-            claim_text = claim_text.replace(']]', ']') # This is a hack, but it works. The line above will add an extra ']' for old claim elements already marked, so this will remove the extra.
+            
+            # Mark old claim elements corresponding to new claim elements.
+            claim_text = claim_text.replace('['+new_element, '[~'+new_element+']')
+            
+            # Remove extra ']' for old claim elements already marked.
+            claim_text = claim_text.replace(']]', ']')
             claim_text = claim_text.replace(']|', ']')
             
             # # Check that no elements are truncated versions of other elements.
             # for new_element_2 in new_elements_set:
                 # if not new_element == new_element_2:
                     # assert not new_element_2.startswith(new_element), "Need to run plint with --no-auto-mark \"{}\" or --manual-marking because the text of claim element '{}' starts with the same text as claim element '{}'. This will cause the automatic marking of claim elements to break.".format(new_element, new_element_2, new_element)
+        
+        # Remove temporary text added to make potentially conflicting claim elements not match.
+        claim_text = claim_text.replace('[~', '[')
     
     if args.verbose:
-        print("Old elements with corresponding new elements marked:", claim_text)
+        print("Claim {} marked: {}".format(claim_number, claim_text))
     
     claim_text = mark_old_element_punctuation(claim_text, claim_number)
     claim_text = check_marking(claim_text, claim_number)

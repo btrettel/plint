@@ -1,9 +1,11 @@
 1. A contraption| comprising:
 an enclosure,
 a display,
+a display handle,
 at least one button, and
 at least one widget| mounted on the enclosure,
 wherein the enclosure is green,
+the display handle is on a top of #the display,
 the at least one button is yellow, and
 the at least one widget is blue.
 
