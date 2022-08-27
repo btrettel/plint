@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.24.1
+Current version: 0.25.0
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -10,7 +10,7 @@ plint can analyze a text file containing patent claims for the following:
     - subjective terms
     - exemplary claim limitations
     - ambiguous claim limitations
-    - terms of art which may be indefinite (focused on mechanical inventions)
+    - terms of art which may be indefinite (focused on mechanical inventions at present)
 - 112(d) issues, including:
     - [whether dependent claims refer to valid claims](#hard-coded-checks)
     - some instances where a dependent claim does not further limit its parent claim
@@ -23,8 +23,8 @@ plint can analyze a text file containing patent claims for the following:
 
 The specification can be analyzed for the following:
 
-- lexicographic definitions
-- possible species elections
+- [lexicographic definitions](#specification-checking)
+- [possible species elections](#restriction-checking)
 
 By default, plint will emulate a nitpicky examiner. When making the default claims warning file (claims.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. claims.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possibly face. If this is too nitpicky for your tastes, you're welcome to make your own warnings file or modify the existing file. plint is highly customizable.
 
@@ -219,34 +219,38 @@ See [demo-claims.txt](demo-claims.txt) below for the basic notation (`|`) in use
     1. A contraption| comprising:
     an enclosure,
     a display,
+    a display handle,
     at least one button, and
     at least one widget| mounted on the enclosure,
     wherein the enclosure is green,
+    the display handle is on a top of #the display,
     the at least one button is yellow, and
     the at least one widget is blue.
 
-As commas, semi-colons, colons, and the end of a claim terminate claim elements, it is not necessary to mark claims like the following, though doing so is harmless:
+As previously introduced claim elements are automatically marked, and commas, semi-colons, colons, and the end of a claim terminate claim elements, it is not necessary to mark claims like the following, though doing so is harmless:
 
     1. A contraption| comprising:
     an enclosure|,
     a display|,
+    a display handle|,
     at least one button|, and
     at least one widget| mounted on the enclosure|,
     wherein the enclosure| is green,
+    the display handle| is on a top of #the display|,
     the at least one button| is yellow, and
     the at least one widget| is blue.
 
 ### Verbose mode
 
-Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print how plint is interpreting the claim when doing the antecedent basis analysis. For example, plint's interpretation of the demo claim is:
+Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print how plint is interpreting the claim when doing the antecedent basis analysis. For example, plint's interpretation of the first demo claim is:
 
-    Claim 1 marked: A {contraption} comprising: an {enclosure}, a {display}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [at least one button] is yellow, and the [at least one widget] is blue.
+    Claim 1 marked: A {contraption} comprising: an {enclosure}, a {display}, a {display handle}, {at least one button}, and {at least one widget} mounted on the [enclosure], wherein the [enclosure] is green, the [display handle] is on a {top of the display}, the [at least one button] is yellow, and the [at least one widget] is blue.
 
 ### Shortcomings of the antecedent basis checker
 
 The antecedent basis checker is fragile and will likely require some iteration until a claim is marked in a way that plint likes.
 
-At present, plint won't work with nested elements. For example: `a center of the widget|` would ideally be interpreted as `a {center of [the widget]}`, but that's not how plint will work at the moment. That'll need to be marked like this: `a center of #the widget|`, interpreted as `a {center of the widget}`. Then plint will think it's all just one element.
+At present, plint won't work with nested elements. For example: `a center of the widget|` would ideally be interpreted as `a {center of the [widget]}`, but that's not how plint will work at the moment. That'll need to be marked like this: `a center of #the widget|`, interpreted as `a {center of the widget}`. Then plint will think it's all just one element.
 
 ## Specification checking
 

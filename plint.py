@@ -46,7 +46,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.24.1")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.25.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -341,17 +341,20 @@ def mark_claim_text(claim_text, claim_number, new_elements_set):
             if args.debug:
                 print("Automatically marking old elements for: {}".format(new_element))
             
+            # Check that no elements are truncated versions of other elements.
+            if '['+new_element in claim_text:
+                for new_element_2 in new_elements_set:
+                    # The (not new_element == new_element_2) condition prevent matching when the elements are same as that is not a problem.
+                    # The ('['+new_element_2 in claim_text) condition should prevent the warning from appearing when there is no conflict.
+                    if (not new_element == new_element_2) and ('['+new_element_2 in claim_text):
+                        assert_warn(not new_element_2.startswith(new_element), "Claim {}: Possibly conflicting claim elements detected: \"{}\" and \"{}\". This can cause problems with the automatic marking of claim elements because the text of claim element \"{}\" starts with the same text as claim element \"{}\". Check the marked claim output.".format(claim_number, new_element_2, new_element, new_element_2, new_element))
+            
             # Mark old claim elements corresponding to new claim elements.
             claim_text = claim_text.replace('['+new_element, '[~'+new_element+']')
             
             # Remove extra ']' for old claim elements already marked.
             claim_text = claim_text.replace(']]', ']')
             claim_text = claim_text.replace(']|', ']')
-            
-            # # Check that no elements are truncated versions of other elements.
-            # for new_element_2 in new_elements_set:
-                # if not new_element == new_element_2:
-                    # assert not new_element_2.startswith(new_element), "Need to run plint with --no-auto-mark \"{}\" or --manual-marking because the text of claim element '{}' starts with the same text as claim element '{}'. This will cause the automatic marking of claim elements to break.".format(new_element, new_element_2, new_element)
         
         # Remove temporary text added to make potentially conflicting claim elements not match.
         claim_text = claim_text.replace('[~', '[')
@@ -597,6 +600,10 @@ claims_text.append(claim_text_with_number.strip())
 if args.debug:
     print("Processing the claims list...")
 
+if args.ant_basis:
+    with open(args.claims+'.marked', 'w') as f:
+        print("Writing marked claims to {}...".format(args.claims+'.marked'))
+
 for claim_text_with_number in claims_text:
     claim_number_str = claim_text_with_number.split('.', 1)[0]
     claim_text = claim_text_with_number.split('.', 1)[1].strip()
@@ -727,7 +734,7 @@ for claim_text_with_number in claims_text:
     
     if args.ant_basis:
         if args.debug:
-            print("Checking for antecedent basis issues...")
+            print("Checking claim {} for antecedent basis issues...".format(claim_number))
         
         # Import new elements from parent claims.
         if dependent:
@@ -750,6 +757,9 @@ for claim_text_with_number in claims_text:
         
         new_elements_set_2 = copy.deepcopy(new_elements_set)
         marked_claim_text = mark_claim_text(claim_text, claim_number, new_elements_set_2)
+        
+        with open(args.claims+'.marked', 'a') as f:
+            f.write("{}. {}\n\n".format(claim_number, marked_claim_text))
         
         # Get new and old elements in this claim.
         new_elements = re.finditer(r"\{.*?\}", marked_claim_text, flags=re.IGNORECASE)

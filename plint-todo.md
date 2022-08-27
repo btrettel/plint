@@ -1,7 +1,20 @@
 # plint to-do list
 
-- Print a single warning if possibly conflicting claim elements are found.
-- Output the marked claims to a file for checking.
+- Get claim elements from spec. Use the number to determine when the claim element ends.
+- Check for actual profanity in the claims and spec as these are likely typos.
+- Detect mixed patent claim types. See MPEP 2173.05(p)(II).
+    - <https://www.uspto.gov/web/offices/pac/mpep/s2173.html#d0e218855>
+    - <https://www.mriplaw.com/blog/fwrjj8zsioafxif96o2yn4u3an5pb2>
+        - The HTC example suggests that an apparatus claim written like a method claim can be interpreted as having functional limitations even if something like "adapted to" is not written in there as I would prefer for clarity. The courts apparently don't think the implicit "adapted to"/etc. makes sense when user actions are described. Is the system adapted to have functionality in response to those user inputs? I don't see why not given that's how they seem to interpret the non-user-input limitations. So I don't really follow the court decision here based on the little I've read.
+    - <https://www.kirkland.com/publications/article/2017/11/mastermine-mixed-claims-and-ways-to-avoid-indefini>
+        - > If a system claim contains an active verb within a limitation, prospective challengers may focus on disentangling any method-like steps from system limitations. The more a challenger can make a method-like step resemble a standalone limitation, the more likely the Federal Circuit will find the claim to be indefinite for claiming two distinct statutory categories.
+        - > If a system claim recites user input, a challenger should likewise argue that the limitation requires active user engagement with the system. The greater the lack of clarity over whether it is a system or apparatus itself or the method of using it that triggers infringement, the greater the odds of claim indefiniteness.
+    - <https://www.ipwatchdog.com/2017/11/03/federal-circuit-indefiniteness-mixed-subject-matter-claims/id=89903/>
+    - <https://www.chandlerip.com/?p=379>
+    - Make certain claim rules for apparatus claims only? APPARATUSONLY?
+    - The case law suggests user input is a particular issue for this:
+        - `(users!|callers!)`
+        - `(inputs!|inputting|inputted|enters!|entering|entered|selects!|selecting|selected|selection|receives!|receiving|received)`
 - Doubled words like "the the". "and the" appeared in a recent application you worked on, too.
 - Add expectancy to JSON input file. Make plint list number of hours to allocate to searching based on the number of words in each claim.
 - `(fluidly connected|fluid connection)`
