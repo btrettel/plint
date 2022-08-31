@@ -46,7 +46,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.25.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.26.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -604,6 +604,8 @@ if args.ant_basis:
     with open(args.claims+'.marked', 'w') as f:
         print("Writing marked claims to {}...".format(args.claims+'.marked'))
 
+lowest_claim_number = 0
+
 for claim_text_with_number in claims_text:
     claim_number_str = claim_text_with_number.split('.', 1)[0]
     claim_text = claim_text_with_number.split('.', 1)[1].strip()
@@ -623,6 +625,9 @@ for claim_text_with_number in claims_text:
     
     number_of_claims += 1
     claim_numbers.add(claim_number)
+    
+    if lowest_claim_number == 0:
+        lowest_claim_number = claim_number
     
     assert not(claim_number == prev_claim_number), 'There are multiple of claim {}.'.format(claim_number)
     
@@ -759,7 +764,7 @@ for claim_text_with_number in claims_text:
         marked_claim_text = mark_claim_text(claim_text, claim_number, new_elements_set_2)
         
         with open(args.claims+'.marked', 'a') as f:
-            f.write("{}. {}\n\n".format(claim_number, marked_claim_text))
+            f.write("{}. {}\n\n".format(claim_number, marked_claim_text.replace('; ', ';\n').replace(': ', ':\n')))
         
         # Get new and old elements in this claim.
         new_elements = re.finditer(r"\{.*?\}", marked_claim_text, flags=re.IGNORECASE)
@@ -830,7 +835,8 @@ if args.spec and args.ant_basis:
         elif spec_appearances_of_element[element] <= 2:
             warn("Claim element that appears in the spec 1 or 2 times: {}. Possible weak disclosure for element, leading to 112(a) issues.".format(element), dav_keyword=element)
 
-assert_warn(shortest_indep_claim_number_by_len == 1, "The least restrictive claim (by number of characters) is claim {}. However, claim 1 is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(claim_number))
+assert_warn(shortest_indep_claim_number_by_len == lowest_claim_number, "The least restrictive claim (by number of characters) is claim {}. However, claim {} is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(shortest_indep_claim_number_by_len, lowest_claim_number))
+assert(shortest_indep_claim_number_by_len in indep_claims)
 
 if args.ant_basis:
     shortest_indep_claim_elements = 1e6
@@ -842,7 +848,8 @@ if args.ant_basis:
             shortest_indep_claim_number_by_elements = claim_number
             shortest_indep_claim_elements = number_of_elements
     
-    assert_warn(shortest_indep_claim_number_by_elements == 1, "The least restrictive claim (by number of claim elements) is claim {}. However, claim 1 is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(claim_number))
+    assert_warn(shortest_indep_claim_number_by_elements == lowest_claim_number, "The least restrictive claim (by number of claim elements) is claim {}. However, claim {} is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(shortest_indep_claim_number_by_elements, lowest_claim_number))
+    assert(shortest_indep_claim_number_by_elements in indep_claims)
 
 dav_search_string = ''
 for dav_keyword in dav_keywords:
