@@ -1,5 +1,12 @@
 # plint to-do list
 
+- Don't use assertions for error handling. <https://blog.regehr.org/archives/1091>
+- Possible 112(d) rejection if dependent claim introduces no new claim elements and has no wherein/similar term.
+- Detect duplicate claims in plint. 17138554 claims 9 and 17. MPEP 706.03(k)
+- Interactive mode (like aspell) allows marking warnings as resolved/skipped, and the resolutions/skips are kept in a file.
+- Rewrite plint to use object oriented programming to simplify data access.
+    - claim.elements_indexes
+    - claim.element_set
 - Get claim elements from spec. Use the number to determine when the claim element ends.
 - Check for actual profanity in the claims and spec as these are likely typos.
 - Detect mixed patent claim types. See MPEP 2173.05(p)(II).

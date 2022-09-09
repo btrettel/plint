@@ -46,7 +46,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.26.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.26.1")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -774,7 +774,7 @@ for claim_text_with_number in claims_text:
             new_element = new_element_iter.group()[1:-1]
             
             # Check if claim element is defined twice, for example, claim 1 introduces "a fastener" and claim 2 also introduces "a fastener", but it is unclear if claim 2 should have said "the fastener". Examples: App. nos. 16162122 and 16633492.
-            message = 'Claim {} introduces "{}" more than once. Unclear if the "{}" is the same in both instances.'.format(claim_number, new_element, new_element)
+            message = 'Claim {} introduces "{}" more than once. Unclear if the "{}" is the same in both instances. Possible antecedent basis issue.'.format(claim_number, new_element, new_element)
             assert_warn(not(new_element in new_elements_set), message, dav_keyword=new_element)
             
             if not(new_element in new_elements_set):
