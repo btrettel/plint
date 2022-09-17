@@ -12,7 +12,7 @@ regex,message
 \balmost\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(alternative|alternatively)\b,Possible 112(d) rejection. Could be removing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01.
 \bamply\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
-\band .* or\b,Possibly unclear associativity. # <https://se.uwaterloo.ca/~dberry/handbook/ambiguityHandbook.pdf>
+#\band .* or\b,Possibly unclear associativity. # <https://se.uwaterloo.ca/~dberry/handbook/ambiguityHandbook.pdf>
 \b(and/or|or/and)\b,"Prefer 'at least one of A or B' instead. Not indefinite, but some examiners think so. See PTAB decision in app. no. 11/565,411. If the application does not have support for all claimed embodiments, then possibly reject under 112(a), scope of enablement. See MPEP 2164.08. Possibly indefinite if A and B are mutually exclusive. # <https://patentlyo.com/patent/2014/01/uspto-approves-of-andor-claim-limitation.html>; I changed the recommended phrasing to use 'or' as that's consisistent with the interpretation in the SuperGuide case mentioned elsewhere in this file. <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/i0nbvlp/>"
 \bany one of the previous claims\b,Possible multiple dependent claim. Manually check validity. See MPEP 608.01(i).
 \bapertures?\b,Possibly indefinite if what the aperture/apertures is/are in or between is not stated.
@@ -174,6 +174,7 @@ regex,message
 \b(insignificant|insignificantly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(instantaneously|instantly|instant|immediate|immediately)\b,Probably never literally true. Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \binstead of\b,"Possible 112(d) rejection. Could be replacing previous claim limitations. See MPEP 608.01(n) and FP 7.36.01. # 16910171, <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>"
+\b(integral|integrally|integrated|monobloc|monolithic|seamless|unitary)\b,"Possibly indefinite due to conflicting definitions. Check for lexicographic definition or dictionary definition. Some guidance: integral (can be multiple parts connected into one, but not held together by merely friction or gravity) vs. monolithic (single piece, molded as one piece). # <http://allthingspros.blogspot.com/2014/08/ptab-integral-claim-construction.html>, <https://patents.google.com/patent/US8375897B2/en>, <https://patentlyo.com/patent/2022/04/arguing-construction-choose.html>"
 \b(intended|intends|intention|intending)\b,"Possible functional clause. Functional language typically is not given weight when it only express intended results and does not limit the structure. See MPEP 2111.04.I."
 \bin the region of\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bit\b,"Possible ambiguous reference. # 16486624, 16434517, 16541109, 16434517"
@@ -254,7 +255,7 @@ regex,message
 \bopposite(?! than| of)\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
 \boptionally\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 \b(or|and|and/or) the like\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.09.
-\bor .* and\b,Possibly unclear associativity. # <https://se.uwaterloo.ca/~dberry/handbook/ambiguityHandbook.pdf>
+#\bor .* and\b,Possibly unclear associativity. # <https://se.uwaterloo.ca/~dberry/handbook/ambiguityHandbook.pdf>
 \border of\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bordinarily\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \bornamental\b,Possible subjective term. See MPEP 2173.05(b)(IV). # 16162122
@@ -272,6 +273,7 @@ regex,message
 \bpliable\b,"Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16162122, found definite in Niazi Licensing Corp. v. St. Jude Medical S.C., Inc., Case No. 21-1864 (Fed. Cir. Apr. 11, 2022)."
 \bporous\b,Possibly indefinite functional language. See MPEP 2173.05(g).
 \b(portable|mobile|transportable)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
+\bppt\b,"Possible indefinite parameter if type not specified (parts-per-thousand or parts-per-trillion). # <https://en.wikipedia.org/wiki/Parts-per_notation#Thousand_vs._trillion>"
 \bpractically\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \b(predetermined|pre-determined|specified)\b,"Possibly indefinite if how the element is predetermined/specified is not discussed in the specifications. See PTAB decision in app. no. 15/359,628. # Also: MOPP 14.129, US6767556A"
 \b(predominantly|predominant)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).

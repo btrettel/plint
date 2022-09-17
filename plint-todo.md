@@ -1,11 +1,22 @@
 # plint to-do list
 
+- Add default filter options in JSON file to plint README file.
+- Add to README's typical procedure to check for elements missed by checking the marked file.
+- Add to README to add date of claims to filename.
+- Make plint automatically recognize all of (for example):
+    - one or more widgets; the widgets; the one or more widgets
+    - a plurality of widgets; the widgets; the plurality of widgets
+- Sort claims by number of dependencies. Search in order of most dependencies.
+- How to better catch issues like "slits and grooves" in 16481894 not being automatically recognized by my antecedent basis checker?
+    - clips: The vehicle air purging system of claim 5, wherein the support member defines integrally formed clips extending outwardly therefrom to couple with the vehicle body. (16775312)
+    - slits or grooves, slits, slit: The air diffuser device according to claim 1, wherein said baffle element comprises peripherally open slits or grooves which are open at the peripheral edge of said baffle element, and/or wherein said baffle element comprises peripherally closed slits each having a bridge portion in the peripheral region for bridging the gap at the peripheral end of each slit. (16481894)
+- Contingent limitation detection. See 2022-05-20 non-final rejection for claim 9 of 16773873. MPEP 2111.04, II.
 - Don't use assertions for error handling. <https://blog.regehr.org/archives/1091>
 - Possible 112(d) rejection if dependent claim introduces no new claim elements and has no wherein/similar term.
 - Detect duplicate claims in plint. 17138554 claims 9 and 17. MPEP 706.03(k)
 - Interactive mode (like aspell) allows marking warnings as resolved/skipped, and the resolutions/skips are kept in a file.
 - Rewrite plint to use object oriented programming to simplify data access.
-    - claim.elements_indexes
+    - claim.elements_and_their_indices
     - claim.element_set
 - Get claim elements from spec. Use the number to determine when the claim element ends.
 - Check for actual profanity in the claims and spec as these are likely typos.
@@ -48,14 +59,6 @@
     - tapping = outlet/hot
     - return  = inlet
     - see KR101429896B1 ("a temperature sensor 5 for detecting hot water temperature"; "5: Temperature sensor for tapping temperature detection")
-- From 2021-05-05 art unit meeting: integral (can be multiple parts connected into one) vs. monolithic (single piece, molded as one piece)
-    - <http://allthingspros.blogspot.com/2014/08/ptab-integral-claim-construction.html>
-    - integral OR integrally OR integrated OR monobloc OR monolithic OR seamless OR unitary
-    - <https://patents.google.com/patent/US8375897B2/en
-        > The term “seamless” is used herein to describe a tube that includes no circumferential welded joints joining segments of the tube together, and is not intended to exclude tubes that have longitudinal (whether welded or not) seams created by forming the flue tube into a cylinder from a flat or curved sheet of metal.
-    - unitary: <https://patentlyo.com/patent/2022/04/arguing-construction-choose.html>
-        - > Claims 8 & 9, do provide for unitary bodies that are machined/stamped “from a single, contiguous piece of conductive material.”
-    - <https://www.powerthesaurus.org/unitary/synonyms>
 - Analyze abstract for compliance with rules.
 - The title and abstract in the JSON file don't have to be files; they can simply be the title and abstract themselves. If the title or abstract variables end in `.txt`, then the associated text files will be read instead.
 - From PE2E DAV on abstracts:

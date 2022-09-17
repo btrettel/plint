@@ -46,7 +46,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.26.1")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.27.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -275,11 +275,12 @@ def mark_claim_text(claim_text, claim_number, new_elements_set):
             broke = False
             if not(res_alls is None):
                 for res_all in res_alls:
+                    # Ignore all the instances identified in done_starts.
                     if not(res_all.start() in done_starts):
                         #print(res_all.group())
                         claim_text = claim_text[0:res_all.start()]+"{"+claim_text[res_all.start():]
                         #print(claim_text)
-                        broke = True
+                        broke = True # That is, broke out of this stage of the loop. Then this needs to iterate as the locations changed?
                         break
                 if broke:
                     continue
@@ -358,6 +359,9 @@ def mark_claim_text(claim_text, claim_number, new_elements_set):
         
         # Remove temporary text added to make potentially conflicting claim elements not match.
         claim_text = claim_text.replace('[~', '[')
+    
+    # Remove the character used to not mark words as this isn't helpful in the .marked file.
+    claim_text = claim_text.replace('#', '')
     
     if args.verbose:
         print("Claim {} marked: {}".format(claim_number, claim_text))
@@ -719,7 +723,7 @@ for claim_text_with_number in claims_text:
             possible_functional_term = possible_functional_term_iter.group()
             
             # To reduce false positives, allow certain -ing words that aren't functional.
-            if possible_functional_term in {'comprising', 'including', 'casing', 'having', 'consisting', 'containing', 'opening', 'during', 'according', 'providing'}:
+            if possible_functional_term in {'comprising', 'including', 'casing', 'having', 'consisting', 'containing', 'opening', 'during', 'according', 'providing', 'ring'}:
                 continue
             
             warn('Claim {} recites "{}". Possible functional language due to present participle wording.'.format(claim_number, possible_functional_term), dav_keyword=possible_functional_term)
