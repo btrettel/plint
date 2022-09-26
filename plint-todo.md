@@ -1,5 +1,7 @@
 # plint to-do list
 
+- Detect MPEP 2144.04 things in plint. For example: adjustable, separable, etc. This could be useful to reduce the amount of time spent searching. <https://www.uspto.gov/web/offices/pac/mpep/s2144.html#d0e210929>
+    - `\b(separable|frangible)\b`: add to MPEP non-prior art 103 rejection thing
 - Add default filter options in JSON file to plint README file.
 - Add to README's typical procedure to check for elements missed by checking the marked file.
 - Add to README to add date of claims to filename.
@@ -10,7 +12,14 @@
 - How to better catch issues like "slits and grooves" in 16481894 not being automatically recognized by my antecedent basis checker?
     - clips: The vehicle air purging system of claim 5, wherein the support member defines integrally formed clips extending outwardly therefrom to couple with the vehicle body. (16775312)
     - slits or grooves, slits, slit: The air diffuser device according to claim 1, wherein said baffle element comprises peripherally open slits or grooves which are open at the peripheral edge of said baffle element, and/or wherein said baffle element comprises peripherally closed slits each having a bridge portion in the peripheral region for bridging the gap at the peripheral end of each slit. (16481894)
-- Contingent limitation detection. See 2022-05-20 non-final rejection for claim 9 of 16773873. MPEP 2111.04, II.
+- Contingent limitation detection. Contingent limitations can be satisfied if the condition is never met. See 2022-05-20 non-final rejection for claim 9 of 16773873. MPEP 2111.04, II.
+    - Some examiners don't like "if"?
+    - <http://www.intelproplaw.com/ip_forum/index.php/topic,30711.msg142871.html#msg142871>
+        - > People have commented here in the past that "if" is a bad word to use in claims.  "When ... then" is apparently the preferred phrasing.
+    - MPEP 2111.04.II Contingent Limitations
+    - <http://www.intelproplaw.com/ip_forum/index.php/topic,31185.0.html>
+    - <http://www.ipwatchdog.com/2017/08/28/beware-conditional-limitations-when-drafting-patent-claims/id=87242/>
+    - <https://patentlyo.com/patent/2022/09/conditional-claim-limitations.html>
 - Don't use assertions for error handling. <https://blog.regehr.org/archives/1091>
 - Possible 112(d) rejection if dependent claim introduces no new claim elements and has no wherein/similar term.
 - Detect duplicate claims in plint. 17138554 claims 9 and 17. MPEP 706.03(k)
@@ -204,10 +213,6 @@
     - <https://www.knobbe.com/blog/preamble-found-limiting-where-it-supplied-antecedent-basis-other-claim-limitations>
     - <http://www.intelproplaw.com/ip_forum/index.php/topic,32443.0.html>
 - <http://www.intelproplaw.com/ip_forum/index.php/topic,32339.0.html>
-- Some examiners don't like "if"?
-    - <http://www.intelproplaw.com/ip_forum/index.php/topic,30711.msg142871.html#msg142871>
-    - MPEP 2111.04.II Contingent Limitations
-    - <http://www.intelproplaw.com/ip_forum/index.php/topic,31185.0.html>
 - <https://patentdefenses.klarquist.com/particular-and-distinct-claims-aka-indefiniteness-sec-1122b-other-than-sec-1126f/>
 - <https://www.reddit.com/r/patentexaminer/comments/vrjxz8/how_to_quickly_spot_112b_indefiniteness_issues/>
 - basis, based on
@@ -290,6 +295,8 @@
 - Replace `\b(between|from (.+?) to (.+?))\b` with a similar rule that requires numbers to be present.
 - automatically, portion, others
     - <https://patentdefenses.klarquist.com/how-construed/>
+- <https://www.reddit.com/r/patentexaminer/comments/xiopeg/qas_error_examples/ip4g766/>
+    - > CRM claims without “non-transitory”. A reviewer doesn’t even need to go through the abstract idea steps in an Alice 101. Without “non-transitory”, it’s an easy layup 101 that most reviewers won’t miss.
 
 ## Specification
 

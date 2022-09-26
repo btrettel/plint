@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.27.0
+Current version: 0.28.0
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -38,7 +38,7 @@ plint is licensed under the GNU Affero General Public License v3.0.
 
 ## Usage
 
-First, keep in mind MPEP 2173.02.II:
+First, keep in mind [MPEP 2173.02.II](https://www.uspto.gov/web/offices/pac/mpep/s2173.html#d0e217598):
 
 > Examiners should note that Office policy is not to employ *per se* rules to make technical rejections. Examples of claim language which have been held to be indefinite set forth in MPEP 2173.05(d) are fact specific and should not be applied as *per se* rules.
 
@@ -264,7 +264,7 @@ If both the specification checking and antecedent basis checking features are us
 
 Analysis possibly useful to identify restrictions will be performed if the `-r` or `--restriction` flag is enabled. This requires that the claims be marked for antecedent basis and will automatically enable antecedent basis checking. All combinations of independent claims will be analyzed to identify elements common to the combination and elements unique to each claim being compared. Based on the elements common and unique to each claim, plint will identify possible restrictions based on the claims being unrelated/independent, related as combination-subcombination, or related as a distinct product and process pair. plint is not capable of recognizing other forms of restriction at the moment.
 
-As plint's restriction checking only looks at claim elements, and not relationships between the elements, it is not a complete analysis.
+This analysis is incomplete. First, for US restrictions, plint obviously is unaware of what has search burden, so that needs to be factored in by the user. plint can make identifying where the search burden is easier by highlighting differences between independent claims and their dependents. Second, plint's restriction checking only looks at claim elements, and not descriptions of or relationships between the elements. So it's possible that all the elements could be present but described or related differently, making the claim scope differ.
 
 If both the `-s`/`--spec` and `-r`/`--restriction` flags are enabled, a rudimentary analysis of the specification will be made to identify possible species elections.
 

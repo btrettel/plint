@@ -275,7 +275,7 @@ regex,message
 \b(portable|mobile|transportable)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bppt\b,"Possible indefinite parameter if type not specified (parts-per-thousand or parts-per-trillion). # <https://en.wikipedia.org/wiki/Parts-per_notation#Thousand_vs._trillion>"
 \bpractically\b,Possible subjective term. See MPEP 2173.05(b)(IV).
-\b(predetermined|pre-determined|specified)\b,"Possibly indefinite if how the element is predetermined/specified is not discussed in the specifications. See PTAB decision in app. no. 15/359,628. # Also: MOPP 14.129, US6767556A"
+\b(predetermined|pre-determined|specified|preset|pre-set)\b,"Possibly indefinite if how the element is predetermined/specified is not discussed in the specifications. See PTAB decision in app. no. 15/359,628. # Also: MOPP 14.129, US6767556A"
 \b(predominantly|predominant)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(preferably|preferentially)\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # 16608171, 16071100, EPO GL F-IV, 4.9"
 \bpreferred\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # 16434517, EPO GL F-IV, 4.9"
