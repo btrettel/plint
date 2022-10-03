@@ -46,7 +46,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.28.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.29.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -531,6 +531,8 @@ shortest_indep_claim_number_by_len = 0
 indep_claims = set()
 indep_claim_types = {}
 parent_claims = {}
+terms_that_should_not_be_in_claim_element = {r'\bclaim\b', r'\bcomprising\b', r'\bcomprises\b', r'\bconsisting of\b', r'\bconsisting essentially of\b', r'\bwherein\b', r'\bwhereby\b'}
+long_claim_element_limit = 100
 
 # global variables
 number_of_warnings = 0
@@ -784,6 +786,10 @@ for claim_text_with_number in claims_text:
             if not(new_element in new_elements_set):
                 new_elements_set.add(new_element)
                 new_elements_dict[new_element] = new_element_iter.start()
+                for term_that_should_not_be_in_claim_element in terms_that_should_not_be_in_claim_element:
+                    matches, match_str = re_matches(term_that_should_not_be_in_claim_element, new_element)
+                    assert_warn(not(matches), 'Claim element "{}" contains a term that should not appear in claim elements: "{}". Likely a mistake was made in marking the claim elements.'.format(new_element, match_str))
+                assert_warn(len(new_element) < long_claim_element_limit, 'Claim element "{}" is over {} characters. Likely a mistake was made in marking the claim elements.'.format(new_element, long_claim_element_limit))
         
         for old_element_iter in old_elements:
             old_element = old_element_iter.group()[1:-1]
@@ -800,6 +806,11 @@ for claim_text_with_number in claims_text:
             
             message = 'Claim {} recites "{}", which possibly lacks antecedent basis. See MPEP 2173.05(e).'.format(claim_number, old_element)
             assert_warn(ab_bool, message, dav_keyword=old_element)
+            
+            for term_that_should_not_be_in_claim_element in terms_that_should_not_be_in_claim_element:
+                matches, match_str = re_matches(term_that_should_not_be_in_claim_element, old_element)
+                assert_warn(not(matches), 'Claim element "{}" contains a term that should not appear in claim elements: "{}". Likely a mistake was made in marking the claim elements.'.format(old_element, match_str))
+                assert_warn(len(new_element) < long_claim_element_limit, 'Claim element "{}" is over {} characters. Likely a mistake was made in marking the claim elements.'.format(new_element, long_claim_element_limit))
         
         new_elements_in_claims[claim_number] = new_elements_dict
     

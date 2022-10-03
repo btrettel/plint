@@ -1,6 +1,6 @@
 # plint: patent claim analyzer/linter
 
-Current version: 0.28.0
+Current version: 0.29.0
 
 plint can analyze a text file containing patent claims for the following:
 
@@ -26,13 +26,13 @@ The specification can be analyzed for the following:
 - [lexicographic definitions](#specification-checking)
 - [possible species elections](#restriction-checking)
 
-By default, plint will emulate a nitpicky examiner. When making the default claims warning file (claims.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. claims.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant might possibly face. If this is too nitpicky for your tastes, you're welcome to make your own warnings file or modify the existing file. plint is highly customizable.
+By default, plint will emulate a nitpicky examiner. When making the default claims warning file (claims.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. claims.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant possibly faces. If this is too nitpicky for your tastes, you're welcome to [filter out warnings you don't want](#filtering-out-warnings), modify the existing warnings file, or make your own warnings file. plint is highly customizable.
 
 plint is designed to run on the ancient version of Python the USPTO has on their computers, so plint won't use the latest features of Python. And the USPTO Python version is limited to the standard library, so NLTK can not be used.
 
 ## Legal
 
-This work was prepared or accomplished by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
+This work was developed by Ben Trettel in his personal capacity. Ben Trettel is a USPTO patent examiner. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
 
 plint is licensed under the GNU Affero General Public License v3.0.
 
@@ -40,9 +40,9 @@ plint is licensed under the GNU Affero General Public License v3.0.
 
 First, keep in mind [MPEP 2173.02.II](https://www.uspto.gov/web/offices/pac/mpep/s2173.html#d0e217598):
 
-> Examiners should note that Office policy is not to employ *per se* rules to make technical rejections. Examples of claim language which have been held to be indefinite set forth in MPEP 2173.05(d) are fact specific and should not be applied as *per se* rules.
+> Examiners should note that Office policy is not to employ *per se* rules to make technical rejections. Examples of claim language which have been held to be indefinite set forth in [MPEP 2173.05(d)](https://www.uspto.gov/web/offices/pac/mpep/s2173.html#d0e218251) are fact specific and should not be applied as *per se* rules.
 
-Warnings produced by plint are *possible* rejections or objections. Each should be carefully checked as many warnings will not be valid rejections or objections. As stated above, by default plint is nitpicky, so likely most of the warnings will not be valid rejections or objections.
+Warnings produced by plint are *potential* rejections or objections. Each should be carefully checked as many warnings will not be valid rejections or objections. As stated above, by default plint is nitpicky, so likely most of the warnings will not be valid rejections or objections.
 
 ### Windows
 
@@ -74,22 +74,31 @@ Alternatively, you can add the directory plint.py is in to your PATH and then ru
 
 ### How I use plint
 
-When examining patents, I typically save the independent claims to a file named {application number}-claims.txt and the specification to {application number}-spec.txt. For example, for application number 16811358, I will save 16811358-claims.txt and 16811358-spec.txt. I will then create a [JSON file](#json-input-file) containing plint's configuration for this application. The JSON file in this example is 16811358.json:
+When examining patents, I save the claims to a file named {application number}-claims-YYYY-MM-DD.txt and the specification to {application number}-spec.txt, where YYYY-MM-DD is the date of the claim set. For example, for application number 16811358, I will save 16811358-claims-2022-09-27.txt and 16811358-spec-2022-09-27.txt. I will then create a [JSON file](#json-input-file) containing plint's configuration for this application. The JSON file in this example is 16811358.json:
 
     {
-        "claims": "16811358-claims.txt",
+        "claims": "16811358-claims-2022-09-27.txt",
         "ant_basis": true,
         "title": "Gas heater, method for operating the gas heater and a gas boiler",
-        "spec": "16811358-spec.txt",
+        "spec": "16811358-spec-2022-09-27.txt",
         "uspto": true,
         "endings": true,
         "restriction": true,
-        "debug": true
+        "debug": true,
+        "filter": ["fluidly", "supplying"]
     }
 
-I then mark the claims for the antecedent basis checker [as described below](#antecedent-basis-checking). This will require some iteration to get right, so I will run plint as follows, modify the claim marking in response to the warnings and parsing errors displayed, and repeat until plint parses the independent claims properly:
+I then mark the claims for the antecedent basis checker [as described below](#antecedent-basis-checking). Ideally I only have to mark claim elements the first time they are introduced. If you set your text editor to highlight text matching the following regex, it will help identify where plint thinks new claim elements start:
+
+    \b(a|an|at least one|one or more|more than one|two or more|two|three|four|five|six|seven|eight|nine|ten)\b
+
+This will require some iteration to get right, so I will run plint as follows, modify the claim marking in response to the warnings and parsing errors displayed, and repeat until plint parses the independent claims properly:
 
     plint .\16811358.json
+
+The marked claims will be written to 16811358-claims-2022-09-27.txt.marked in this example. Once plint runs through all the claims without parsing errors, I check the .marked file to identify anything plint missed, manually mark up the claims there, and rerun plint. For example, a claim might say "wherein air circulation unit is configured", which plint won't mark correctly as the article is missing due to a typographical error. So I mark that text as `wherein [air circulation unit] is configured` because the article is supposed to be "the", indicating that this is not the first time the claim element "air circulation unit" appeared. (Otherwise the term would be marked up in curly brackets: `{` and `}`.) Typos are one reason plint won't necessarily mark claims correctly.
+
+Another reason plint might not mark claims correctly is that not all valid claim elements will necessarily be preceded with an article or one of the phrases listed above. This will often appear as plint complaining about nested claim elements. When the first appearance of a claim element was not marked, plint can not automatically mark subsequent appearances of that claim element, causing a parsing error. When this sort of parsing error occurs, look for the first appearance of the claim element causing trouble and manually mark it with `{` and `}`.
 
 As discussed below, [debug mode](#verbose-and-debug-modes) is enabled, which will enable verbose mode as well. Debug and verbose modes display more information, and this extra information may be useful when iteratively marking the claims. Once the claims are marked up, I typically remove the debug line in the JSON file.
 
@@ -103,26 +112,19 @@ Once I am confident that I marked the claims for antecedent basis properly, I wi
         "uspto": true,
         "endings": true,
         "restriction": true,
-        "outfile": true
-    }
-
-I will run plint on only the independent claims at first to identify possible restrictions. This will save time as if I restrict out certain claims, I don't want to waste the time marking them. If no restrictions appear possible, I will add the remaining claims to the claims text file and mark them for antecedent basis checking.
-
-Then I will check each line in 16811358-claims.txt.out. Most of the warnings will not lead to rejections or objections, but all should be checked. After reading the warnings, I may decide to mark the claim differently if plint is still not interpreting the claim properly. I will add filters as appropriate if I'm finding the output contains many false positives for a particular term, for example:
-
-    {
-        "claims": "16811358-claims.txt",
-        "ant_basis": true,
-        "title": "Gas heater, method for operating the gas heater and a gas boiler",
-        "spec": "16811358-spec.txt",
-        "uspto": true,
-        "endings": true,
-        "restriction": true,
         "outfile": true,
         "filter": ["fluidly", "supplying"]
     }
 
+Sometimes I will run plint on only the independent claims at first to identify possible restrictions. This will save time as if I restrict out certain claims, I don't want to waste the time marking them. If no restrictions appear possible, I will add the remaining claims to the claims text file and mark them for antecedent basis checking.
+
+Note the filter line of the JSON file. I will add filters as appropriate if I'm finding the output contains many false positives for a particular term, for example. I have a plint JSON file template with a filter line that removes many warnings that I don't want to see.
+
+Then I will check each line in 16811358-claims.txt.out. Most of the warnings will not lead to rejections or objections, but all should be checked. After reading the warnings, I may decide to mark the claim differently if plint is still not interpreting the claim properly.
+
 If any of the settings aren't seen as relevant, for example, `endings` or `restriction`, I remove them from the JSON file.
+
+When I get an amended claim set, I create a new claims file with an updated date and change the date for the claims file in the JSON file. This way I can more easily keep track of what changed in the amendment.
 
 ## Hard-coded checks
 
@@ -131,13 +133,13 @@ The following hard-coded checks are made:
 - A check that the claim number is formatted with a period after the number, for example: "1."
 - A check that the claim number is an integer.
 - A check that the claims are in numerical order.
-- A check that the claim ends with a period. See MPEP 608.01(m)
-- A check that each independent claim starts with 'A' or 'An'. This is not required but is typical. See MPEP 608.01(m) for the requirements.
-- A check that each dependent claim starts with 'The'. This is not required but is typical. See MPEP 608.01(m) for the requirements.
+- A check that the claim ends with a period. See [MPEP 608.01(m)](https://www.uspto.gov/web/offices/pac/mpep/s608.html#d0e45061)
+- A check that each independent claim starts with 'A' or 'An'. This is not required but is typical. See [MPEP 608.01(m)](https://www.uspto.gov/web/offices/pac/mpep/s608.html#d0e45061) for the requirements.
+- A check that each dependent claim starts with 'The'. This is not required but is typical. See [MPEP 608.01(m)](https://www.uspto.gov/web/offices/pac/mpep/s608.html#d0e45061) for the requirements.
 - A check for multiple dependent claims to manually check.
 - A check that dependent claims do not refer back to themselves.
 - A check that dependent claims refer back to existing claims.
-- A check that claim 1 is the shortest claim as a spot check for 37 CFR 1.75(g) compliance. See MPEP 608.01(i).
+- A check that claim 1 is the shortest claim as a spot check for 37 CFR 1.75(g) compliance. See [MPEP 608.01(i)](https://www.uspto.gov/web/offices/pac/mpep/s608.html#d0e44872).
 
 ## Warnings file
 
@@ -320,7 +322,7 @@ The `-t` or `--title` command line flag will enable checking the title, which is
 
     plint --title "A novel title" demo-claims.txt
 
-Per MPEP 606, titles should not start with "A" or contain the word "novel", so this example would return two warnings.
+Per [MPEP 606](https://www.uspto.gov/web/offices/pac/mpep/s606.html), titles should not start with "A" or contain the word "novel", so this example would return two warnings.
 
 ## Exit statuses
 

@@ -1,7 +1,10 @@
 # plint to-do list
 
+- Switch terms_that_should_not_be_in_claim_element to be regex and add `\b` as appropriate.
+- Automatically identify old elements that don't have "the" or other terms in front of them to check for missing words. Example: 17180146 claim 20: "wherein air circulation unit is configured".
+- Consolidate claims.csv by identifying duplicate messages and putting rules in alternative form, for example: `\b(X|Y|Z)\b` vs. separate rules for `\bX\b`, `\bY\b`, and `\bZ\b`
 - Detect MPEP 2144.04 things in plint. For example: adjustable, separable, etc. This could be useful to reduce the amount of time spent searching. <https://www.uspto.gov/web/offices/pac/mpep/s2144.html#d0e210929>
-    - `\b(separable|frangible)\b`: add to MPEP non-prior art 103 rejection thing
+    - `(remov$5 OR disconnect$5 OR separat$5 OR detach$5 OR releas$5)`: convert to regex and add to MPEP non-prior art 103 rejection thing
 - Add default filter options in JSON file to plint README file.
 - Add to README's typical procedure to check for elements missed by checking the marked file.
 - Add to README to add date of claims to filename.
@@ -297,6 +300,7 @@
     - <https://patentdefenses.klarquist.com/how-construed/>
 - <https://www.reddit.com/r/patentexaminer/comments/xiopeg/qas_error_examples/ip4g766/>
     - > CRM claims without “non-transitory”. A reviewer doesn’t even need to go through the abstract idea steps in an Alice 101. Without “non-transitory”, it’s an easy layup 101 that most reviewers won’t miss.
+- Make screencast on your USPTO computer showing how to use plint. Upload to YouTube.
 
 ## Specification
 
