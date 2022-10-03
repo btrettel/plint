@@ -1,6 +1,5 @@
 # plint to-do list
 
-- Switch terms_that_should_not_be_in_claim_element to be regex and add `\b` as appropriate.
 - Automatically identify old elements that don't have "the" or other terms in front of them to check for missing words. Example: 17180146 claim 20: "wherein air circulation unit is configured".
 - Consolidate claims.csv by identifying duplicate messages and putting rules in alternative form, for example: `\b(X|Y|Z)\b` vs. separate rules for `\bX\b`, `\bY\b`, and `\bZ\b`
 - Detect MPEP 2144.04 things in plint. For example: adjustable, separable, etc. This could be useful to reduce the amount of time spent searching. <https://www.uspto.gov/web/offices/pac/mpep/s2144.html#d0e210929>
