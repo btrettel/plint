@@ -1,8 +1,8 @@
-# plint: patent claim analyzer/linter
+# plint: patent claim proofreader and analyzer
 
-Current version: 0.29.0
+Current version: 0.30.0
 
-plint can analyze a text file containing patent claims for the following:
+plint can proofread and analyze a text file containing patent claims for the following:
 
 - 112(b) issues, including:
     - [antecedent basis](#antecedent-basis-checking)
@@ -32,9 +32,11 @@ plint is designed to run on the ancient version of Python the USPTO has on their
 
 ## Legal
 
+Copyright 2022 Ben Trettel. plint is licensed under the [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.en.html), a copy of which has been provided with the software.
+
 This work was developed by Ben Trettel in his personal capacity. Ben Trettel is a USPTO patent examiner. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
 
-plint is licensed under the GNU Affero General Public License v3.0.
+This work comes with absolutely no warranty.
 
 ## Usage
 
@@ -42,7 +44,7 @@ First, keep in mind [MPEP 2173.02.II](https://www.uspto.gov/web/offices/pac/mpep
 
 > Examiners should note that Office policy is not to employ *per se* rules to make technical rejections. Examples of claim language which have been held to be indefinite set forth in [MPEP 2173.05(d)](https://www.uspto.gov/web/offices/pac/mpep/s2173.html#d0e218251) are fact specific and should not be applied as *per se* rules.
 
-Warnings produced by plint are *potential* rejections or objections. Each should be carefully checked as many warnings will not be valid rejections or objections. As stated above, by default plint is nitpicky, so likely most of the warnings will not be valid rejections or objections.
+Warnings produced by plint are *possible* rejections or objections. Each should be carefully checked as many warnings will not be valid rejections or objections. As stated above, by default plint is nitpicky, so likely most of the warnings will not be valid rejections or objections.
 
 ### Windows
 
@@ -74,7 +76,7 @@ Alternatively, you can add the directory plint.py is in to your PATH and then ru
 
 ### How I use plint
 
-When examining patents, I save the claims to a file named {application number}-claims-YYYY-MM-DD.txt and the specification to {application number}-spec.txt, where YYYY-MM-DD is the date of the claim set. For example, for application number 16811358, I will save 16811358-claims-2022-09-27.txt and 16811358-spec-2022-09-27.txt. I will then create a [JSON file](#json-input-file) containing plint's configuration for this application. The JSON file in this example is 16811358.json:
+When examining patents, I save the claims to a file named {application number}-claims-YYYY-MM-DD.txt and the specification to {application number}-spec-YYYY-MM-DD.txt, where YYYY-MM-DD is the date of the claim set. For example, for application number 16811358, I will save 16811358-claims-2022-09-27.txt and 16811358-spec-2022-09-27.txt. I will then create a [JSON file](#json-input-file) containing plint's configuration for this application. The JSON file in this example is 16811358.json:
 
     {
         "claims": "16811358-claims-2022-09-27.txt",
@@ -140,6 +142,7 @@ The following hard-coded checks are made:
 - A check that dependent claims do not refer back to themselves.
 - A check that dependent claims refer back to existing claims.
 - A check that claim 1 is the shortest claim as a spot check for 37 CFR 1.75(g) compliance. See [MPEP 608.01(i)](https://www.uspto.gov/web/offices/pac/mpep/s608.html#d0e44872).
+- A check for method claims that do not contain the word step or any words ending in "ing". These are possibly use claims.
 
 ## Warnings file
 
@@ -242,6 +245,10 @@ As previously introduced claim elements are automatically marked, and commas, se
     the at least one button| is yellow, and
     the at least one widget| is blue.
 
+### .marked file
+
+plint will write how it is interpreting claims in the antecedent basis analysis to a text file with a filename the same as that of the claims but with ".marked" at the end. plint will automatically add line returns to this file after colons and semi-colons to make the text file easier to read.
+
 ### Verbose mode
 
 Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print how plint is interpreting the claim when doing the antecedent basis analysis. For example, plint's interpretation of the first demo claim is:
@@ -264,7 +271,7 @@ If both the specification checking and antecedent basis checking features are us
 
 ## Restriction checking
 
-Analysis possibly useful to identify restrictions will be performed if the `-r` or `--restriction` flag is enabled. This requires that the claims be marked for antecedent basis and will automatically enable antecedent basis checking. All combinations of independent claims will be analyzed to identify elements common to the combination and elements unique to each claim being compared. Based on the elements common and unique to each claim, plint will identify possible restrictions based on the claims being unrelated/independent, related as combination-subcombination, or related as a distinct product and process pair. plint is not capable of recognizing other forms of restriction at the moment.
+Analysis possibly useful to identify restrictions will be performed if the `-r` or `--restriction` flag is enabled. This requires that the claims be marked for antecedent basis and will automatically enable antecedent basis checking. Each independent claim and its dependents form a claim set. Claim sets will be analyzed to identify elements common to the combination and elements unique to each claim being compared. Based on the elements common and unique to each claim set, plint will identify possible restrictions based on the claims being unrelated/independent, related as combination-subcombination, or related as a distinct product and process pair. plint is not capable of recognizing other forms of restriction at the moment.
 
 This analysis is incomplete. First, for US restrictions, plint obviously is unaware of what has search burden, so that needs to be factored in by the user. plint can make identifying where the search burden is easier by highlighting differences between independent claims and their dependents. Second, plint's restriction checking only looks at claim elements, and not descriptions of or relationships between the elements. So it's possible that all the elements could be present but described or related differently, making the claim scope differ.
 

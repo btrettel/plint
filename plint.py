@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# This work was prepared or accomplished by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
+# This work was developed by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
 
 import argparse
 import csv
@@ -29,7 +29,7 @@ from itertools import chain, combinations
 import json
 
 parser = argparse.ArgumentParser(description="patent claim linter: analyzes patent claims for 112(b), 112(d), 112(f), and other issues")
-parser.add_argument("claims", help="claims file to read")
+parser.add_argument("claims", help="claims file to read", nargs='?', default=None)
 parser.add_argument("-a", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
 #parser.add_argument("-A", "--abstract", help="document abstract for analysis")
 parser.add_argument("-c", "--to-claim", help="stop analysis at this claim number", type=int, default=None)
@@ -38,6 +38,7 @@ parser.add_argument("-d", "--debug", action="store_true", help="print debugging 
 parser.add_argument("-e", "--endings", action="store_true", help="give warnings for likely adverbs (words ending in -ly) and present participle phrases (words ending in -ing)", default=False)
 parser.add_argument("-f", "--filter", help="filter out warnings with this regex", nargs="*", default=[])
 parser.add_argument("-F", "--force", action="store_true", help="enable all commented out warnings", default=False)
+parser.add_argument("-l", "--legal", action="store_true", help="show legal notices", default=False)
 parser.add_argument("-m", "--manual-marking", action="store_true", help="don't automatically mark previously introduced claim elements", default=False)
 #parser.add_argument("-N", "--no-auto-mark", help="don't use automatic marking on these claim elements", default=[])
 parser.add_argument("-n", "--nitpick", action="store_true", help="equivalent to --ant-basis --restriction --endings --uspto", default=False)
@@ -46,7 +47,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.29.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.30.0")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -357,7 +358,7 @@ def mark_claim_text(claim_text, claim_number, new_elements_set):
             claim_text = claim_text.replace(']]', ']')
             claim_text = claim_text.replace(']|', ']')
         
-        # Remove temporary text added to make potentially conflicting claim elements not match.
+        # Remove temporary text added to make possibly conflicting claim elements not match.
         claim_text = claim_text.replace('[~', '[')
     
     # Remove the character used to not mark words as this isn't helpful in the .marked file.
@@ -416,6 +417,12 @@ def load_warnings_file(file_to_load):
     
     return warnings
 
+if args.legal:
+    print("Copyright 2022 Ben Trettel. plint is licensed under the GNU Affero General Public License v3.0, a copy of which has been provided with the software. The license is also available online: https://www.gnu.org/licenses/agpl-3.0.en.html\n")
+    print("This work was developed by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.\n")
+    print("This work comes with absolutely no warranty.")
+    exit()
+
 if args.test:
     match_bool, match_str = re_matches('\\btest\\b', 'This is a test.')
     assert match_bool
@@ -440,6 +447,10 @@ if args.test:
     print('All tests passed.')
     
     exit()
+
+if args.claims is None:
+    eprint("Enter a claims file.")
+    exit(1)
 
 if args.claims.endswith('.json'):
     # Instead of using command line flags, get configuration from JSON file.
@@ -559,17 +570,32 @@ if not args.spec is None:
     # Check for lexicographic definitions.
     with open(args.spec, "r", encoding="utf-8") as spec_file:
         line = spec_file.readline()
+        spec_string = ''
         
+        # Concatenate all lines with one space between them.
         while line:
-            line = line.replace('\n', '')
+            # Strip spaces from beginnings and ends of lines.
+            line = line.replace('\n', '').strip().replace('       ', ' ')
             
-            result = re.search(r"(“|”|\bi\.e\.|\b, that is\b|\bmeaning\b|\bmeans(?! for| to)\b|\bdefinitions?\b|\bdefines?\b|\bdefined\b|\bdefining\b|\bterms?\b|\btermed\b|\bterminology\b|\bphrases?\b|\bin other words\b|\bknown as\b|\bcalled\b|\bnamed\b|\bso.called\b|\bsimply put\b|\bput differently\b|\bthat is to say\b|\bnamely\b|\botherwise stated\b|\bin short\b|\balternatively stated\b|\bput it differently\b|\bidentified\b|\breferred to as\b|\bdesignated\b|\bas used herein\b|\bas used here\b|\bas opposed to\b|\bis understood to mean\b|\bis understood herein\b|\bconstrued\b)", line, flags=re.IGNORECASE)
+            # This if statement will make a heading not appear as parts of the sentences following the heading.
+            if line == line.upper():
+                line = line+'.'
             
-            if not result is None:
-                warn("Spec. line with possible lexicographic definition: {}".format(line))
+            # Add a single space after each line.
+            spec_string = spec_string+line+' '
             
             # Advance line
             line = spec_file.readline()
+        
+        # Split into sentences the dumb way: splitting at periods.
+        sentences = spec_string.split('. ')
+        
+        # Run regex against each sentence. Highlight matching phrase in sentence.
+        for sentence in sentences:
+            result = re.search(r"(“|”|\bi\.e\.|\b, that is\b|\bmeaning\b|\bmeans(?! for| to)\b|\bdefinitions?\b|\bdefines?\b|\bdefined\b|\bdefining\b|\bterms?\b|\btermed\b|\bterminology\b|\bphrases?\b|\bin other words\b|\bknown as\b|\bcalled\b|\bnamed\b|\bso.called\b|\bsimply put\b|\bput differently\b|\bthat is to say\b|\bnamely\b|\botherwise stated\b|\bin short\b|\balternatively stated\b|\bput it differently\b|\bidentified\b|\breferred to as\b|\bdesignated\b|\bas used herein\b|\bas used here\b|\bas opposed to\b|\bis understood to mean\b|\bis understood herein\b|\bconstrued\b)", sentence, flags=re.IGNORECASE)
+            
+            if not result is None:
+                warn("Spec. quote with possible lexicographic definition: {}.".format(sentence.replace(result.group(), '*****'+result.group()+'*****')))
 
 if args.debug:
     print("Constructing list with text of claims including number...")
@@ -668,6 +694,12 @@ for claim_text_with_number in claims_text:
         # Determine type of claim
         if re.search("\\bmethod\\b", cleaned_claim_text) or re.search("\\bprocess\\b", cleaned_claim_text, flags=re.IGNORECASE):
             indep_claim_types[claim_number] = 'method'
+            
+            # Check for "use" claims.
+            match_bool, match_str = re_matches(r"\b(step\b|\w*ing)", cleaned_claim_text)
+            
+            if not(match_bool):
+                warn("Claim {} is possibly a \"use\" claim. Check for steps. See MPEP 2173.05(q).".format(claim_number))
         else:
             indep_claim_types[claim_number] = 'apparatus'
     else:
@@ -687,9 +719,9 @@ for claim_text_with_number in claims_text:
                 warn('Dependent claim {} possibly has invalid parent claim number: {}'.format(claim_number, parent_claim_str))
                 parent_claim = None
             
-            assert_warn(not(parent_claim == claim_number), "Dependent claim {} depends on itself. Potential 112(d) rejection.".format(claim_number))
+            assert_warn(not(parent_claim == claim_number), "Dependent claim {} depends on itself. Possible 112(d) rejection.".format(claim_number))
             assert_warn(parent_claim < claim_number, "Dependent claim {} depends on claim {}, which is not a preceding claim. See MPEP 608.01(n).IV".format(claim_number, parent_claim))
-            assert_warn(parent_claim in claim_numbers, "Dependent claim {} depends on non-existent claim {}. Potential 112(d) rejection.".format(claim_number, parent_claim))
+            assert_warn(parent_claim in claim_numbers, "Dependent claim {} depends on non-existent claim {}. Possible 112(d) rejection.".format(claim_number, parent_claim))
             
             parent_claims[claim_number] = parent_claim
     
@@ -846,9 +878,9 @@ if args.spec and args.ant_basis:
     
     for element in spec_appearances_of_element:
         if spec_appearances_of_element[element] == 0:
-            warn("Claim element that does not appear in the spec: {}. Possible drawing objection if element not in drawing. See MPEP 608.02(d). Possible weak disclosure for element, leading to 112(a) issues.".format(element), dav_keyword=element)
+            warn("Claim element that does not appear in the spec: {}. Possible drawing objection if the element is not in the drawings. See MPEP 608.02(d). Possible weak disclosure for the element, leading to 112(a) issues.".format(element), dav_keyword=element)
         elif spec_appearances_of_element[element] <= 2:
-            warn("Claim element that appears in the spec 1 or 2 times: {}. Possible weak disclosure for element, leading to 112(a) issues.".format(element), dav_keyword=element)
+            warn("Claim element that appears in the spec 1 or 2 times: {}. Possible weak disclosure for the element, leading to 112(a) issues.".format(element), dav_keyword=element)
 
 assert_warn(shortest_indep_claim_number_by_len == lowest_claim_number, "The least restrictive claim (by number of characters) is claim {}. However, claim {} is supposed to be the least restrictive claim. Check that it is. See MPEP 608.01(i).".format(shortest_indep_claim_number_by_len, lowest_claim_number))
 assert(shortest_indep_claim_number_by_len in indep_claims)
@@ -874,8 +906,9 @@ for dav_keyword in dav_keywords:
         dav_search_string += dav_keyword+' '
 dav_search_string = dav_search_string.strip()
 
-if dav_search_string != "":
-    eprint("\nDAV claims viewer search string:", dav_search_string)
+if args.uspto:
+    if dav_search_string != "":
+        eprint("\nDAV claims viewer search string:", dav_search_string)
 
 if args.restriction:
     if not args.spec is None:
@@ -914,6 +947,7 @@ if args.restriction:
                 # - Species election based on paragraphs of specification:
                 #   - US20200238317A1
                 # - Unclear how to handle: US20200246764A1, US20210387211A1, US20200282410A1, US20200068820A1, US20220048367A1
+                # TODO: I recall seeing something like "second exemplary embodiment" before, so perhaps I should have a regex with additional phrases for a middle word.
                 
                 if in_drawings_section:
                     if args.debug:
@@ -959,7 +993,7 @@ if args.restriction:
                     claim_group_elements[indep_claim].add(claim_element)
         
         possible_restriction = False
-        for i, claim_combo in enumerate(powerset(indep_claims), 1):
+        for i, claim_combo in enumerate(powerset(sorted(indep_claims)), 1):
             if len(claim_combo) == 2:
                 claim_list = list(claim_combo)
                 #print("Claim combination being analyzed for restrictions: {}".format(claim_list))
@@ -1041,6 +1075,23 @@ if args.restriction:
                     possible_restriction = True
                 
                 eprint()
+        
+        # Check for claim elements unique to an independent claim when compared against all other independent claims and their dependencies.
+        # MAYBE later: Make plint check for claim elements unique to a claim *and its dependencies* when compared against all other independent claims and their dependencies. This just checks each independent claim.
+        for indep_claim in sorted(indep_claims):
+            unique_indep_claim_elements = copy.deepcopy(set(new_elements_in_claims[indep_claim].keys()))
+            
+            for other_indep_claim in indep_claims:
+                if other_indep_claim == indep_claim:
+                    continue
+                
+                unique_indep_claim_elements_copy = copy.deepcopy(unique_indep_claim_elements)
+                
+                for indep_claim_element in unique_indep_claim_elements_copy:
+                    if indep_claim_element in claim_group_elements[other_indep_claim]:
+                        unique_indep_claim_elements.remove(indep_claim_element)
+            
+            eprint("Elements unique to claim {} alone compared against all other independent claims and their dependents ({} total): {}".format(indep_claim, len(unique_indep_claim_elements), unique_indep_claim_elements))
         
         if not(possible_restriction):
             warn("No restriction appears possible on the basis of claim elements alone. Relationships between the elements or functions of the elements might allow a restriction. A species election may be possible as well.\n")

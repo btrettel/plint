@@ -1,12 +1,12 @@
 # plint to-do list
 
+- Check boilerplate list for more terms to add to plint.
+- "Use" claim detection: Method or process without word "step"? Method or process claim which is short?
+    - Check for dependent use claims.
+- 112(d) examples: 16078994
+- 15567564 112(b) rejection: Reference to standards needs to define organization name and date of the standard to be definite.
 - Automatically identify old elements that don't have "the" or other terms in front of them to check for missing words. Example: 17180146 claim 20: "wherein air circulation unit is configured".
 - Consolidate claims.csv by identifying duplicate messages and putting rules in alternative form, for example: `\b(X|Y|Z)\b` vs. separate rules for `\bX\b`, `\bY\b`, and `\bZ\b`
-- Detect MPEP 2144.04 things in plint. For example: adjustable, separable, etc. This could be useful to reduce the amount of time spent searching. <https://www.uspto.gov/web/offices/pac/mpep/s2144.html#d0e210929>
-    - `(remov$5 OR disconnect$5 OR separat$5 OR detach$5 OR releas$5)`: convert to regex and add to MPEP non-prior art 103 rejection thing
-- Add default filter options in JSON file to plint README file.
-- Add to README's typical procedure to check for elements missed by checking the marked file.
-- Add to README to add date of claims to filename.
 - Make plint automatically recognize all of (for example):
     - one or more widgets; the widgets; the one or more widgets
     - a plurality of widgets; the widgets; the plurality of widgets
@@ -14,7 +14,8 @@
 - How to better catch issues like "slits and grooves" in 16481894 not being automatically recognized by my antecedent basis checker?
     - clips: The vehicle air purging system of claim 5, wherein the support member defines integrally formed clips extending outwardly therefrom to couple with the vehicle body. (16775312)
     - slits or grooves, slits, slit: The air diffuser device according to claim 1, wherein said baffle element comprises peripherally open slits or grooves which are open at the peripheral edge of said baffle element, and/or wherein said baffle element comprises peripherally closed slits each having a bridge portion in the peripheral region for bridging the gap at the peripheral end of each slit. (16481894)
-- Contingent limitation detection. Contingent limitations can be satisfied if the condition is never met. See 2022-05-20 non-final rejection for claim 9 of 16773873. MPEP 2111.04, II.
+- Contingent limitation detection. Contingent limitations can be satisfied if the condition is never met. See 2022-05-20 non-final rejection for claim 9 of 16773873. MPEP 2111.04.II. <https://www.uspto.gov/web/offices/pac/mpep/s2111.html#d0e201000>
+    - > The broadest reasonable interpretation of a system (or apparatus or product) claim having structure that performs a function, which only needs to occur if a condition precedent is met, requires structure for performing the function should the condition occur. The system claim interpretation differs from a method claim interpretation because the claimed structure must be present in the system regardless of whether the condition is met and the function is actually performed.
     - Some examiners don't like "if"?
     - <http://www.intelproplaw.com/ip_forum/index.php/topic,30711.msg142871.html#msg142871>
         - > People have commented here in the past that "if" is a bad word to use in claims.  "When ... then" is apparently the preferred phrasing.
@@ -29,6 +30,7 @@
 - Rewrite plint to use object oriented programming to simplify data access.
     - claim.elements_and_their_indices
     - claim.element_set
+    - claim.category (apparatus, method, etc.)
 - Get claim elements from spec. Use the number to determine when the claim element ends.
 - Check for actual profanity in the claims and spec as these are likely typos.
 - Detect mixed patent claim types. See MPEP 2173.05(p)(II).
@@ -44,20 +46,16 @@
     - The case law suggests user input is a particular issue for this:
         - `(users!|callers!)`
         - `(inputs!|inputting|inputted|enters!|entering|entered|selects!|selecting|selected|selection|receives!|receiving|received)`
-- Doubled words like "the the". "and the" appeared in a recent application you worked on, too.
 - Add expectancy to JSON input file. Make plint list number of hours to allocate to searching based on the number of words in each claim.
 - `(fluidly connected|fluid connection)`
     - <http://www.intelproplaw.com/ip_forum/index.php?topic=31706.0>
         - > As I use it, fluidly connected means that fluid is able to flow from one component to another, but the two components need not be physically connected to one another.  For instance, a vehicle radiator is fluidly connected to the engine cooling jacket, because coolant is able to flow from one to the other, but they are not physically connected.
     - I tend to view it as "the two points are connected by a fluid", not that there is flow from one point to another.
-- Do restriction analysis including dependent claims? List the additional elements in a different set, for example: "Elements common to claims 1 to 13" vs. "Elements common to claims 1 to 13 and their dependents", "Elements unique to claim 1" vs. "Elements unique to claim 1's dependents".
-    - Update README.md after adding this feature.
 - Make example outputs in the README file automatically generated.
 - Have option to print associated line numbers in claims.csv for each warning.
 - above, below, higher, lower, larger, smaller ==> if numerical, suggest less than or greater than
 - examples where "with" is okay: in accordance with, with respect to, associated with
 - option to output cleaned claims (without markings)
-- `(\bpercent|%)\sincrease/decrease` and `increase/decrease\sof\s\d*(\spercent|%)`: This is ambiguous. Is it multiplicative or additive?
 - Result effective variable (REV):
     - e.g.: may be varied, are varied
     - (may OR can OR are) ADJ2 (vary OR varied)
@@ -176,7 +174,6 @@
 - Check papers for more ideas.
     - "Patent Claim Structure Recognition"
     - "The "UNLIMITLESS": On How to Remedy the Inadequacies of a Language-Based System for Patent Claims"
-- "Use" claim detection: Method or process without word step? Method or process claim which is short?
 - Check classification for patent documents on patent analysis for more ideas.
 - Check for synonyms of the relative terms you already have for more.
 - With `--spec`, one could use proximity to 112(f) terms to determine which elements are functionally defined. Then one could count the number of times that element is mentioned in the specs to get an estimate for how detailed the description is. If it's not presented in detail, then that could lead to a 112(a) or 112(b) problem.
