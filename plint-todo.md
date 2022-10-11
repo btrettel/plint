@@ -1,5 +1,25 @@
 # plint to-do list
 
+- Rewrite plint to use object oriented programming to simplify data access. Do this simultaneously with adding tests.
+    - `claims`: a dictionary of claim objects
+    - `claims[number].elements_with_indices`
+    - `claims[number].element_set`
+    - `claims[number].category`: (apparatus, method, etc.)
+    - `claims[number].parent`: parent claim number
+    - `claims[number].children`: children claim numbers
+    - `claims[number].all_children`: all children claim numbers
+- Reorganize code to have unit tests for everything including the antecedent basis checking.
+    - particular claims.csv entries
+    - antecedent basis
+        - "the" before "a"
+        - multiple "a" for same element
+        - dependencies get new elements
+        - all elements found in a long claim
+        - all elements found in a dependent claim
+        - `{`, `[`, `}`, `]`, `|`, `!`, `@`, and `#` work
+- Check spec for figures that aren't discussed. That could indicate a 112(a) issue.
+    - <https://groups.google.com/g/misc.legal.moderated/c/04WqcZJSwN8/m/fsQiC_AgYiMJ>
+        - > it would be handy if it would tell me that I failed to discuss a figure
 - Check boilerplate list for more terms to add to plint.
 - "Use" claim detection: Method or process without word "step"? Method or process claim which is short?
     - Check for dependent use claims.
@@ -27,10 +47,6 @@
 - Possible 112(d) rejection if dependent claim introduces no new claim elements and has no wherein/similar term.
 - Detect duplicate claims in plint. 17138554 claims 9 and 17. MPEP 706.03(k)
 - Interactive mode (like aspell) allows marking warnings as resolved/skipped, and the resolutions/skips are kept in a file.
-- Rewrite plint to use object oriented programming to simplify data access.
-    - claim.elements_and_their_indices
-    - claim.element_set
-    - claim.category (apparatus, method, etc.)
 - Get claim elements from spec. Use the number to determine when the claim element ends.
 - Check for actual profanity in the claims and spec as these are likely typos.
 - Detect mixed patent claim types. See MPEP 2173.05(p)(II).
@@ -136,15 +152,6 @@
 - <https://medium.com/analysts-corner/holy-ambiguity-crapman-ec15c77dc880>
     - Discusses why minimum and maximum can be indefinite.
     - On the indefiniteness of minimum and maximum, also see: berry_from_2003
-- Reorganize code to have unit tests for everything including the antecedent basis checking.
-    - particular warning.csv entries
-    - antecedent basis
-        - "the" before "a"
-        - multiple "a" for same element
-        - dependencies get new elements
-        - all elements found in a long claim
-        - all elements found in a dependent claim
-        - `{`, `[`, `}`, `]`, `|`, `!`, `@`, and `#` work
 - Check for invalid multiple dependencies.
 - Check for features of other softwares.
     - <https://specif.io/bluepencil/>
@@ -280,7 +287,7 @@
 - `--unity` for unity of invention analysis. Requires marking the novel elements in the claims with `@`.
 - trademarks
     - `\bband.aid\b` - adhesive bandage
-    - `\b(bubblewrap|bubble wrap)\b` - inflated cushioning
+    - `\b(bubblewrap|bubble\swrap)\b` - inflated cushioning
     - `\bchapstick\b` - lip baum
     - <https://www.rd.com/list/surprising-trademarked-words/>
     - <https://digitalsynopsis.com/advertising/generic-trademark-product-brand-names/>
@@ -291,7 +298,7 @@
     - <http://www.intelproplaw.com/ip_forum/index.php/topic,31337.0.html>
 - <https://en.wikipedia.org/wiki/Polysemy>
     - <https://stackoverflow.com/questions/22016273/list-of-polysemy-words>
-- Replace `\b(between|from (.+?) to (.+?))\b` with a similar rule that requires numbers to be present.
+- Replace `\b(between|from\s(.+?)\sto\s(.+?))\b` with a similar rule that requires numbers to be present.
 - automatically, portion, others
     - <https://patentdefenses.klarquist.com/how-construed/>
 - <https://www.reddit.com/r/patentexaminer/comments/xiopeg/qas_error_examples/ip4g766/>
