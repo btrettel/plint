@@ -1,6 +1,6 @@
 # plint: patent claim proofreader and analyzer
 
-Current version: 0.30.0
+Current version: 0.31.0
 
 plint can proofread and analyze a text file containing patent claims for the following:
 

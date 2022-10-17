@@ -1,5 +1,8 @@
 # plint to-do list
 
+- Add command line argument to state that certain claim elements are equivalent for the restriction analysis. For example, "outer barrel" and "barrel" are equivalent in 17/083,825.
+    - The easiest way to handle this would be to have a list where every element mentioned is *excluded* from the restriction analysis entirely.
+    - Note in the documention that these elements won't be listed as common to each claim group, even though they are, because they've been completely removed.
 - Rewrite plint to use object oriented programming to simplify data access. Do this simultaneously with adding tests.
     - `claims`: a dictionary of claim objects
     - `claims[number].elements_with_indices`

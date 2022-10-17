@@ -27,6 +27,7 @@ regex,message
 \baround\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \bas\s(described|illustrated)\b,"Possible reference to figure or table. See MPEP 2173.05(s). # EPO GL F-IV, 4.17"
 \bas\sin\b,Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
+\bassociated\b,Possible overly broad term that would be easily rejected. # <https://www.reddit.com/r/patentexaminer/comments/y4sp5z/bri_examples/>
 \b(a\sthe|the\sthe|of\sof|from\sto|of\sof|with\swith|is\sis|from\sfrom|in\sin|not\snot|it\sit|on\son|the\sand)\b,Likely typo.
 \b(at\sleast\sone|one\sor\smore)\b,"If the application does not have support for all claimed embodiments, then possibly reject under 112(a), scope of enablement. See MPEP 2164.08. # <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/>"
 \b(at\sleast\sone|one\sor\smore)\sof\s(.+?)\sand\s(.+?)\b,"Should be interpreted as 'at least one of A and at least one of B'. See SuperGuide Corp. v. DirecTV Enterprises, Inc. (358 F.3d 870 (Fed. Cir. 2004)). # <https://www.reddit.com/r/patentexaminer/comments/te30e5/andor/i0pnysf/>, 16822349"
