@@ -136,7 +136,7 @@ regex,message
 \b(general|generally)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
 \b(gradual|gradually)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). # 16491320
 \bgreater(?!\sthan|\sof)\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b).
-\b(great|greatly)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). Possible subjective term. See MPEP 2173.05(b)(IV).
+\b(great(ly)?|excellent(ly)?|terrific(ly)?)\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). Possible subjective term. See MPEP 2173.05(b)(IV).
 \bgrooves?\b,Possibly indefinite if what the groove/grooves is/are in or between is not stated.
 \bhard\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \b(having|has)\b,"Possible non-standard transitional phrase with unclear definition. See MPEP 2111.03.IV. # <https://blog.ipleaders.in/top-ten-drafting-mistakes-impact-enforcement-patents/>, <http://digital-law-online.info/lpdi1.0/treatise55.html>, <https://www.bpmlegal.com/content/patgloss>: open like comprising, <https://patentdefenses.klarquist.com/how-construed/>: ambiguous, PIY 1997 p. 9/18R: 'having only' is closed like consisting of, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"

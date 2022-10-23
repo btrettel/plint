@@ -1,5 +1,19 @@
 # plint to-do list
 
+- <https://old.reddit.com/r/patentexaminer/comments/y9u7dq/surveys_and_patent_experience/it7evsw/>:
+    - > lordnecro 2 points an hour ago 
+    > You can run scripts in Word, and it is pretty powerful. I am kinda surprised too that you can, but they have worked for the last 10 years, so hopefully nothing changes.
+    > 
+    > Lots can be be done... automating anything you do repeatedly, formatting, error checking, lots of stuff. I am reluctant to go into detail on them. I spoke to a few SPEs/other management and they seemed unhappy I was doing it rather than "Wow, we could be saving millions using software like this" so I haven't brought it up to anyone in years. I really, really don't want to have that locked out so I can't use it anymore.
+- <https://www.ipwatchdog.com/2016/12/10/patent-drafting-anatomy-patent-claim/id=75575/>
+    - > Third, the first time you introduce a limitation (i.e., an element, characteristic, internal reference, etc.) in a patent claim you MUST introduce it with either “a” or “an”, as is grammatically appropriate. (i.e., Primary antecedent basis). Subsequently you refer to the already introduced limitation by either “said” or “the.” (i.e., Secondary antecedent basis). This can be quite difficult for beginners because the three most common words in the English language — a, an and the — are all terms of art for patent claim drafting.
+    - "Primary antecedent basis" and "secondary antecedent basis" seem like good terms. I should use those terms in plint and its documentation.
+- <https://www.knobbe.com/blog/preamble-found-limiting-where-it-supplied-antecedent-basis-other-claim-limitations>
+    - In plint, detect when antecedent basis comes from the preamble and give a warning that this may make the preamble limiting.
+- Add link to plint repository in README.md file.
+- Make certain claim rules for apparatus or method claims only? `APPARATUSONLY` and `METHODONLY`?
+- Identify claim elements that are in sentences identified as having lexicographic definitions as these could be defined contrary to the ordinary meaning.
+- Identify similar claim elements that may be identical but not claimed identically. For example, 17/218,554 mentions a "gas" that may be the same as the "air". This could lead to a 112(b) rejection as it's unclear whether the "gas" refers to or includes the "air".
 - Add command line argument to state that certain claim elements are equivalent for the restriction analysis. For example, "outer barrel" and "barrel" are equivalent in 17/083,825.
     - The easiest way to handle this would be to have a list where every element mentioned is *excluded* from the restriction analysis entirely.
     - Note in the documention that these elements won't be listed as common to each claim group, even though they are, because they've been completely removed.
@@ -61,7 +75,6 @@
         - > If a system claim recites user input, a challenger should likewise argue that the limitation requires active user engagement with the system. The greater the lack of clarity over whether it is a system or apparatus itself or the method of using it that triggers infringement, the greater the odds of claim indefiniteness.
     - <https://www.ipwatchdog.com/2017/11/03/federal-circuit-indefiniteness-mixed-subject-matter-claims/id=89903/>
     - <https://www.chandlerip.com/?p=379>
-    - Make certain claim rules for apparatus claims only? APPARATUSONLY?
     - The case law suggests user input is a particular issue for this:
         - `(users!|callers!)`
         - `(inputs!|inputting|inputted|enters!|entering|entered|selects!|selecting|selected|selection|receives!|receiving|received)`
