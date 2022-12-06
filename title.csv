@@ -1,5 +1,5 @@
 regex,message
 ^(a|an|the)\b,Titles are not permitted to start with an article. See MPEP 606.
-\b(enhanced|enhancements?|superior)\b,Title contains word considered a synonym of or similar to 'improved'. 'Improved' is prohibited in titles by MPEP 606.
+\b(enhanced?|enhancements?|superior|enhancing|improving|better|enhancing)\b,Title contains word considered a synonym of or similar to 'improved'. 'Improved' is prohibited in titles by MPEP 606.
 \b(first|modern|state.of.the.art)\b,Title contains word considered a synonym of or similar to 'novel'. 'Novel' is prohibited in titles by MPEP 606.
-\b(improved|improvements?|new|novel|related|design|ornamental)\b,Title contains word prohibited in titles by MPEP 606.
+\b(improved?|improvements?|new|novel|related|design|ornamental)\b,Title contains word prohibited in titles by MPEP 606.

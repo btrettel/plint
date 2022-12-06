@@ -1,39 +1,77 @@
 # plint to-do list
 
-- <https://old.reddit.com/r/patentexaminer/comments/y9u7dq/surveys_and_patent_experience/it7evsw/>:
-    - > lordnecro 2 points an hour ago 
-    > You can run scripts in Word, and it is pretty powerful. I am kinda surprised too that you can, but they have worked for the last 10 years, so hopefully nothing changes.
-    > 
-    > Lots can be be done... automating anything you do repeatedly, formatting, error checking, lots of stuff. I am reluctant to go into detail on them. I spoke to a few SPEs/other management and they seemed unhappy I was doing it rather than "Wow, we could be saving millions using software like this" so I haven't brought it up to anyone in years. I really, really don't want to have that locked out so I can't use it anymore.
+- plint 1.0
+    - Add link to plint repository in README.md file.
+    - Rewrite plint to use object oriented programming to simplify data access. Do this simultaneously with adding tests.
+        - `claims`: a dictionary of claim objects
+            - `claims[number].elements_with_indices`
+            - `claims[number].element_set`
+            - `claims[number].category`: (apparatus, method, etc.)
+            - `claims[number].parent`: parent claim number
+            - `claims[number].children`: children claim numbers
+            - `claims[number].all_children`: all children claim numbers
+        - `spec`
+            - `spec.elements_with_reference_numbers`
+            - `spec.element_set`
+    - Reorganize code to have unit tests for everything including the antecedent basis checking.
+        - particular claims.csv entries
+        - antecedent basis
+            - "the" before "a"
+            - multiple "a" for same element
+            - dependencies get new elements
+            - all elements found in a long claim
+            - all elements found in a dependent claim
+            - `{`, `[`, `}`, `]`, `|`, `!`, `@`, and `#` work
+    - Make certain claim rules for apparatus or method claims only? `APPARATUSONLY` and `METHODONLY`?
+    - 90% branch coverage
+    - run through linter and fix code
+    - Get elements from specification based on reference numbers. `\bthe\s[\w\s]+\s\d+\b` (but this won't match the smallest; might be easiest to simply scan the specification by words)
+    - Add command line flag to disable checking CSV files.
+    - Detect whether title is vague. Check length of title in words after removing vague words, stop words, and duplicate words? Convert list of words to set and then filter. 4 words or less?
+        - <https://www.reddit.com/r/Patents/comments/x9r64k/should_a_patent_title_be_very_narrow_or_very/>
+    - If the first word is a vague word then it's probably particularly vague.
+    - `--warn-all` or `-Wall` for plint to turn all warnings on (`--uspto`, `--ant-basis`, `--restrict`, etc.)
+    - Put files in standard Python package format.
+    - Put plint on PyPi.
+    - Have a Makefile to make a USPTO version of plint for installation.
+    - Make claims.csv entries plural for many or all of the pluralized terms in vague-title-words.txt.
+    - "feature", "example", "implementation" instead of "embodiment": modify species election checker to handle
+        - US20220055457A1
+    - predefined ==> like predetermined
+    - If foreign document is incorporated by reference, that is improper. plint can detect this.
+        - FP 06-19
+        - Examples: 17/062,837 (20210116149), 17/022,927 (20210148606)
+    - most comprehensive (narrowest) claim detection for USPC classification; has most elements
+    - Submit plint for approval by OCIO.
+        - If OCIO rejects it due to dependency on Python, rewrite in Object Pascal. It might be nice to have a TUI.
+- After release of 1.0:
+    - Ask which features people would like for a patent analysis tool on r/patentexaminer, r/patentlaw, and r/patents.
+- Scan spec for elements with reference numbers. Use that to try to fully automate the antecedent basis checking. Also produce a list of unclaimed elements like The Examiner did.
+- Make plint write the office action for certain parts if checked off.
+- Don't use assertions for error messages.
+- Change species election analysis to be per sentence, not per line.
+- 17223417 claim 19: "[feedback value]s" probably should return a warning.
+- Have different warning severities, and allow the user to ignore all warnings below a certain level.
+- `\b(capable|programmable|configurable)\b`: Suggest programmed/configured/etc. as -able does not require that the prior art actually perform the stated limitations, just that it is capable of performing the stated limitations.
+- 101 streamlined analysis? computer readable medium without non-transitory should be amended to say non-transitory
+- many drawings indicate that a species election is likely
+- No transitional phrase (comprising, consisitng of, etc.) then claim is likely either purely functional or intended use.
+- Restriction enhancements:
+    - Look at overlap of -ing and -ed words in case the actions differ between claim groups?
+    - Look at overlap in wherein/etc. clauses?
+- list most frequently mentioned elements to get an idea of what's most important to find when searching
 - <https://www.ipwatchdog.com/2016/12/10/patent-drafting-anatomy-patent-claim/id=75575/>
     - > Third, the first time you introduce a limitation (i.e., an element, characteristic, internal reference, etc.) in a patent claim you MUST introduce it with either “a” or “an”, as is grammatically appropriate. (i.e., Primary antecedent basis). Subsequently you refer to the already introduced limitation by either “said” or “the.” (i.e., Secondary antecedent basis). This can be quite difficult for beginners because the three most common words in the English language — a, an and the — are all terms of art for patent claim drafting.
     - "Primary antecedent basis" and "secondary antecedent basis" seem like good terms. I should use those terms in plint and its documentation.
 - <https://www.knobbe.com/blog/preamble-found-limiting-where-it-supplied-antecedent-basis-other-claim-limitations>
     - In plint, detect when antecedent basis comes from the preamble and give a warning that this may make the preamble limiting.
-- Add link to plint repository in README.md file.
-- Make certain claim rules for apparatus or method claims only? `APPARATUSONLY` and `METHODONLY`?
+- <https://web.archive.org/web/20010107193500/http://artexam.com/examiner_overview.htm>
+    - <https://web.archive.org/web/20010211093238/http://www.artexam.com/examiner_known_limitations.htm>
 - Identify claim elements that are in sentences identified as having lexicographic definitions as these could be defined contrary to the ordinary meaning.
 - Identify similar claim elements that may be identical but not claimed identically. For example, 17/218,554 mentions a "gas" that may be the same as the "air". This could lead to a 112(b) rejection as it's unclear whether the "gas" refers to or includes the "air".
 - Add command line argument to state that certain claim elements are equivalent for the restriction analysis. For example, "outer barrel" and "barrel" are equivalent in 17/083,825.
     - The easiest way to handle this would be to have a list where every element mentioned is *excluded* from the restriction analysis entirely.
-    - Note in the documention that these elements won't be listed as common to each claim group, even though they are, because they've been completely removed.
-- Rewrite plint to use object oriented programming to simplify data access. Do this simultaneously with adding tests.
-    - `claims`: a dictionary of claim objects
-    - `claims[number].elements_with_indices`
-    - `claims[number].element_set`
-    - `claims[number].category`: (apparatus, method, etc.)
-    - `claims[number].parent`: parent claim number
-    - `claims[number].children`: children claim numbers
-    - `claims[number].all_children`: all children claim numbers
-- Reorganize code to have unit tests for everything including the antecedent basis checking.
-    - particular claims.csv entries
-    - antecedent basis
-        - "the" before "a"
-        - multiple "a" for same element
-        - dependencies get new elements
-        - all elements found in a long claim
-        - all elements found in a dependent claim
-        - `{`, `[`, `}`, `]`, `|`, `!`, `@`, and `#` work
+    - Note in the documentation that these elements won't be listed as common to each claim group, even though they are, because they've been completely removed.
 - Check spec for figures that aren't discussed. That could indicate a 112(a) issue.
     - <https://groups.google.com/g/misc.legal.moderated/c/04WqcZJSwN8/m/fsQiC_AgYiMJ>
         - > it would be handy if it would tell me that I failed to discuss a figure
@@ -320,6 +358,9 @@
 - <https://www.reddit.com/r/patentexaminer/comments/xiopeg/qas_error_examples/ip4g766/>
     - > CRM claims without “non-transitory”. A reviewer doesn’t even need to go through the abstract idea steps in an Alice 101. Without “non-transitory”, it’s an easy layup 101 that most reviewers won’t miss.
 - Make screencast on your USPTO computer showing how to use plint. Upload to YouTube.
+- Detect short/vague abstracts as well, in a way similar to that for the titles.
+- Have HTML output
+- <https://www.reddit.com/r/Patents/comments/vtsp3w/conversation_inadvertently_left_in_a_patent_spec/>
 
 ## Specification
 
@@ -377,4 +418,6 @@ Make patent drafting diction database. Put appropriate case law in the comment. 
         - > As used in this description and in the appended claims, the word X means Y.
     - <https://patentdefenses.klarquist.com/how-construed/>
         - > Use Of “i.e.” In Spec. Or Prosecution May Be Deemed Definitional
+    - <https://old.reddit.com/r/Patents/comments/xtpwwg/how_do_you_define_a_term_in_a_patent_specification/>
+        - Update plint to recognize lexicographic definitions using terms mentioned here.
 - Separate DAV search string for the spec?

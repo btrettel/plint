@@ -154,7 +154,7 @@ regex,message
 \bi\.e\.\b,"Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08. # Not really exemplary, but still confusing. 16898241"
 \bif\snecessary\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
 \b(important|critical)\b,Possible subjective term. See MPEP 2173.05(b)(IV). # <https://www.b2ipreport.com/swip-report/claim-term-important-leads-to-indefiniteness/>
-\b(improved|improvement|improvements|improve|improves|better)\b,"Possible subjective term. See MPEP 2173.05(b)(IV). Possible Jepson format claim. See MPEP 2173.III. # 16197089, 16950528"
+\b(improved|improvements?|improves?|better|enhanced?|enhancements?|superior|enhancing)\b,"Possible subjective term. See MPEP 2173.05(b)(IV). Possible Jepson format claim. See MPEP 2173.III. # 16197089, 16950528"
 #\bin\b,"Possible overly narrow term. See MPEP 2111.02 if in preamble. # EPO GL F-IV, 4.6.1: 'the use of the word 'in' sometimes makes it unclear whether protection is sought for the improvement only or for all the features defined in the claim', wipo_wipo_2022 3.5. Disabled as there were too many false positives."
 #\b(including|includes|include)\b,"Non-standard open transitional phrase. See MPEP 2111.03.I. # <http://digital-law-online.info/lpdi1.0/treatise55.html>, PIY 1997 p. 9/18R, <https://www.bpmlegal.com/content/patgloss>: open like comprising, <https://patentlyo.com/patent/2020/02/consisting-essentially-here.html>"
 \bInconel\b,"Possible trademark or trade name in claim. See MPEP 2173.05(u) and FP 07-35-01."

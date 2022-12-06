@@ -47,7 +47,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.32.0")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.32.1")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
@@ -238,6 +238,10 @@ def mark_claim_text(claim_text, claim_number, new_elements_set):
     
     # Remove character that adds text to claims for the antecedent basis checker to make antecedent basis work.
     claim_text = claim_text.replace("`", "")
+    
+    # Add a period at the end of the claim if a period is absent. Otherwise, the parsing won't work properly.
+    if not claim_text.endswith('.'):
+        claim_text = claim_text + '.'
     
     # Mark plural claim element starting terms. This is hacky, but should work.
     # Note that plural claim element starting terms act differently than singular claim element starting terms like "a" or "an". For plurals, the claim element starting term itself becomes part of the claim element.
@@ -592,7 +596,7 @@ if not args.spec is None:
         
         # Run regex against each sentence. Highlight matching phrase in sentence.
         for sentence in sentences:
-            result = re.search(r"(“|”|\bi\.e\.|\b, that is\b|\bmeaning\b|\bmeans(?! for| to)\b|\bdefinitions?\b|\bdefines?\b|\bdefined\b|\bdefining\b|\bterms?\b|\btermed\b|\bterminology\b|\bphrases?\b|\bin other words\b|\bknown as\b|\bcalled\b|\bnamed\b|\bso.called\b|\bsimply put\b|\bput differently\b|\bthat is to say\b|\bnamely\b|\botherwise stated\b|\bin short\b|\balternatively stated\b|\bput it differently\b|\bidentified\b|\breferred to as\b|\bdesignated\b|\bas used herein\b|\bas used here\b|\bas opposed to\b|\bis understood to mean\b|\bis understood herein\b|\bconstrued\b)", sentence, flags=re.IGNORECASE)
+            result = re.search(r"(“|”|\bi\.e\.|\b,\sthat\sis\b|\bmeaning\b|\bmeans(?!\sfor|\sto)\b|\bdefinitions?\b|\bdefines?\b|\bdefined\b|\bdefining\b|\bterms?\b|\btermed\b|\bterminology\b|\bphrases?\b|\bin\sother\swords\b|\bknown\sas\b|\bcalled\b|\bnamed\b|\bso.called\b|\bsimply\sput\b|\bput\sdifferently\b|\bthat\sis\sto\ssay\b|\bnamely\b|\botherwise\sstated\b|\bin\sshort\b|\balternatively\sstated\b|\bput\sit\sdifferently\b|\bidentified\b|\breferred\sto\sas\b|\bdesignated\b|\bas\sused\sherein\b|\bas\sused\shere\b|\bas\sopposed\sto\b|\bis\sunderstood\sto\smean\b|\bis\sunderstood\sherein\b|\bconstrued\b|\bfor\sexample\b|\be\.g\.)", sentence, flags=re.IGNORECASE)
             
             if not result is None:
                 warn("Spec. quote with possible lexicographic definition: {}.".format(sentence.replace(result.group(), '*****'+result.group()+'*****')))
@@ -641,7 +645,7 @@ lowest_claim_number = 0
 for claim_text_with_number in claims_text:
     claim_number_str = claim_text_with_number.split('.', 1)[0]
     claim_text = claim_text_with_number.split('.', 1)[1].strip()
-    claim_words = claim_text.split(' ')
+    claim_words = claim_text.lower().split(' ')
     cleaned_claim_text = remove_ab_notation(claim_text)
     
     assert claim_number_str.isdigit(), 'Invalid claim number: {}'.format(claim_number_str)
@@ -673,7 +677,7 @@ for claim_text_with_number in claims_text:
     
     parent_claim = None
     
-    if not 'claim' in cleaned_claim_text:
+    if not 'claim' in cleaned_claim_text.lower():
         # independent claim
         dependent = False
         number_of_indep_claims += 1
@@ -685,7 +689,7 @@ for claim_text_with_number in claims_text:
         # Keep track of which claim is shortest. This only checks independent claims since the shortest claim must be an independent claim.
         if claim_len < shortest_indep_claim_len:
             if args.debug:
-                print("Independent claim {} ({}) is shorter than claim {} ({}).".format(claim_number, claim_len, shortest_indep_claim_number_by_len, shortest_indep_claim_len))
+                print("Independent claim {} ({} characters) is shorter than claim {} ({} characters).".format(claim_number, claim_len, shortest_indep_claim_number_by_len, shortest_indep_claim_len))
             
             shortest_indep_claim_len = claim_len
             shortest_indep_claim_number_by_len = claim_number
@@ -709,7 +713,7 @@ for claim_text_with_number in claims_text:
         
         assert_warn(cleaned_claim_text.startswith('The '), "Dependent claim {} does not start with 'The'. This is not required but is typical. See MPEP 608.01(m) for the requirements.".format(claim_number))
         
-        if 'claims' in cleaned_claim_text:
+        if 'claims' in cleaned_claim_text.lower():
             warn("Claim {} is possibly multiple dependent. Manually check validity. See MPEP 608.01(i).".format(claim_number))
         else:
             try:
