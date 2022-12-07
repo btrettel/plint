@@ -1,6 +1,6 @@
 # plint: patent claim proofreader and analyzer
 
-Current version: 0.32.1
+Current version: 0.32.2
 
 plint can proofread and analyze a text file containing patent claims for the following:
 
@@ -26,63 +26,21 @@ The specification can be analyzed for the following:
 - [lexicographic definitions](#specification-checking)
 - [possible species elections](#restriction-checking)
 
-By default, plint will emulate a nitpicky examiner. When making the default claims warning file (claims.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. claims.csv is meant to be conservative in that it will have far more warnings than rejections I would actually make. It represents rejections (valid or not) that an applicant possibly faces. If this is too nitpicky for your tastes, you're welcome to [filter out warnings you don't want](#filtering-out-warnings), modify the existing warnings file, or make your own warnings file. plint is highly customizable.
-
-plint is designed to run on the ancient version of Python the USPTO has on their computers, so plint won't use the latest features of Python. And the USPTO Python version is limited to the standard library, so NLTK can not be used.
+By default, plint will emulate a nitpicky examiner. When making the default claims warning file (claims.csv), before adding a line related to patent prosecution, I ask whether 1% or more of examiners or judges would reject a claim based on the presence of a particular word or phrase. I don't ask whether the rejection would be valid. claims.csv is meant to be conservative in that it will have far more warnings than rejections any examiner or judge would actually make. It represents rejections (valid or not) that an applicant possibly faces. If this is too nitpicky for your tastes, you're welcome to [filter out warnings you don't want](#filtering-out-warnings), modify the existing warnings file, or make your own warnings file. plint is highly customizable.
 
 ## Legal
 
-Copyright 2022 Ben Trettel. plint is licensed under the [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.en.html), a copy of which has been provided with the software.
-
-This work was developed by Ben Trettel in his personal capacity. Ben Trettel is a USPTO patent examiner. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
-
-This work comes with absolutely no warranty.
-
-## Usage
-
-First, keep in mind [MPEP 2173.02.II](https://www.uspto.gov/web/offices/pac/mpep/s2173.html#d0e217598):
-
-> Examiners should note that Office policy is not to employ *per se* rules to make technical rejections. Examples of claim language which have been held to be indefinite set forth in [MPEP 2173.05(d)](https://www.uspto.gov/web/offices/pac/mpep/s2173.html#d0e218251) are fact specific and should not be applied as *per se* rules.
-
-Warnings produced by plint are *possible* rejections or objections. Each should be carefully checked as many warnings will not be valid rejections or objections. As stated above, by default plint is nitpicky, so likely most of the warnings will not be valid rejections or objections.
-
-### Windows
-
-On my USPTO computer (Windows), after adding `C:\Python32` and the folder where plint.py is to my path, I can run the script as follows:
-
-    python.exe plint.py .\claims.txt
-
-You can edit your path by using the start search button. Search for env and click on "Edit environment variables for your account". Separate the different folder paths with a semi-colon. [See here](https://answers.microsoft.com/en-us/windows/forum/all/adding-path-variable/97300613-20cb-4d85-8d0e-cc9d3549ba23) for some screenshots of the environmental variables dialog box.
-
-If you want to run the script directly instead of through Python, you can add ;.PY to the end of the user environmental variable PATHEXT. For me, this means that I added PATHEXT in the "Edit environment variables for your account" dialog as follows:
-
-    .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL;.PY
-
-Then I can run plint as follows:
-
-    plint .\claims.txt
-
-### Linux
-
-On Linux, the plint script can be run from the directory it is in as follows:
-
-    ./plint.py claims.txt
-
-claims.txt is the file you wish to read, which is plain text containing the patent document claims. Each claim is numbered with a period after the number, for example: "1."
-
-Alternatively, you can add the directory plint.py is in to your PATH and then run plint as follows:
-
-    plint.py claims.txt
+Copyright 2022-2023 Ben Trettel. plint is licensed under the [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.en.html), a copy of which has been provided with the software. This work comes with no warranty. If you want a different license for your use, you're welcome to contact me at <http://trettel.us/contact.html>.
 
 ### How I use plint
 
-When examining patents, I save the claims to a file named {application number}-claims-YYYY-MM-DD.txt and the specification to {application number}-spec-YYYY-MM-DD.txt, where YYYY-MM-DD is the date of the claim set. For example, for application number 16811358, I will save 16811358-claims-2022-09-27.txt and 16811358-spec-2022-09-27.txt. I will then create a [JSON file](#json-input-file) containing plint's configuration for this application. The JSON file in this example is 16811358.json:
+As an example, I could save the claims to claims.txt and the specification to spec.txt. I will then create a [JSON file](#json-input-file) containing plint's configuration for this application. The JSON file in this example is:
 
     {
-        "claims": "16811358-claims-2022-09-27.txt",
+        "claims": "claims.txt",
         "ant_basis": true,
-        "title": "Gas heater, method for operating the gas heater and a gas boiler",
-        "spec": "16811358-spec-2022-09-27.txt",
+        "title": "Example title",
+        "spec": "spec.txt",
         "uspto": true,
         "endings": true,
         "restriction": true,
@@ -90,15 +48,15 @@ When examining patents, I save the claims to a file named {application number}-c
         "filter": ["fluidly", "supplying"]
     }
 
-I then mark the claims for the antecedent basis checker [as described below](#antecedent-basis-checking). Ideally I only have to mark claim elements the first time they are introduced. If you set your text editor to highlight text matching the following regex, it will help identify where plint thinks new claim elements start:
+In this example, I'm saving the JSON file to app.json. I then mark the claims for the antecedent basis checker [as described below](#antecedent-basis-checking). Ideally I only have to mark claim elements the first time they are introduced. If you set your text editor to highlight text matching the following regex, it will help identify where plint thinks new claim elements start:
 
     \b(a|an|at least one|one or more|more than one|two or more|two|three|four|five|six|seven|eight|nine|ten)\b
 
 This will require some iteration to get right, so I will run plint as follows, modify the claim marking in response to the warnings and parsing errors displayed, and repeat until plint parses the independent claims properly:
 
-    plint .\16811358.json
+    plint .\app.json
 
-The marked claims will be written to 16811358-claims-2022-09-27.txt.marked in this example. Once plint runs through all the claims without parsing errors, I check the .marked file to identify anything plint missed, manually mark up the claims there, and rerun plint. For example, a claim might say "wherein air circulation unit is configured", which plint won't mark correctly as the article is missing due to a typographical error. So I mark that text as `wherein [air circulation unit] is configured` because the article is supposed to be "the", indicating that this is not the first time the claim element "air circulation unit" appeared. (Otherwise the term would be marked up in curly brackets: `{` and `}`.) Typos are one reason plint won't necessarily mark claims correctly.
+The marked claims will be written to claims.txt.marked in this example. Once plint runs through all the claims without parsing errors, I check the .marked file to identify anything plint missed, manually mark up claims.txt to account for the missed element(s), and rerun plint. For example, a claim might say "wherein air circulation unit is configured", which plint won't mark correctly as the article is missing due to a typographical error. So I mark that text in claims.txt as `wherein [air circulation unit] is configured` because the article is supposed to be "the", indicating that this is not the first time the claim element "air circulation unit" appeared. (Otherwise the term would be marked up in curly brackets: `{` and `}`.) Typos are one reason plint won't necessarily mark claims correctly.
 
 Another reason plint might not mark claims correctly is that not all valid claim elements will necessarily be preceded with an article or one of the phrases listed above. This will often appear as plint complaining about nested claim elements. When the first appearance of a claim element was not marked, plint can not automatically mark subsequent appearances of that claim element, causing a parsing error. When this sort of parsing error occurs, look for the first appearance of the claim element causing trouble and manually mark it with `{` and `}`.
 
@@ -107,10 +65,10 @@ As discussed below, [debug mode](#verbose-and-debug-modes) is enabled, which wil
 Once I am confident that I marked the claims for antecedent basis properly, I will remove the `debug` flag and add the `outfile` flag to save the output to a file, so the JSON file is now:
 
     {
-        "claims": "16811358-claims.txt",
+        "claims": "claims.txt",
         "ant_basis": true,
-        "title": "Gas heater, method for operating the gas heater and a gas boiler",
-        "spec": "16811358-spec.txt",
+        "title": "Example title",
+        "spec": "spec.txt",
         "uspto": true,
         "endings": true,
         "restriction": true,
@@ -118,15 +76,11 @@ Once I am confident that I marked the claims for antecedent basis properly, I wi
         "filter": ["fluidly", "supplying"]
     }
 
-Sometimes I will run plint on only the independent claims at first to identify possible restrictions. This will save time as if I restrict out certain claims, I don't want to waste the time marking them. If no restrictions appear possible, I will add the remaining claims to the claims text file and mark them for antecedent basis checking.
-
 Note the filter line of the JSON file. I will add filters as appropriate if I'm finding the output contains many false positives for a particular term, for example. I have a plint JSON file template with a filter line that removes many warnings that I don't want to see.
 
-Then I will check each line in 16811358-claims.txt.out. Most of the warnings will not lead to rejections or objections, but all should be checked. After reading the warnings, I may decide to mark the claim differently if plint is still not interpreting the claim properly.
+Then I will check each line in claims.txt.out. Most of the warnings will not lead to rejections or objections, but all should be checked. After reading the warnings, I may decide to mark the claim differently if plint is still not interpreting the claim properly.
 
 If any of the settings aren't seen as relevant, for example, `endings` or `restriction`, I remove them from the JSON file.
-
-When I get an amended claim set, I create a new claims file with an updated date and change the date for the claims file in the JSON file. This way I can more easily keep track of what changed in the amendment.
 
 ## Hard-coded checks
 
@@ -257,7 +211,7 @@ Verbose mode can be enabled with the `-V` or `--verbose` flag, which will print 
 
 ### Shortcomings of the antecedent basis checker
 
-The antecedent basis checker is fragile and will likely require some iteration until a claim is marked in a way that plint likes.
+The antecedent basis checker is fragile and will likely require some iteration until a claim is marked in a way that plint likes. This is not necessarily an issue with plint, as there are many ambiguities in claim language that make a fully automated analysis difficult. Even a human examiner is going to have to choices when interpreting the claim, and plint asks that these choices be made by the user of plint.
 
 At present, plint won't work with nested elements. For example: `a center of the widget|` would ideally be interpreted as `a {center of the [widget]}`, but that's not how plint will work at the moment. That'll need to be marked like this: `a center of #the widget|`, interpreted as `a {center of the widget}`. Then plint will think it's all just one element.
 

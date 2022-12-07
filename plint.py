@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # plint
-# Copyright (C) 2022 Ben Trettel
+# Copyright (C) 2022-2023 Ben Trettel
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# This work was developed by Ben Trettel in his personal capacity. The views expressed are his own and do not necessarily reflect the views or policies of the United States Patent and Trademark Office, the Department of Commerce, or the United States government.
-
 import argparse
 import csv
 import sys
@@ -28,7 +26,7 @@ import copy
 from itertools import chain, combinations
 import json
 
-parser = argparse.ArgumentParser(description="patent claim linter: analyzes patent claims for 112(b), 112(d), 112(f), and other issues")
+parser = argparse.ArgumentParser(description="patent claim proofreader and analyzer: checks patent claims for antecedent basis, 112(b), 112(d), 112(f), restrictions, and other issues")
 parser.add_argument("claims", help="claims file to read", nargs='?', default=None)
 parser.add_argument("-a", "--ant-basis", action="store_true", help="check for antecedent basis issues", default=False)
 #parser.add_argument("-A", "--abstract", help="document abstract for analysis")
@@ -47,7 +45,7 @@ parser.add_argument("-r", "--restriction", action="store_true", help="analyze cl
 parser.add_argument("-s", "--spec", help="specification text file to read")
 parser.add_argument("-t", "--title", help="document title for analysis")
 parser.add_argument("-U", "--uspto", action="store_true", help="USPTO examiner mode: display messages relevant to USPTO patent examiners", default=False)
-parser.add_argument("-v", "--version", action="version", version="plint version 0.32.1")
+parser.add_argument("-v", "--version", action="version", version="plint version 0.32.2")
 parser.add_argument("-V", "--verbose", action="store_true", help="print additional information", default=False)
 parser.add_argument("--test", action="store_true", help=argparse.SUPPRESS, default=False)
 args = parser.parse_args()
