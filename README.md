@@ -165,13 +165,13 @@ If a specific claim element is introduced more than once, a warning will be prin
 - When the end of a new element is not detected, add `}` after the element.
 - When the end of an element previously introduced is not detected, add `]` after the element.
 - Alternatively, if you want plint to automatically determine which type of element is ending, use `|`.
+- Claim elements previously introduced are automatically marked. For example, if a claim states "a widget", this will be interpreted as `a {widget}`. plint will then automatically interpret "the widget" as `the [widget]` in the claim being analyzed and its dependents. If desired, automatic marking can be disabled with the `--manual-marking` command line argument.
 - When an article should not create an element, add `#` to the beginning of that word. For terms that introduce multiple elements that contain multiple words (like "at least one"), it is necessary to place the `#` not at the first term (for example: `at #least one`) for the moment.
-- When a claim element was introduced properly as a singular element but later referred to as plural, the character `!` can be used to erase the plural. For example, `[expected traffic delays!;` will be interpreted as `[expected traffic delay];`.
+- When a claim element was introduced properly as a singular element but later referred to as plural, the character `!` can be used to erase the plural. For example, `[expected traffic delays!;` will be interpreted as `[expected traffic delay];`. More broadly, `!` simply removes the character preceding it.
 - Sometimes getting plint to properly parse claim elements requires adding text. Text put between backticks (`` ` ``) will be added to the claim for the antecedent basis check but not used otherwise. Here are some examples:
     - The limitation "upper and lower nozzles" should introduce an "upper nozzle" and a "lower nozzle". So, "upper and lower nozzles" could be marked as `` {upper `nozzle| `and {lower nozzles!| ``.
-    - Sometimes claim elements are introduced properly as a plural element but later referred in plural. For example, a claim may introduce "adjacent TMEs" but later refer to "each adjacent TME". The latter can be marked as `` each {adjacent TME`s`| `` to add the plural for the antecedent basis checker.
+    - Sometimes claim elements are introduced properly as a plural element but later referred to as singular. For example, a claim may introduce "adjacent TMEs" but later refer to "each adjacent TME". The latter can be marked as `` each {adjacent TME`s`| `` to add the plural for the antecedent basis checker.
 - Sometimes claim elements contain a semi-colon, comma, or colon. For example, a claim may introduce "a fully deployed, closed position". The comma can be ignored by adding `~` after it: `a fully deployed,~ closed position|`.
-- Claim elements previously introduced are automatically marked. For example, if a claim states "a widget", this will be interpreted as `a {widget}`. plint will then automatically interpret "the widget" as `the {widget}`. If desired, automatic marking can be disabled with the `--manual-marking` command line argument.
 
 See [demo-claims.txt](demo-claims.txt) below for the basic notation (`|`) in use.
 
@@ -231,10 +231,6 @@ This analysis is incomplete. First, for US restrictions, plint obviously is unaw
 
 If both the `-s`/`--spec` and `-r`/`--restriction` flags are enabled, a rudimentary analysis of the specification will be made to identify possible species elections.
 
-## DAV claims viewer search string
-
-If any warnings are printed, plint will display a string which can be pasted into the DAV claims viewer to highlight the terms found to have issues in the claims.
-
 ## Writing the output to a file
 
 The optional `-o` or `--outfile` flag will write the warnings and DAV claims viewer search string to `{file}.out`, where `file` is the input file. For example, the following will write to `claims.txt.out`:
@@ -254,7 +250,9 @@ These checks are disabled by default as they return a large number of false posi
 
 ### USPTO examiner mode
 
-Some messages which are only relevant to USPTO patent examiners are displayed if the `-u` or `--uspto` flags.
+Some messages which are only relevant to USPTO patent examiners are displayed with the `-u` or `--uspto` flags.
+
+When this flag is enabled, if any warnings are printed, plint will display a string which can be pasted into the DAV claims viewer to highlight the terms found to have issues in the claims.
 
 ### Nitpick mode
 

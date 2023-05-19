@@ -1,7 +1,12 @@
 # plint to-do list
 
 - plint 1.0
+    - Swith plint to use ConfigParser as INI allows for comments?
+        - <https://docs.python.org/3/library/tomllib.html#module-tomllib>
+            - Requires Python 3.11, which is fairly recent so this couldn't run on the ancient version of Python 3 that the USPTO has (3.2). ConfigParser would be fine otherwise.
+            - FreePascal supports INI out of the box: <https://wiki.freepascal.org/Using_INI_Files>
     - Add link to plint repository in README.md file.
+    - "claim element" to "element" for simplicity.
     - Rewrite plint to use object oriented programming to simplify data access. Do this simultaneously with adding tests.
         - `claims`: a dictionary of claim objects
             - `claims[number].elements_with_indices`
@@ -44,6 +49,8 @@
     - most comprehensive (narrowest) claim detection for USPC classification; has most elements
     - Submit plint for approval by OCIO.
         - If OCIO rejects it due to dependency on Python, rewrite in Object Pascal. It might be nice to have a TUI.
+    - linting: <https://www.b-list.org/weblog/2022/dec/19/boring-python-code-quality/>
+    - percent and ratio can be ambiguous if what they are relative to is not specified
 - After release of 1.0:
     - Ask which features people would like for a patent analysis tool on r/patentexaminer, r/patentlaw, and r/patents.
 - Scan spec for elements with reference numbers. Use that to try to fully automate the antecedent basis checking. Also produce a list of unclaimed elements like The Examiner did.
