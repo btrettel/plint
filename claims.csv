@@ -103,6 +103,7 @@ regex,message
 \belongated\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(emotional|emotion)\b,Possible subjective term. See MPEP 2173.05(b)(IV).
 \b(enhance|enhances|enhanced|enhancing)\b,Possible subjective term. See MPEP 2173.05(b)(IV).
+\benlarg(e|ed|es|ing|ement)(?! from)\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b). # <https://ipwatchdog.com/2023/01/12/federal-circuit-says-texas-court-erred-finding-viscometer-patent-claim-indefinite/id=155235/>
 \bespecially\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III). Possible invalid alternative limitation. See MPEP 2173.05(h).
 \bessentially\b,Possible relative term (term of degree or approximation). See MPEP 2173.05(b)(III).
 \b(etc\.|et\scetera|or\sthe\slike)\b,Possible invalid alternative limitation. See MPEP 2173.05(h).
@@ -424,4 +425,3 @@ regex,message
 \b\w*/\w*\b,"For A/B, it is possibly unclear whether the limitation means A and B are synonyms, both A and B are required (prefer 'and' in this case), either A or B are required (prefer 'or' in this case), A is the opposite of B (for example, 'approving/disapproving changes'), or 'A/B' is the name of the item. # gleich_ambiguity_2010, <https://medium.com/analysts-corner/six-tips-for-writing-unambiguous-requirements-70bad5422427>, <https://patentdefenses.klarquist.com/how-construed/>"
 \bzero or more\b,"Possible invalid alternative limitation. See MPEP 2173.05(h). # <http://www.intelproplaw.com/ip_forum/index.php/topic,32004.0.html>"
 (\([^(]+\)),Possible exemplary claim language. See MPEP 2173.05(d) and FP 7.34.08.
-\benlarg(e|ed|es|ing|ement)(?! from)\b,Possible relative term. Could be indefinite if not stated in reference to something else. See MPEP 2173.05(b). # <https://ipwatchdog.com/2023/01/12/federal-circuit-says-texas-court-erred-finding-viscometer-patent-claim-indefinite/id=155235/>

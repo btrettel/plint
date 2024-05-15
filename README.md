@@ -1,5 +1,7 @@
 # plint: patent claim proofreader and analyzer
 
+NOTE: This software is overdue for a complete rewrite in a more maintainable and testable way. It's essentially a prototype of a bunch of ideas I had, when I wasn't sure which data structures would be appropriate. Apologies to anyone extending this.
+
 Current version: 0.32.2
 
 plint can proofread and analyze a text file containing patent claims for the following:

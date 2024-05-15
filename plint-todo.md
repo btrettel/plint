@@ -368,6 +368,7 @@
 - Detect short/vague abstracts as well, in a way similar to that for the titles.
 - Have HTML output
 - <https://www.reddit.com/r/Patents/comments/vtsp3w/conversation_inadvertently_left_in_a_patent_spec/>
+- <https://ipwatchdog.com/2023/06/19/wherein-clauses-patent-drafting-pitfalls-avoid/id=162502/>
 
 ## Specification
 
